@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="易經問事占卜、八字姓名論命、六十四卦命名與查詢，含逐爻化解與大運流年推演。">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>易經卜卦論命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;600;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js"></script>
+<style>
+/* Layout: 留白充足的單欄「手帖」——置中刊頭＋豎排印章，細線分隔，表單如筆記，結果如書頁 */
+:root{
+  --bg:#F1EEE6; --paper:#FAF8F3; --sunk:#E9E5DA; --line:#D9D3C5; --line2:#C8C0AE;
+  --ink:#2E2C28; --muted:#7B766B; --moss:#5C6F50; --moss-ink:#FAF8F3; --seal:#B0513A; --jade:#4F7458; --ochre:#9C7A3C; --bad:#9A4A44;
+  --f-disp:"LXGW WenKai TC","Kaiti TC","KaiTi",serif; --f-body:"Noto Serif TC","Songti TC","PMingLiU",serif; --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --r:4px; --fs:17.5px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1B1A17; --paper:#23221E; --sunk:#171613; --line:#3A3832; --line2:#4A473F;
+  --ink:#E8E3D7; --muted:#A39D90; --moss:#9CB28C; --moss-ink:#1B1A17; --seal:#DE7A62; --jade:#8DBB96; --ochre:#D2AE6A; --bad:#E08C84; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1B1A17; --paper:#23221E; --sunk:#171613; --line:#3A3832; --line2:#4A473F;
+  --ink:#E8E3D7; --muted:#A39D90; --moss:#9CB28C; --moss-ink:#1B1A17; --seal:#DE7A62; --jade:#8DBB96; --ochre:#D2AE6A; --bad:#E08C84; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.95;letter-spacing:.02em;padding-inline:18px;padding-block:0 72px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto}
+p{margin:.4em 0}
+/* 刊頭 */
+header.top{display:flex;flex-direction:column;align-items:center;gap:6px;padding-block:44px 18px;text-align:center}
+.seal{width:auto;height:auto;border:1.5px solid var(--seal);color:var(--seal);border-radius:3px;padding:8px 6px;font-family:var(--f-disp);font-weight:700;font-size:22px;line-height:1.15;writing-mode:vertical-rl;letter-spacing:.1em;transform:none}
+.brand h1{margin:6px 0 0;font-family:var(--f-disp);font-weight:700;font-size:38px;letter-spacing:.32em;text-indent:.32em;text-wrap:balance}
+.brand p{margin:0;color:var(--muted);font-size:15px;letter-spacing:.28em;font-family:var(--f-body)}
+/* 分頁 */
+nav.tabs{display:flex;justify-content:center;gap:2px 6px;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-block:18px 34px;padding-block:6px}
+nav.tabs button{font:inherit;font-family:var(--f-disp);font-size:18.5px;letter-spacing:.12em;background:none;border:0;color:var(--muted);padding:8px 12px;cursor:pointer;position:relative}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button[aria-selected="true"]{color:var(--ink)}
+nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:1px;width:5px;height:5px;border-radius:50%;background:var(--seal);transform:translateX(-50%)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--ochre);outline-offset:3px}
+/* 面板與卡片 */
+.panel,.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:30px 32px;min-width:0}
+.panel h2{margin:0 0 20px;font-family:var(--f-disp);font-size:26px;font-weight:700;letter-spacing:.18em;text-align:center}
+.panel h2::after{content:"";display:block;width:28px;height:1px;background:var(--seal);margin:12px auto 0}
+.card h3{margin:0 0 12px;font-family:var(--f-disp);font-size:23px;font-weight:700;letter-spacing:.1em;line-height:1.5}
+.card h3 small{font-family:var(--f-body)}
+.card h4,.panel h4{margin:22px 0 6px;font-family:var(--f-ui);font-size:14px;font-weight:500;color:var(--ochre);letter-spacing:.24em}
+.out{margin-top:30px;display:flex;flex-direction:column;gap:22px}
+/* 表單：筆記本底線 */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
+label.f,.f{display:flex;flex-direction:column;gap:4px;font-family:var(--f-ui);font-size:14.5px;letter-spacing:.12em;color:var(--muted);min-width:0}
+input,select,textarea{font:inherit;font-family:var(--f-body);font-size:17.5px;letter-spacing:.02em;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line2);border-radius:0;padding:8px 2px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{border-bottom-color:var(--moss)}
+textarea{min-height:84px;resize:vertical;border:1px solid var(--line2);padding:10px 12px;border-radius:var(--r)}
+select{cursor:pointer}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+#d-time{min-width:13.5em}
+.btn{font:inherit;font-family:var(--f-ui);font-size:16px;letter-spacing:.14em;border-radius:2px;padding:11px 22px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:background .15s,color .15s}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.pri{background:var(--moss);border-color:var(--moss);color:var(--moss-ink)}
+.btn.pri:hover{filter:brightness(1.08);background:var(--moss);color:var(--moss-ink)}
+.btn.sm{padding:6px 14px;font-size:14px;letter-spacing:.08em}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{font:inherit;font-family:var(--f-ui);font-size:15.5px;letter-spacing:.1em;padding:7px 16px;border-radius:2px;border:1px solid var(--line2);background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.checks{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:16px}
+.checks label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.checks input{width:auto;accent-color:var(--moss)}
+.hint{color:var(--muted);font-size:15px;line-height:1.8}
+/* 經文 */
+.classic{font-family:var(--f-disp);font-size:20px;line-height:2}
+.classic .lbl{display:inline-block;color:var(--seal);font-size:13px;font-family:var(--f-ui);letter-spacing:.2em;border:1px solid currentColor;border-radius:2px;padding:0 6px;margin-right:10px;vertical-align:3px;line-height:1.7}
+.bh{color:var(--muted);font-family:var(--f-body);font-size:16px;margin-top:-4px;padding-left:2px}
+/* 卦象 */
+.hexrow{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:flex-start}
+.hexfig{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:120px}
+.hexfig .cap{font-family:var(--f-disp);font-size:19px;letter-spacing:.08em;text-align:center;line-height:1.35}
+.hexfig .cap small{display:block;color:var(--muted);font-family:var(--f-ui);font-size:13px;letter-spacing:.14em;margin-top:2px}
+.yaos{display:flex;flex-direction:column-reverse;gap:9px;padding:16px 16px;border-radius:var(--r);background:var(--bg);border:1px solid var(--line)}
+.yao{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);font-family:var(--f-ui)}
+.yao .pos{width:14px;text-align:right}
+.bar{display:flex;gap:14px;width:92px;height:12px}
+.bar i{flex:1;background:var(--ink);border-radius:1px}
+.yao.mv .bar i{background:var(--seal)}
+.yao .dot{width:8px;height:8px;border-radius:50%}
+.yao.mv .dot{background:var(--seal)}
+.verdict{display:inline-flex;align-items:center;font-family:var(--f-ui);font-weight:500;padding:1px 11px;border-radius:2px;font-size:14px;letter-spacing:.14em;border:1px solid currentColor;vertical-align:4px}
+.v-good{color:var(--jade)} .v-mid{color:var(--ochre)} .v-bad{color:var(--bad)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:16.5px}
+.kv dt{color:var(--muted);font-family:var(--f-ui);font-size:14.5px;letter-spacing:.12em;padding-top:3px} .kv dd{margin:0;min-width:0}
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0;border-top:1px solid var(--line);margin-top:14px}
+.trio>div{padding:14px 16px 6px 0;min-width:0;font-size:16.5px}
+.trio>div+div{padding-left:16px;border-left:1px solid var(--line)}
+.trio b{display:block;font-family:var(--f-ui);font-weight:500;font-size:13.5px;color:var(--moss);letter-spacing:.24em;margin-bottom:2px}
+@media (max-width:640px){.trio>div+div{border-left:0;padding-left:0;border-top:1px dashed var(--line)}}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center;border:1px solid var(--line);border-radius:var(--r)}
+.pillars div{padding:12px 4px}
+.pillars div+div{border-left:1px solid var(--line)}
+.pillars small{display:block;color:var(--muted);font-size:13px;font-family:var(--f-ui);letter-spacing:.14em}
+.pillars .gz{font-family:var(--f-disp);font-weight:700;font-size:30px;letter-spacing:.14em;line-height:1.4}
+.wx{display:flex;gap:10px;flex-wrap:wrap;font-size:15px;font-family:var(--f-ui)}
+.wx span{padding:2px 12px;border:1px solid var(--line2);border-radius:2px}
+.wuge{display:grid;grid-template-columns:auto auto 1fr;gap:8px 16px;align-items:center;font-size:16.5px}
+.wuge .num{font-variant-numeric:tabular-nums;font-weight:700;font-size:19px;text-align:right}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:16px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--muted);font-weight:500;font-size:14px;font-family:var(--f-ui);letter-spacing:.1em}
+tr.cur td{background:var(--sunk)}
+.chars{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--f-disp);font-size:24px}
+.chars span{padding:2px 10px;border-radius:2px;border:1px solid var(--line)}
+.chars span.like{border-color:var(--jade);color:var(--jade)}
+/* 逐爻、運程 */
+.list-period{display:flex;flex-direction:column;gap:20px}
+.period{border-left:2px solid var(--line2);padding-left:16px}
+.period.good{border-left-color:var(--jade)} .period.bad{border-left-color:var(--bad)} .period.mid{border-left-color:var(--ochre)}
+.period .t{font-family:var(--f-disp);font-weight:700;font-size:19px;letter-spacing:.06em}
+.period p{margin:4px 0}
+.period .classic{font-size:19px!important}
+.ja{margin:6px 0 0;font-size:16.5px;border-left:1px solid var(--ochre);padding-left:12px;color:var(--ink)}
+.hj{margin:8px 0 0;padding:10px 14px;border-radius:var(--r);background:var(--bg);font-size:16px;border:1px dashed var(--line2)}
+.hj-bad{color:var(--bad)} .hj-none{color:var(--jade)}
+.curbox{outline:1px solid var(--ochre);outline-offset:6px;border-radius:2px;padding:4px 2px}
+.empty{color:var(--muted);text-align:center;padding:30px;font-family:var(--f-disp);font-size:19px}
+.rec{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.rec:last-child{border-bottom:0}
+.rec .m{min-width:0;flex:1}
+.rec b{font-family:var(--f-disp);font-size:20px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 20px;border-radius:2px;font-size:15px;letter-spacing:.08em;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.note{font-size:14.5px;color:var(--muted);border-top:1px dashed var(--line2);padding-top:14px;margin-top:10px}
+.stroke-ins{display:flex;gap:12px;flex-wrap:wrap}
+.stroke-ins label{display:flex;flex-direction:column;align-items:center;font-family:var(--f-disp);font-size:24px}
+.stroke-ins input{width:64px;text-align:center;font-size:16px;padding:4px}
+.coins{display:flex;gap:8px;flex-wrap:wrap;font-size:15px}
+.coins span{border:1px solid var(--line);padding:2px 10px;border-radius:2px}
+.jlt td,.jlt th{padding:4px;text-align:center}
+.jlb{font:inherit;font-family:var(--f-disp);font-size:15px;line-height:1.3;background:transparent;border:1px solid var(--line);border-radius:2px;padding:5px 6px;cursor:pointer;min-width:48px}
+.wrapt td{white-space:normal;vertical-align:top}.wrapt td:first-child{white-space:nowrap}.wrapt td:nth-child(2){min-width:7em}
+.steps{margin:0 0 12px;padding-left:24px;display:flex;flex-direction:column;gap:6px}
+details summary{list-style-position:inside;cursor:pointer}
+.hexgrid{display:grid;grid-template-columns:auto repeat(8,minmax(0,1fr));gap:5px;font-size:13px;overflow-x:auto}
+.hexgrid .hd{color:var(--muted);text-align:center;padding:4px 0;font-size:13px;font-family:var(--f-ui)}
+.hexgrid button{font:inherit;font-family:var(--f-disp);font-size:15.5px;line-height:1.25;padding:8px 2px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink);cursor:pointer;min-width:0}
+.hexgrid button:hover{border-color:var(--moss)}
+.hexgrid button.dim{opacity:.22}
+.hexgrid button.sel{background:var(--ink);color:var(--paper)}
+@media (max-width:560px){
+  body{--fs:17px;padding-inline:16px}
+  .panel,.card{padding:22px 18px}
+  .brand h1{font-size:30px;letter-spacing:.22em;text-indent:.22em}
+  .brand p{letter-spacing:.14em;font-size:14px}
+  nav.tabs button{font-size:17px;padding:6px 8px;letter-spacing:.06em}
+  .pillars .gz{font-size:23px}
+  .classic{font-size:18.5px}
+  .hexrow{gap:12px 10px}
+  .hexfig{min-width:0;gap:6px}
+  .yaos{padding:10px 7px;gap:7px}
+  .bar{width:48px;gap:8px;height:10px}
+  .yao{gap:6px}
+  .hexfig .cap{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="seal" aria-hidden="true">易經</div>
+  <div class="brand"><h1>易經卜卦論命</h1><p>問事・論命・命名・查卦</p></div>
+</header>
+<nav class="tabs" role="tablist">
+  <button role="tab" id="t-div" aria-selected="true" data-tab="div">易經問事占卜</button>
+  <button role="tab" id="t-life" aria-selected="false" data-tab="life">易經論八字姓名</button>
+  <button role="tab" id="t-name" aria-selected="false" data-tab="name">六十四卦命名</button>
+  <button role="tab" id="t-lib" aria-selected="false" data-tab="lib">六十四卦查詢</button>
+  <button role="tab" id="t-learn" aria-selected="false" data-tab="learn">斷卦教學</button>
+  <button role="tab" id="t-rec" aria-selected="false" data-tab="rec">我的紀錄</button>
+  <button role="tab" id="t-help" aria-selected="false" data-tab="help">演算說明</button>
+</nav>
+
+<!-- 問事占卜 -->
+<section id="p-div" data-pane="div">
+  <div class="panel">
+    <h2>易經問事占卜</h2>
+    <div class="grid">
+      <label class="f" style="grid-column:1/-1">所問之事（心中默念，也可寫下）<input id="d-q" placeholder="例：下個月換工作是否順利？"></label>
+      <label class="f">問事類別<select id="d-cat"><option>事業工作</option><option>創業財運</option><option>感情婚姻</option><option>健康平安</option><option>考試學業</option><option>其他</option></select></label>
+      <div class="f" style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0"><label for="d-time">取盤時間</label><div class="row"><input id="d-time" type="datetime-local" style="flex:1"><button class="btn sm" id="d-now" type="button" style="white-space:nowrap">取當地時間</button></div></div>
+    </div>
+    <h4 class="hint" style="margin:14px 0 6px">起卦方式</h4>
+    <div class="seg" id="d-method">
+      <button aria-pressed="true" data-m="time">時間起卦</button>
+      <button aria-pressed="false" data-m="num">數字起卦</button>
+      <button aria-pressed="false" data-m="coin">銅錢搖卦</button>
+      <button aria-pressed="false" data-m="manual">自選卦象</button>
+    </div>
+    <div id="dm-time" class="hint" style="margin-top:10px">以取盤時間的農曆年支、月、日、時起卦（梅花易數）。</div>
+    <div id="dm-num" class="grid" style="margin-top:10px" hidden>
+      <label class="f">第一個數字（上卦）<input id="d-n1" type="number" min="1" inputmode="numeric" value="38"></label>
+      <label class="f">第二個數字（下卦）<input id="d-n2" type="number" min="1" inputmode="numeric" value="125"></label>
+    </div>
+    <div id="dm-coin" style="margin-top:10px" hidden>
+      <div class="hint">按「搖卦」六次，由初爻到上爻（三枚銅錢：三背老陽○、三字老陰×會變爻）。</div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="d-toss">搖卦</button><button class="btn sm" id="d-toss-reset">重來</button></div>
+      <div class="coins" id="d-coins" style="margin-top:8px"></div>
+    </div>
+    <div id="dm-manual" class="grid" style="margin-top:10px" hidden>
+      <label class="f">取卦<select id="d-hex"></select></label>
+      <label class="f">動爻<select id="d-mv"><option value="1">初爻</option><option value="2">二爻</option><option value="3">三爻</option><option value="4">四爻</option><option value="5">五爻</option><option value="6">上爻</option></select></label>
+    </div>
+    <div class="row" style="margin-top:16px"><button class="btn pri" id="d-go">起卦解卦</button><button class="btn" id="d-save">儲存紀錄</button><button class="btn" id="d-copy">複製結果</button></div>
+  </div>
+  <div class="out" id="d-out"></div>
+</section>
+
+<!-- 論命 -->
+<section id="p-life" data-pane="life" hidden>
+  <div class="panel">
+    <h2>以易經分析八字及姓名</h2>
+    <div class="grid">
+      <label class="f">已存的問測者<select id="l-prof"><option value="">— 新增 —</option></select></label>
+      <label class="f">姓<input id="l-sur" value="王"></label>
+      <label class="f">名<input id="l-giv" value="大明"></label>
+      <label class="f">性別<select id="l-gen"><option value="1">男</option><option value="0">女</option></select></label>
+      <label class="f">出生日期（國曆）<input id="l-bd" type="date" value="1985-06-18"></label>
+      <label class="f">出生時間<input id="l-bt" type="time" value="09:30"></label>
+      <label class="f">論命日期<input id="l-ref" type="date"></label>
+      <label class="f">推運的本命卦<select id="l-base"><option value="bm">本命卦（先天卦）</option><option value="zong">總命卦（先天＋後天）</option><option value="name">姓名卦（後天卦）</option><option value="mh">梅花生辰卦（含時辰）</option></select></label>
+    </div>
+    <div class="row" style="margin-top:10px"><label class="checks"><label><input type="checkbox" id="l-nt">不確定出生時辰（以午時計）</label></label></div>
+    <div id="l-strokes" style="margin-top:10px"></div>
+    <h4 class="hint" style="margin:14px 0 6px">易經論命分析項目</h4>
+    <div class="checks" id="l-items">
+      <label><input type="checkbox" value="1" checked>先天命運（本命卦）</label>
+      <label><input type="checkbox" value="2" checked>後天命運（姓名卦）</label>
+      <label><input type="checkbox" value="3" checked>先後天總命卦</label>
+      <label><input type="checkbox" value="4" checked>一生大運</label>
+      <label><input type="checkbox" value="5" checked>流年</label>
+      <label><input type="checkbox" value="6" checked>流月</label>
+      <label><input type="checkbox" value="7" checked>流日</label>
+    </div>
+    <div class="row" style="margin-top:16px"><button class="btn pri" id="l-go">顯示結果</button><button class="btn" id="l-save">儲存問測者</button><button class="btn" id="l-del">刪除問測者</button><button class="btn" id="l-copy">複製結果</button></div>
+    <p class="hint" id="l-sample" style="margin:10px 0 0">畫面上預填的是示範資料，請改成你要論命的人。</p>
+  </div>
+  <div class="out" id="l-out"></div>
+</section>
+
+<!-- 命名 -->
+<section id="p-name" data-pane="name" hidden>
+  <div class="panel">
+    <h2>以易經六十四卦命名</h2>
+    <div class="grid">
+      <label class="f">姓氏<input id="n-sur" value="林"></label>
+      <label class="f">性別<select id="n-gen"><option value="1">男</option><option value="0">女</option></select></label>
+      <label class="f">出生日期（國曆）<input id="n-bd" type="date" value="2026-03-12"></label>
+      <label class="f">出生時間<input id="n-bt" type="time" value="08:00"></label>
+    </div>
+    <div id="n-strokes" style="margin-top:10px"></div>
+    <h4 class="hint" style="margin:14px 0 6px">命名依據</h4>
+    <div class="checks" id="n-rules">
+      <label><input type="checkbox" value="hex" checked>易經六十四卦</label>
+      <label><input type="checkbox" value="zod" checked>生肖姓名學</label>
+      <label><input type="checkbox" value="num" checked>筆劃吉凶</label>
+      <label><input type="checkbox" value="sex" checked>男女忌用字</label>
+    </div>
+    <div class="row" style="margin-top:16px"><button class="btn pri" id="n-two">複名（兩字）</button><button class="btn" id="n-one">單名（一字）</button></div>
+  </div>
+  <div class="out" id="n-out"></div>
+</section>
+
+<!-- 查詢 -->
+<section id="p-lib" data-pane="lib" hidden>
+  <div class="panel">
+    <h2>六十四卦查詢</h2>
+    <div class="grid"><label class="f">輸入卦名或關鍵字<input id="b-q" placeholder="例：益、謙、水火、晉升"></label></div>
+    <div class="hexgrid" id="b-grid" style="margin-top:12px"></div>
+    <p class="hint" style="margin:8px 0 0">橫列為上卦、直行為下卦（先天數 1 乾、2 兌、3 離、4 震、5 巽、6 坎、7 艮、8 坤）。點選任一卦查看經文、白話、六爻與化解。</p>
+  </div>
+  <div class="out" id="b-out"></div>
+</section>
+
+<!-- 教學 -->
+<section id="p-learn" data-pane="learn" hidden><div class="out" id="k-body" style="margin-top:0"></div></section>
+
+<!-- 紀錄 -->
+<section id="p-rec" data-pane="rec" hidden>
+  <div class="panel"><h2>占卜紀錄</h2><div id="r-list"></div><p class="note">紀錄只存在你目前使用的這個瀏覽器，換裝置或清除瀏覽資料就會不見。</p></div>
+</section>
+
+<!-- 說明 -->
+<section id="p-help" data-pane="help" hidden>
+  <div class="panel classic-help" id="h-body"></div>
+</section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const HEX={"11":{"no":1,"name":"乾為天","short":"乾","gc":"元，亨，利，貞。用九：見群龍無首，吉。","tuan":"大哉乾元，萬物資始，乃統天。雲行雨施，品物流形，大明終始，六位時成，時乘六龍以御天。乾道變化，各正性命，保合大和，乃利貞。首出庶物，萬國咸寧。","xiang":"象曰：天行健，君子以自強不息。","lines":[["初九：潛龍勿用。","象曰：潛龍勿用，陽在下也。"],["九二：見龍在田，利見大人。","象曰：見龍在田，德施普也。"],["九三：君子終日乾乾，夕惕若厲，無咎。","象曰：終日乾乾，反覆道也。"],["九四：或躍在淵，無咎。","象曰：或躍在淵，進無咎也。"],["九五：飛龍在天，利見大人。","象曰：飛龍在天，大人造也。"],["上九：亢龍有悔。","象曰：亢龍有悔，盈不可久也。"],["用九：見群龍無首，吉。","象曰：用九，天德不可為首也。"]],"kw":"剛健、自強、領導","luck":5,"sum":"乾卦六爻皆陽，象徵天道運行不息，一開始就亨通，利於守正。傳統解說指出乾坤本為一體，乾是念頭之陽、坤是念頭之陰，六爻代表念頭的變化，念頭不同便生出吉凶悔吝。占得此卦能量充沛、適合主動開創，但要循序漸進，由潛而見、由躍而飛，切忌剛強過度而亢極生悔。","work":"工作上適合擔當主導角色，積極任事會受重用，但避免獨斷。","biz":"事業有開創之機，資金與人脈充足，宜穩健擴張，勿盲目求快。","love":"感情主動有力，容易吸引對方，但須收斂強勢，多些體貼。","yb":["時機未到，宜隱藏實力、充實自己，不可貿然行動。","才能開始被看見，宜主動結識貴人，爭取舞台。","整日勤奮、夜晚仍警惕反省，雖有風險但終無過失。","進退之間要審時度勢，可試著躍進，不成也無大礙。","如龍飛天，正值巔峰，大展鴻圖並得貴人相助。","高處不勝寒，過度剛強必有悔恨，宜知進知退。"],"bad":[],"gcb":"大為亨通，利於堅守正道。","jk":["x","x","x","x","x","x"],"jl":"吉"},"88":{"no":2,"name":"坤為地","short":"坤","gc":"坤，元，亨，利牝馬之貞。君子有攸往，先迷後得主，利西南得朋，東北喪朋。安貞，吉。用六：利永貞。","tuan":"至哉坤元，萬物資生，乃順承天。坤厚載物，德合無疆，含弘光大，品物咸亨。牝馬地類，行地無疆，柔順利貞。君子攸行，先迷失道，後順得常。西南得朋，乃與類行。東北喪朋，乃終有慶。安貞之吉，應地無疆。","xiang":"象曰：地勢坤，君子以厚德載物。","lines":[["初六：履霜，堅冰至。","象曰：履霜堅冰，陰始凝也。馴致其道，至堅冰也。"],["六二：直方大，不習無不利。","象曰：六二之動，直以方也。不習無不利，地道光也。"],["六三：含章可貞。或從王事，無成有終。","象曰：含章可貞，以時發也。或從王事，知光大也。"],["六四：括囊，無咎，無譽。","象曰：括囊無咎，慎不害也。"],["六五：黃裳，元吉。","象曰：黃裳，元吉，文在中也。"],["上六：龍戰于野，其血玄黃。","象曰：龍戰於野，其道窮也。"],["用六：利永貞。","象曰：用六永貞，以大終也。"]],"kw":"柔順、包容、承載","luck":4,"sum":"坤卦六爻皆陰，象徵大地厚德載物。像母馬一樣柔順守正則亨通；搶先出頭容易迷失，跟隨正確的領導便能得到指引。往西南得到朋友，往東北失去朋友，安分守正則吉。宜順勢配合、扶持他人，以柔克剛，終能有成。","work":"宜擔任輔佐、執行角色，踏實配合主管，可獲肯定。","biz":"適合合作經營、代理加盟，穩紮穩打，不宜冒進領先。","love":"感情溫柔體貼、包容為上，以耐心經營，關係穩定。","yb":["見微知著，小問題若不處理，將累積成大麻煩。","正直方正、胸懷寬大，順其自然便無往不利。","含藏才華、不爭功，輔佐他人做事，終有好結果。","謹言慎行、收斂鋒芒，雖無讚譽但可免災禍。","謙和守中、內在充實，得到最大的吉祥。","陰盛與陽相爭，兩敗俱傷，宜避免正面衝突。"],"bad":[4,6],"gcb":"大為亨通，像母馬般柔順堅貞則有利。君子有所前往，搶先會迷失，跟隨在後則得到主導；往西南可得朋友，往東北會失去朋友；安守正道則吉。","jk":["x","x","x","bad","x","bad"],"jl":"吉"},"64":{"no":3,"name":"水雷屯","short":"屯","gc":"元，亨，利，貞，勿用，有攸往，利建侯。","tuan":"屯，剛柔始交而難生，動乎險中，大亨貞。雷雨之動滿盈，天造草昧，宜建侯而不寧。","xiang":"象曰：雲雷，屯，君子以經綸。","lines":[["初九：磐桓。利居貞，利建侯。","象曰：雖磐桓，志行正也。以貴下賤，大得民也。"],["六二：屯如邅如，乘馬班如，匪寇婚媾。女子貞不字，十年乃字。","象曰：六二之難，乘剛也。十年乃字，反常也。"],["六三：即鹿無虞，惟入于林中，君子幾不如舍，往吝。","象曰：即鹿無虞，以從禽也。君子舍之，往吝窮也。"],["六四：乘馬班如。求婚媾，往吉，無不利。","象曰：求而往，明也。"],["九五：屯其膏。小貞吉，大貞凶。","象曰：屯其膏，施未光也。"],["上六：乘馬班如，泣血漣如。","象曰：泣血漣如，何可長也。"]],"kw":"初創、艱難、萌芽","luck":3,"sum":"屯卦象徵萬物初生、草創艱難，雷在水下，動而遇險。雖然根本上亨通、利於守正，但此時不宜帶著目的貿然前往，適合在自己的地方開疆拓土、建立根基，並尋求幫手。熬過起步期便會漸入佳境。","work":"新工作或新職務起步辛苦，多請教前輩，穩住腳步。","biz":"創業初期阻礙多，資金周轉吃緊，宜先建立基礎再擴張。","love":"感情進展緩慢、好事多磨，需要耐心，不宜急求結果。","yb":["徘徊難進，宜守正不動，先建立根基、尋求支援。","進退兩難，追求者眾但時機未到，耐心等待終能如願。","沒有嚮導就入山林逐鹿，只會迷路，不如放棄。","主動尋求合作、結成良緣，前往則吉利。","恩澤不能廣施，小事守正可吉，大事強求則凶。","困頓無援、傷心落淚，此狀態不可久，宜另尋出路。"],"bad":[3,6],"gcb":"大為亨通、利於守正；暫時不要輕易前往，適合建立根基、尋求輔助的人。","jk":["x","x","bad","x","x","bad"],"jl":"平"},"76":{"no":4,"name":"山水蒙","short":"蒙","gc":"亨。匪我求童蒙，童蒙求我。初筮告，再三瀆，瀆則不告。利貞。","tuan":"蒙，山下有險，險而止，蒙。蒙亨，以亨行時中也。匪我求童蒙，童蒙求我，志應也。初筮告，以剛中也。再三瀆，瀆則不告，瀆蒙也。蒙以養正，聖功也。","xiang":"象曰：山下出泉，蒙。君子以果行育德。","lines":[["初六：發蒙，利用刑人，用說桎梏，以往吝。","象曰：利用刑人，以正法也。"],["九二：包蒙吉。納婦吉。子克家。","象曰：子克家，剛柔接也。"],["六三：勿用娶女，見金夫，不有躬，無攸利。","象曰：勿用取女，行不順也。"],["六四：困蒙，吝。","象曰：困蒙之吝，獨遠實也。"],["六五：童蒙，吉。","象曰：童蒙之吉，順以巽也。"],["上九：擊蒙。不利為寇，利禦寇。","象曰：利用禦寇，上下順也。"]],"kw":"啟蒙、學習、未明","luck":3,"sum":"蒙卦象徵蒙昧未開，山下出泉，前途未明。傳統以教育與占卜為喻：不是求人來學，而是有人求教才教；誠心占卜一次就靈驗，心存僥倖反覆試探就是褻瀆，便不再靈驗。宜虛心求教、以誠向學，守正則亨通。","work":"工作上仍在摸索，宜虛心學習、接受指導，勿自以為是。","biz":"經營方向尚未清楚，先做市場研究、請教專家再決定。","love":"對感情認識不夠清楚，宜多了解對方，不要盲目投入。","yb":["以規範啟發蒙昧，可去除束縛，但過於嚴苛則有憾。","包容他人的不足，能擔起家中重任，吉利。","見利忘義、不能自持，這樣的對象不宜結交。","困於無知又遠離賢者，會有遺憾。","像孩童般虛心受教，吉祥。","用嚴格手段糾正錯誤，防範於未然而非主動攻擊。"],"bad":[3,4],"gcb":"亨通。不是我去求蒙昧的人，而是蒙昧的人來求我；第一次誠心請教就告訴他，反覆試探就是褻瀆，不再回答。利於守正。","jk":["x","x","bad","bad","x","x"],"jl":"平"},"61":{"no":5,"name":"水天需","short":"需","gc":"有孚，光亨，貞吉。利涉大川。","tuan":"需，須也；險在前也。剛健而不陷，其義不困窮矣。需有孚，光亨，貞吉。位乎天位，以正中也。利涉大川，往有功也。","xiang":"象曰：雲上於天，需。君子以飲食宴樂。","lines":[["初九：需于郊，利用恆，無咎。","象曰：需於郊，不犯難行也。利用恆，無咎，未失常也。"],["九二：需于沙，小有言，終吉。","象曰：需於沙，衍在中也，雖小有言，以吉終也。"],["九三：需于泥，致寇至。","象曰：需於泥，災在外也。自我致寇，敬慎不敗也。"],["六四：需于血，出自穴。","象曰：需於血，順以聽也。"],["九五：需于酒食，貞吉。","象曰：酒食貞吉，以中正也。"],["上六：入于穴。有不速之客三人來，敬之終吉。","象曰：不速之客來，敬之終吉，雖不當位，未大失也。"]],"kw":"等待、需求、蓄勢","luck":3,"sum":"需卦坎上乾下，雲在天上而雨未落下，象徵等待時機。前方有險，自身剛健也不可冒進；只要心存誠信、安心等待、用心端正，時機成熟時雨自然落下，光明亨通，也利於渡過大河。","work":"升遷或計畫需要等待時機，保持耐心並持續累積實力。","biz":"投資時機未到，先觀望與蓄積資金，時機成熟再出手。","love":"感情需要時間醞釀，不急躁，誠心相待終有回應。","yb":["在遠處等待，保持常態不冒險，就無過失。","在沙灘等待，稍有閒言，但最終吉利。","在泥地等待，太接近危險，易招來禍患，宜謹慎。","身陷險境，宜順勢聽從，設法脫身。","以酒食款待、安心等待，守正則吉。","落入困境時有意外來客，恭敬相待終得吉。"],"bad":[],"gcb":"心存誠信，光明亨通，守正則吉，利於渡過大河。","jk":["x","x","x","x","x","x"],"jl":"平"},"16":{"no":6,"name":"天水訟","short":"訟","gc":"有孚，窒。惕中吉。終凶。利見大人，不利涉大川。","tuan":"訟，上剛下險，險而健，訟。訟有孚，窒惕，中吉，剛來而得中也。終凶，訟不可成也。利見大人，尚中正也。不利涉大川，入於淵也。","xiang":"象曰：天與水違行，訟，君子以作事謀始。","lines":[["初六：不永所事，小有言，終吉。","象曰：不永所事，訟不可長也。雖小有言，其辨明也。"],["九二：不克訟，歸而逋，其邑人三百戶，無眚。","象曰：不克訟，歸逋，竄也。自下訟上，患至掇也。"],["六三：食舊德，貞厲，終吉。或從王事，無成。","象曰：食舊德，從上吉也。"],["九四：不克訟，復即命，渝，安貞吉。","象曰：復即命，渝，安貞，不失也。"],["九五：訟元吉。","象曰：訟元吉，以中正也。"],["上九：或錫之鞶帶，終朝三褫之。","象曰：以訟受服，亦不足敬也。"]],"kw":"爭訟、衝突、謹慎","luck":2,"sum":"訟卦天向上、水向下，彼此背道而馳，象徵爭執。雙方各有道理卻互相矛盾，爭訟宜在中途停止，堅持到底則凶。宜請有德行的人公正裁決；人心不和時，不宜一起冒大險。","work":"職場易有口角或權責糾紛，據理而不爭勝，尋求主管協調。","biz":"合約、債務易生糾紛，簽約前條款要清楚，避免訴訟。","love":"雙方意見不合易爭吵，退一步溝通，避免冷戰擴大。","yb":["不要長期糾纏爭端，稍有口舌，最終吉利。","爭訟不勝，及早退讓回避，可免災禍。","安守原有的福分，雖有危險但終吉。","放棄爭訟、回歸正道，安守本分則吉。","遇到公正的裁判，爭訟大吉。","即使爭訟贏得賞賜，也會很快被奪走，不足為榮。"],"bad":[6],"gcb":"雖有誠信卻受阻，心懷警惕、適可而止則吉，堅持到底則凶；利於找有德者裁判，不利於冒險。","jk":["x","x","x","x","x","bad"],"jl":"凶"},"86":{"no":7,"name":"地水師","short":"師","gc":"貞，丈人，吉無咎。","tuan":"師，眾也，貞正也，能以眾正，可以王矣。剛中而應，行險而順，以此毒天下，而民從之，吉又何咎矣。","xiang":"象曰：地中有水，師。君子以容民畜眾。","lines":[["初六：師出以律，否臧凶。","象曰：師出以律，失律凶也。"],["九二：在師中，吉，無咎。王三錫命。","象曰：在師中吉，承天寵也。王三錫命，懷萬邦也。"],["六三：師或輿尸，凶。","象曰：師或輿尸，大無功也。"],["六四：師左次，無咎。","象曰：左次，無咎，未失常也。"],["六五：田有禽，利執言，無咎。長子帥師，弟子輿尸，貞凶。","象曰：長子帥師，以中行也；弟子輿尸，使不當也。"],["上六：大君有命，開國承家，小人勿用。","象曰：大君有命，以正功也。小人勿用，必亂邦也。"]],"kw":"統率、紀律、群眾","luck":3,"sum":"師卦一陽統五陰，象徵用兵統眾。守正、由德高望重的人統領則吉，沒有過錯。行事須有紀律、師出有名，才能化險為夷、得眾人擁護。","work":"適合帶領團隊，但需建立明確制度與紀律，賞罰分明。","biz":"經營須重組織管理，選對人才當主管，避免多頭馬車。","love":"感情中要有原則、彼此尊重，避免第三者介入干擾。","yb":["出師要有紀律，若無規範必有凶險。","身居要職統領得當，吉祥且受上級嘉獎。","用人不當恐有挫敗，凶。","暫時退守、保存實力，沒有過失。","師出有名可行動，但須任用賢能，不可讓小人掌權。","論功行賞、建立事業，但小人不可重用。"],"bad":[3],"gcb":"用兵要守正，由德高望重的長者統領，吉祥而無過失。","jk":["x","x","bad","x","x","x"],"jl":"平"},"68":{"no":8,"name":"水地比","short":"比","gc":"吉。原筮元永貞，無咎。不寧方來，後夫凶。","tuan":"比，吉也，比，輔也，下順從也。原筮元永貞，無咎，以剛中也。不寧方來，上下應也。後夫凶，其道窮也。","xiang":"象曰：地上有水，比。先王以建萬國，親諸侯。","lines":[["初六：有孚比之，無咎。有孚盈缶，終來有它吉。","象曰：比之初六，有它吉也。"],["六二：比之自內，貞吉。","象曰：比之自內，不自失也。"],["六三：比之匪人。","象曰：比之匪人，不亦傷乎！"],["六四：外比之，貞吉。","象曰：外比於賢，以從上也。"],["九五：顯比。王用三驅，失前禽，邑人不誡，吉。","象曰：顯比之吉，位正中也。舍逆取順，失前禽也。邑人不誡，上使中也。"],["上六：比之無首，凶。","象曰：比之無首，無所終也。"]],"kw":"親比、團結、依附","luck":4,"sum":"比卦地上有水，相互依附，象徵親近追隨。追隨之前要誠心審慎選擇，一開始就守正便無過失。傳統解說提醒：王者初建天下時，不安的人紛紛來歸附；天下已定才來投靠的人錯過時機，反而有凶。宜及早選對對象，以誠相待。","work":"人際和諧、團隊合作佳，主動親近主管與同事有助發展。","biz":"適合結盟、合夥，但要慎選誠信的夥伴。","love":"感情和睦、互相依靠，適合確定關係，猶豫則錯失。","yb":["以誠信待人，真誠充實，終有意外的吉祥。","發自內心親近他人，守正則吉。","親近了不正當的人，會受傷害。","向外親近賢者，守正則吉。","光明正大地親比，來者不拒、去者不追，吉。","親比之時沒有好開頭，終無結果，凶。"],"bad":[3,6],"gcb":"吉祥。再次審慎占問，長久守正便無過失；不安的人紛紛來歸附，遲來的人則有凶。","jk":["x","x","bad","x","x","bad"],"jl":"吉"},"51":{"no":9,"name":"風天小畜","short":"小畜","gc":"亨。密雲不雨，自我西郊。","tuan":"小畜，柔得位，而上下應之，曰小畜。健而巽，剛中而志行，乃亨。密雲不雨，尚往也。自我西郊，施未行也。","xiang":"象曰：風行天上，小畜，君子以懿文德。","lines":[["初九：復自道，何其咎？吉。","象曰：復自道，其義吉也。"],["九二：牽復，吉。","象曰：牽復在中，亦不自失也。"],["九三：輿說輻，夫妻反目。","象曰：夫妻反目，不能正室也。"],["六四：有孚。血去惕出，無咎。","象曰：有孚惕出，上合志也。"],["九五：有孚攣如，富以其鄰。","象曰：有孚攣如，不獨富也。"],["上九：既雨既處，尚德載。婦貞厲，月幾望，君子征凶。","象曰：既雨既處，德積載也。君子征凶，有所疑也。"]],"kw":"小有積蓄、蓄養、待時","luck":3,"sum":"小畜卦象徵小有蓄積，雲聚在西邊卻還沒下雨，力量尚不足以成事。宜修養德行、累積實力，小事可成，大事需再等待。","work":"工作上有小進展，但仍受制約，宜繼續累積經驗。","biz":"小有獲利，但資金仍不足以擴張，宜保守儲蓄。","love":"感情有好感但尚未成熟，彼此需要多些時間。","yb":["回到正道，又有何過失？吉。","受牽引而回歸正道，吉。","車輪脫落、夫妻反目，關係出現裂痕。","以誠信化解，憂患消除，無過失。","以誠相待、與鄰共富，合作有成。","已降雨並停止，宜知足止步，再進則凶。"],"bad":[3],"gcb":"亨通。濃雲密布卻還沒下雨，雲從西郊升起，時機尚未成熟。","jk":["x","x","bad","x","x","x"],"jl":"平"},"12":{"no":10,"name":"天澤履","short":"履","gc":"履虎尾，不咥人，亨。","tuan":"履，柔履剛也。說而應乎乾，是以履虎尾，不咥人，亨。剛中正，履帝位而不疚，光明也。","xiang":"象曰：上天下澤，履，君子以辨上下，定民志。","lines":[["初九：素履，往無咎。","象曰：素履之往，獨行願也。"],["九二：履道坦坦，幽人貞吉。","象曰：幽人貞吉，中不自亂也。"],["六三：眇能視，跛能履，履虎尾，咥人，凶。武人為于大君。","象曰：眇能視，不足以有明也；跛能履，不足以與行也。咥人之凶，位不當也。武人為於大君，志剛也。"],["九四：履虎尾，愬愬，終吉。","象曰：愬愬終吉，志行也。"],["九五：夬履，貞厲。","象曰：夬履貞厲，位正當也。"],["上九：視履考祥，其旋元吉。","象曰：元吉在上，大有慶也。"]],"kw":"履行、謹慎、禮節","luck":4,"sum":"履卦象徵跟在老虎尾巴後面走卻不被咬，雖處險境仍能亨通。面對強者要以柔和守禮的態度應對，凡事按部就班、依禮而行。","work":"面對強勢主管或客戶，保持禮貌與分寸，謹慎就能化險為夷。","biz":"經營須守規矩、重信譽，冒險行事易招損失。","love":"感情中注意禮貌與尊重，以真誠樸實的態度相處。","yb":["樸素無華地前進，沒有過失。","走在平坦大道上，安靜守正則吉。","能力不足卻逞強，如踩虎尾被咬，凶。","戒慎恐懼地踩虎尾，最終吉利。","果斷行事，但須警覺危險。","回顧走過的路，周全圓滿，大吉。"],"bad":[],"gcb":"跟在老虎尾巴後面走，老虎卻不咬人，亨通。","jk":["x","x","x","x","x","x"],"jl":"吉"},"81":{"no":11,"name":"地天泰","short":"泰","gc":"小往大來，吉亨。","tuan":"泰，小往大來，吉亨，則是天地交而萬物通也，上下交而其志同也。內陽而外陰，內健而外順，內君子而外小人。君子道長，小人道消也。","xiang":"象曰：天地交，泰。后以財成天地之道，輔相天地之宜，以左右民。","lines":[["初九：拔茅茹以其匯，征吉。","象曰：拔茅征吉，志在外也。"],["九二：包荒，用馮河，不遐遺，朋亡，得尚于中行。","象曰：包荒，得尚於中行，以光大也。"],["九三：無平不陂，無往不復，艱貞無咎。勿恤其孚，于食有福。","象曰：無往不復，天地際也。"],["六四：翩翩不富，以其鄰，不戒以孚。","象曰：翩翩不富，皆失實也。不戒以孚，中心願也。"],["六五：帝乙歸妹，以祉元吉。","象曰：以祉元吉，中以行願也。"],["上六：城復于隍。勿用師，自邑告命。貞吝。","象曰：城復於隍，其命亂也。"]],"kw":"通泰、和諧、順利","luck":5,"sum":"泰卦地在上、天在下，陰在外、陽在內，小的離去、大的到來，陰陽交感，萬事通泰。上下一心是運勢亨通的時期，但須居安思危，泰極則否。","work":"工作順利，上下溝通良好，容易得到支持與晉升。","biz":"生意興隆、往來順暢，是拓展事業的好時機。","love":"感情和諧甜蜜，彼此心意相通，適合論及婚嫁。","yb":["拔起茅草根根相連，同心協力前進則吉。","包容寬大、不遺遠賢，行事得中道。","沒有只平不陂、只往不返，守正則無咎。","不以富貴驕人，真誠與人相處。","以禮結親，有福祉且大吉。","城牆傾倒，泰極將否，宜守不宜攻。"],"bad":[6],"gcb":"小的離去、大的到來，吉祥亨通。","jk":["x","x","x","x","x","bad"],"jl":"吉"},"18":{"no":12,"name":"天地否","short":"否","gc":"否之匪人，不利君子貞，大往小來。","tuan":"否之匪人，不利君子貞，大往小來，則是天地不交而萬物不通也，上下不交而天下無邦也。內陰而外陽，內柔而外剛，內小人而外君子。小人道長，君子道消也。","xiang":"象曰：天地不交，否；君子以儉德辟難，不可榮以祿。","lines":[["初六：拔茅茹，以其匯。貞吉，亨。","象曰：拔茅貞吉，志在君也。"],["六二：包承。小人吉，大人否亨。","象曰：大人否亨，不亂群也。"],["六三：包羞。","象曰：包羞，位不當也。"],["九四：有命無咎，疇離祉。","象曰：有命無咎，志行也。"],["九五：休否，大人吉。其亡其亡，繫于苞桑。","象曰：大人之吉，位正當也。"],["上九：傾否，先否後喜。","象曰：否終則傾，何可長也。"]],"kw":"閉塞、不通、守正","luck":2,"sum":"否卦天在上、地在下，陰陽不交，萬物閉塞。小人當道，不利君子守正，陽氣在外、陰氣在內。宜韜光養晦、儉約守德，等待否極泰來。","work":"工作阻滯、溝通不良，宜低調自保，勿與人爭。","biz":"景氣不佳、資金周轉困難，宜保守經營、減少支出。","love":"雙方溝通不順，冷淡疏離，宜靜待轉機。","yb":["與同類同心守正，吉而亨通。","包容承順，小人得利，君子守否道反而亨通。","內心有愧，處境尷尬。","奉命行事，無咎，眾人同享福祉。","閉塞將止，大人吉，但仍需時時戒懼。","否極泰來，先苦後喜。"],"bad":[],"gcb":"閉塞不通的不是正人，不利於君子守正；大的離去、小的到來。","jk":["x","x","x","x","x","x"],"jl":"凶"},"13":{"no":13,"name":"天火同人","short":"同人","gc":"同人于野，亨。利涉大川，利君子貞。","tuan":"同人，柔得位得中而應乎乾，曰同人。同人曰，同人於野，亨，利涉大川，乾行也。文明以健，中正而應，君子正也，唯君子為能通天下之志。","xiang":"象曰：天與火，同人，君子以類族辨物。","lines":[["初九：同人于門，無咎。","象曰：出門同人，又誰咎也。"],["六二：同人于宗，吝。","象曰：同人於宗，吝道也。"],["九三：伏戎于莽，升其高陵，三歲不興。","象曰：伏戎於莽，敵剛也。三歲不興，安行也。"],["九四：乘其墉，弗克攻，吉。","象曰：乘其墉，義弗克也；其吉，則因而反則也。"],["九五：同人，先號咷而後笑，大師克相遇。","象曰：同人之先，以中直也。大師相遇，言相克也。"],["上九：同人于郊，無悔。","象曰：同人於郊，志未得也。"]],"kw":"同心、合作、團結","luck":4,"sum":"同人卦天與火性質同向上，象徵與人和同。到廣闊的郊野尋求志同道合的人，利於渡過大河、利於君子守正。宜在公開光明的場合合作，不可只結私黨，心胸開闊才能通達天下。","work":"團隊合作佳，適合跨部門協作，公開透明可得支持。","biz":"宜廣結善緣、合夥經營，但應避免小圈子利益。","love":"朋友介紹或團體活動中易遇良緣，坦誠交往。","yb":["出門與人和同，沒有過失。","只與同宗親近，格局狹小有憾。","暗中設伏，三年都不敢發動，宜放下敵意。","登牆欲攻而自知不可，反而吉。","先哭後笑，經過艱難終能相聚。","在郊外與人和同，雖無悔，但志向未得。"],"bad":[],"gcb":"在廣闊的郊野與人和同，亨通；利於渡過大河，利於君子守正。","jk":["x","x","x","x","x","x"],"jl":"吉"},"31":{"no":14,"name":"火天大有","short":"大有","gc":"元亨。","tuan":"大有，柔得尊位，大中而上下應之，曰大有。其德剛健而文明，應乎天而時行，是以元亨。","xiang":"象曰：火在天上，大有，君子以遏惡揚善，順天休命。","lines":[["初九：無交害。匪咎，艱則無咎。","象曰：大有初九，無災害也。"],["九二：大車以載，有攸往，無咎。","象曰：大車以載，積中不敗也。"],["九三：公用亨于天子，小人弗克。","象曰：公用亨於天子，小人害也。"],["九四：匪其彭，無咎。","象曰：匪其彭，無咎，明辨析也。"],["六五：厥孚交如，威如，吉。","象曰：厥孚交如，信以發志也；威如之吉，易而無備也。"],["上九：自天佑之，吉無不利。","象曰：大有上吉，自天佑也。"]],"kw":"大有、豐收、富足","luck":5,"sum":"大有卦火在天上，光照萬物，象徵大豐收，一開始就亨通。擁有越多越要謙虛，遏惡揚善、順應天命，才能長保富足。","work":"工作成果豐碩，受到重用，宜謙虛待人以保持優勢。","biz":"財運亨通，收穫豐富，可穩健擴展事業版圖。","love":"感情圓滿，對方欣賞你的光芒，宜真誠以待。","yb":["不與惡交往，知艱難則無咎。","大車裝載豐富，前往無咎。","以所有奉獻於上，小人無法做到。","不炫耀富有，便無過失。","以誠信待人又有威嚴，吉。","得天保佑，吉而無不利。"],"bad":[],"gcb":"大為亨通。","jk":["x","x","x","x","x","x"],"jl":"吉"},"87":{"no":15,"name":"地山謙","short":"謙","gc":"亨，君子有終。","tuan":"謙，亨，天道下濟而光明，地道卑而上行。天道虧盈而益謙，地道變盈而流謙，鬼神害盈而福謙，人道惡盈而好謙。謙尊而光，卑而不可逾，君子之終也。","xiang":"象曰：地中有山，謙，君子以裒多益寡，稱物平施。","lines":[["初六：謙謙君子，用涉大川，吉。","象曰：謙謙君子，卑以自牧也。"],["六二：鳴謙，貞吉。","象曰：鳴謙貞吉，中心得也。"],["九三：勞謙，君子有終，吉。","象曰：勞謙君子，萬民服也。"],["六四：無不利，撝謙。","象曰：無不利，撝謙，不違則也。"],["六五：不富以其鄰。利用侵伐，無不利。","象曰：利用侵伐，征不服也。"],["上六：鳴謙。利用行師，征邑國。","象曰：鳴謙，志未得也。可用行師，征邑國也。"]],"kw":"謙虛、退讓、平衡","luck":5,"sum":"謙卦地中有山，高而能下，象徵謙虛，亨通且君子有好歸宿。六爻皆吉，是易經中唯一全吉之卦。謙虛者受人敬重，凡事能有好結果。","work":"謙虛低調反而受主管賞識與同事擁戴，終能出頭。","biz":"經營以客為尊、不爭一時之利，能長久穩定獲利。","love":"以謙和尊重對方，感情穩定發展。","yb":["謙而又謙的君子，可以涉越大川，吉。","謙虛之名遠播，守正則吉。","勤勞而謙虛，有始有終，吉。","發揮謙德，無往不利。","以謙德服人，必要時也可果斷行事。","謙名遠揚，可用以整頓內部。"],"bad":[],"gcb":"亨通，君子能有好的結局。","jk":["x","x","x","x","x","x"],"jl":"吉"},"48":{"no":16,"name":"雷地豫","short":"豫","gc":"利建侯行師。","tuan":"豫，剛應而志行，順以動，豫。豫，順以動，故天地如之，而況建侯行師乎？天地以順動，故日月不過，而四時不忒；聖人以順動，則刑罰清而民服。豫之時義大矣哉！","xiang":"象曰：雷出地奮，豫。先王以作樂崇德，殷薦之上帝，以配祖考。","lines":[["初六：鳴豫，凶。","象曰：初六鳴豫，志窮，凶也。"],["六二：介于石，不終日，貞吉。","象曰：不終日，貞吉，以中正也。"],["六三：盱豫，悔，遲有悔。","象曰：盱豫有悔，位不當也。"],["九四：由豫，大有得。勿疑，朋盍簪。","象曰：由豫，大有得，志大行也。"],["六五：貞疾，恆不死。","象曰：六五貞疾，乘剛也；恆不死，中未亡也。"],["上六：冥豫。成有渝，無咎。","象曰：冥豫在上，何可長也。"]],"kw":"喜悅、安樂、預備","luck":4,"sum":"豫卦雷出地上，萬物欣欣向榮，象徵和樂愉悅，利於帶領隊伍、建立事業。順勢而動、事先預備則吉，但不可沉溺享樂，樂極生悲。","work":"工作氣氛愉快，宜趁勢推動計畫，但勿鬆懈怠惰。","biz":"市場熱絡，可順勢推廣，但需事前規劃，避免過度樂觀。","love":"感情甜蜜愉快，但避免只顧玩樂而忽略承諾。","yb":["得意忘形、自鳴得意，凶。","堅定如石，及早察覺，守正則吉。","仰人鼻息求樂，遲疑必有悔恨。","眾人因你而得樂，大有收穫，勿疑。","雖有隱憂，但能長久不衰。","沉溺享樂，若能改正則無咎。"],"bad":[1,6],"gcb":"利於建立諸侯、出兵行動。","jk":["bad","x","x","x","x","bad"],"jl":"吉"},"24":{"no":17,"name":"澤雷隨","short":"隨","gc":"元亨利貞，無咎。","tuan":"隨，剛來而下柔，動而說，隨。大亨貞，無咎，而天下隨時，隨時之義大矣哉！","xiang":"象曰：澤中有雷，隨。君子以嚮晦入宴息。","lines":[["初九：官有渝，貞吉。出門交有功。","象曰：官有渝，從正吉也。出門交有功，不失也。"],["六二：係小子，失丈夫。","象曰：係小子，弗兼與也。"],["六三：係丈夫，失小子。隨有求得，利居貞。","象曰：係丈夫，志舍下也。"],["九四：隨有獲，貞凶。有孚在道，以明，何咎？","象曰：隨有獲，其義凶也。有孚在道，明功也。"],["九五：孚于嘉，吉。","象曰：孚於嘉，吉。位中止也。"],["上六：拘繫之，乃從維之。王用亨于西山。","象曰：拘繫之，上窮也。"]],"kw":"隨從、順應、變通","luck":4,"sum":"隨卦澤中有雷，動而喜悅，象徵隨順時勢；一開始就亨通，利於守正，沒有過錯。能隨時應變、擇善而從就能亨通，但要隨得正確，不可盲從。","work":"適合配合新主管或新政策調整，靈活應變可獲認可。","biz":"順應市場趨勢調整策略，跟隨正確的潮流獲利。","love":"隨緣而行，選擇對象要清楚，不可在兩人間搖擺。","yb":["觀念有所改變，守正則吉，出門交往有功。","依附小人而失去君子，因小失大。","依附君子而捨小利，有求必得，宜守正。","追隨者有所收穫但恐招嫉，以誠信明理則無咎。","以誠信追求美善，吉。","緊密相繫、堅定追隨，誠心可感動天地。"],"bad":[2,6],"gcb":"大為亨通、利於守正，沒有過失。","jk":["x","bad","x","x","x","bad"],"jl":"吉"},"75":{"no":18,"name":"山風蠱","short":"蠱","gc":"元亨，利涉大川。先甲三日，後甲三日。","tuan":"蠱，剛上而柔下，巽而止，蠱。蠱，元亨，而天下治也。利涉大川，往有事也。先甲三日，後甲三日，終則有始，天行也。","xiang":"象曰：山下有風，蠱。君子以振民育德。","lines":[["初六：幹父之蠱，有子，考無咎，厲，終吉。","象曰：幹父之蠱，意承考也。"],["九二：幹母之蠱，不可貞。","象曰：幹母之蠱，得中道也。"],["九三：幹父之蠱，小有悔，無大咎。","象曰：幹父之蠱，終無咎也。"],["六四：裕父之蠱，往見吝。","象曰：裕父之蠱，往未得也。"],["六五：幹父之蠱，用譽。","象曰：幹父用譽，承以德也。"],["上九：不事王侯，高尚其事。","象曰：不事王侯，志可則也。"]],"kw":"整治、革新、除弊","luck":2,"sum":"蠱卦象徵器物久置生蟲、積弊需要整頓，一開始就亨通，利於渡過大河。事情開始前三天要精心準備，開始後三天要謹慎檢查；勇於承擔改革，即可撥亂反正。","work":"接手爛攤子或需要改革，正是展現能力的機會。","biz":"公司內部有積弊，宜整頓流程、汰換不良環節。","love":"感情有舊問題待解，坦誠面對、共同修補。","yb":["繼承並修正父輩的錯誤，雖有危險終吉。","修正母輩的錯誤，不可過於剛直。","修正錯誤稍有悔恨，但無大過。","放任弊端不管，繼續下去會有遺憾。","修正前人錯誤而獲得讚譽。","不追求名位，保持高尚的志節。"],"bad":[2,4],"gcb":"大為亨通，利於渡過大河；改革前要審慎準備三天，改革後要檢討三天。","jk":["x","bad","x","bad","x","x"],"jl":"凶"},"82":{"no":19,"name":"地澤臨","short":"臨","gc":"元，亨，利，貞。至于八月有凶。","tuan":"臨，剛浸而長，說而順，剛中而應，大亨以正，天之道也。至於八月有凶，消不久也。","xiang":"象曰：澤上有地，臨。君子以教思無窮，容保民無疆。","lines":[["初九：咸臨，貞吉。","象曰：咸臨貞吉，志行正也。"],["九二：咸臨，吉，無不利。","象曰：咸臨，吉無不利，未順命也。"],["六三：甘臨，無攸利。既憂之，無咎。","象曰：甘臨，位不當也。既憂之，咎不長也。"],["六四：至臨，無咎。","象曰：至臨無咎，位當也。"],["六五：知臨，大君之宜，吉。","象曰：大君之宜，行中之謂也。"],["上六：敦臨，吉，無咎。","象曰：敦臨之吉，志在內也。"]],"kw":"臨近、監督、成長","luck":3,"sum":"臨卦象徵居上臨下、勢力漸長，一開始就亨通，利於守正。陽氣上升、前景看好，宜以德服人、教化包容；但盛極必衰，到了農曆八月要防凶險。","work":"有升遷或負責管理的機會，宜以身作則、關懷部屬。","biz":"業績上升，可擴大經營，但需預防後續反轉。","love":"感情漸入佳境，主動關懷對方會更加親密。","yb":["以感化相臨，守正則吉。","以感化相臨，吉而無不利。","以甜言蜜語臨人，無所利，知憂而改則無咎。","親身親臨，沒有過失。","以智慧領導，恰如其分，吉。","以敦厚相臨，吉而無咎。"],"bad":[],"gcb":"大為亨通、利於守正；但到了八月會有凶險。","jk":["x","x","x","x","x","x"],"jl":"平"},"58":{"no":20,"name":"風地觀","short":"觀","gc":"盥而不薦，有孚顒若。","tuan":"大觀在上，順而巽，中正以觀天下。觀，盥而不薦，有孚顒若，下觀而化也。觀天之神道，而四時不忒，聖人以神道設教，而天下服矣。","xiang":"象曰：風行地上，觀。先王以省方觀民設教。","lines":[["初六：童觀，小人無咎，君子吝。","象曰：初六童觀，小人道也。"],["六二：窺觀，利女貞。","象曰：窺觀女貞，亦可醜也。"],["六三：觀我生，進退。","象曰：觀我生，進退，未失道也。"],["六四：觀國之光，利用賓于王。","象曰：觀國之光，尚實也。"],["九五：觀我生，君子無咎。","象曰：觀我生，觀民也。"],["上九：觀其生，君子無咎。","象曰：觀其生，志未平也。"]],"kw":"觀察、瞻仰、示範","luck":3,"sum":"觀卦風行地上，象徵觀察與被觀察。傳統以古代拜神為喻：拜神前先洗手、抬頭，誠心恭敬。宜靜觀時局、反省自身，以端正言行作為他人表率，暫時不宜大動作。","work":"宜多觀察職場生態、了解主管意向，再做決定。","biz":"多做市場調查，觀望趨勢，暫不宜大筆投資。","love":"多觀察了解對方的人品，再決定是否深交。","yb":["如孩童般淺見，小人無妨，君子則有憾。","從門縫偷看，見識狹窄。","觀察自己的行為，決定進退。","觀察國家光輝，宜受重用。","反省自身作為，君子無咎。","觀察他人的作為，仍須自省。"],"bad":[1,2],"gcb":"祭祀時洗手後還沒獻祭，內心誠敬莊嚴，令人景仰。","jk":["bad","bad","x","x","x","x"],"jl":"平"},"34":{"no":21,"name":"火雷噬嗑","short":"噬嗑","gc":"亨。利用獄。","tuan":"頤中有物，曰噬嗑，噬嗑而亨。剛柔分，動而明，雷電合而章。柔得中而上行，雖不當位，利用獄也。","xiang":"象曰：雷電噬嗑，先王以明罰敕法。","lines":[["初九：屨校滅趾，無咎。","象曰：屨校滅趾，不行也。"],["六二：噬膚滅鼻，無咎。","象曰：噬膚滅鼻，乘剛也。"],["六三：噬臘肉，遇毒，小吝，無咎。","象曰：遇毒，位不當也。"],["九四：噬乾胏，得金矢，利艱貞，吉。","象曰：利艱貞，吉，未光也。"],["六五：噬乾肉，得黃金，貞厲，無咎。","象曰：貞厲，無咎，得當也。"],["上九：何校滅耳，凶。","象曰：何校滅耳，聰不明也。"]],"kw":"決斷、去除障礙、法治","luck":3,"sum":"噬嗑卦象徵咬碎口中之物，代表排除障礙、明罰敕法，亨通且利於判斷刑獄。遇阻礙要果斷處理，依規則與法理行事，方能亨通。","work":"工作中有阻礙或小人，宜依規章處理，果斷排除。","biz":"易遇合約糾紛或法律問題，依法處理可化解。","love":"感情中有第三者或障礙，需坦誠解決才能進展。","yb":["小懲大戒，及早改正，無咎。","處理問題稍過頭，但無大礙。","遇到棘手的舊問題，有小麻煩但無大咎。","遇到硬骨頭，艱難守正則吉。","處理困難事務得當，守正無咎。","罪大惡極不知悔改，凶。"],"bad":[1,6],"gcb":"亨通，利於用刑罰斷案。","jk":["bad","x","x","x","x","bad"],"jl":"平"},"73":{"no":22,"name":"山火賁","short":"賁","gc":"亨。小利有所往。","tuan":"賁，亨；柔來而文剛，故亨。分剛上而文柔，故小利有攸往。剛柔交錯，天文也；文明以止，人文也。觀乎天文，以察時變；觀乎人文，以化成天下。","xiang":"象曰：山下有火，賁。君子以明庶政，無敢折獄。","lines":[["初九：賁其趾，舍車而徒。","象曰：舍車而徒，義弗乘也。"],["六二：賁其須。","象曰：賁其須，與上興也。"],["九三：賁如濡如，永貞吉。","象曰：永貞之吉，終莫之陵也。"],["六四：賁如皤如，白馬翰如，匪寇婚媾。","象曰：六四，當位疑也；匪寇婚媾，終無尤也。"],["六五：賁于丘園。束帛戔戔，吝，終吉。","象曰：六五之吉，有喜也。"],["上九：白賁，無咎。","象曰：白賁，無咎，上得志也。"]],"kw":"文飾、美化、外表","luck":4,"sum":"賁卦山下有火，光照山景，象徵裝飾與文采；亨通，帶著目的前往有小利。適度的包裝修飾有益，但不可華而不實，內在本質才是根本。","work":"注重形象與簡報表現，但實力才是關鍵。","biz":"適合做包裝、行銷、設計，但產品品質不可輕忽。","love":"外在吸引力強，但需以真誠內涵維持感情。","yb":["修飾腳步，捨車步行，安守本分。","修飾鬍鬚，依附他人而動。","修飾得光鮮潤澤，長久守正則吉。","素雅修飾，求婚而非寇敵。","修飾田園，禮物雖薄，終得吉。","返璞歸真，以素為飾，無咎。"],"bad":[],"gcb":"亨通，小事利於前往。","jk":["x","x","x","x","x","x"],"jl":"吉"},"78":{"no":23,"name":"山地剝","short":"剝","gc":"不利有攸往。","tuan":"剝，剝也，柔變剛也。不利有攸往，小人長也。順而止之，觀象也。君子尚消息盈虛，天行也。","xiang":"象曰：山附於地，剝，上以厚下，安宅。","lines":[["初六：剝牀以足，蔑貞，凶。","象曰：剝牀以足，以滅下也。"],["六二：剝牀以辨，蔑貞凶。","象曰：剝牀以辨，未有與也。"],["六三：剝之，無咎。","象曰：剝之無咎，失上下也。"],["六四：剝牀以膚，凶。","象曰：剝牀以膚，切近災也。"],["六五：貫魚以宮人寵，無不利。","象曰：以宮人寵，終無尤也。"],["上九：碩果不食。君子得輿，小人剝廬。","象曰：君子得輿，民所載也。小人剝廬，終不可用也。"]],"kw":"剝落、衰退、守靜","luck":2,"sum":"剝卦五陰一陽，陰盛陽衰，象徵剝落衰敗，不利於帶著目的前往。此時不宜有所作為，應順勢而止、厚待根基，保存實力等待復甦。","work":"職位或權力受到侵蝕，宜低調守成，勿與小人正面衝突。","biz":"業績衰退、資金流失，宜收縮戰線、穩住核心。","love":"感情出現危機或漸行漸遠，宜冷靜，避免爭吵。","yb":["床腳被剝蝕，根基動搖，凶。","床框被剝蝕，孤立無援，凶。","脫離小人群體，無咎。","剝及肌膚，災難切近，凶。","率領眾人歸順，受寵而無不利。","碩果僅存，君子得民心，小人自毀。"],"bad":[1,2,4],"gcb":"不利於有所前往。","jk":["bad","bad","x","bad","x","x"],"jl":"凶"},"84":{"no":24,"name":"地雷復","short":"復","gc":"亨。出入無疾，朋來無咎。反覆其道，七日來復，利有攸往。","tuan":"復，亨。剛反，動而以順行，是以出入無疾，朋來無咎。反覆其道，七日來復，天行也。利有攸往，剛長也。復，其見天地之心乎。","xiang":"象曰：雷在地中，復，先王以至日閉關，商旅不行，後不省方。","lines":[["初九：不遠復，無祗悔，元吉。","象曰：不遠之復，以修身也。"],["六二：休復，吉。","象曰：休復之吉，以下仁也。"],["六三：頻復，厲，無咎。","象曰：頻復之厲，義無咎也。"],["六四：中行獨復。","象曰：中行獨復，以從道也。"],["六五：敦復，無悔。","象曰：敦復無悔，中以自考也。"],["上六：迷復，凶，有災眚。用行師，終有大敗，以其國君凶，至于十年不克征。","象曰：迷復之凶，反君道也。"]],"kw":"回復、復興、轉機","luck":4,"sum":"復卦一陽生於五陰之下，陽氣由下而上逐漸恢復，象徵否極泰來。可比喻為如天寒乍暖，整體會越來越好，但過程會有反覆；天道以七為週期，利於有所前往。轉機已現，宜循序漸進、修身養性，不可操之過急。","work":"低潮後出現轉機，可重新出發，穩步回升。","biz":"景氣逐漸回溫，宜從小規模重新開始。","love":"舊情復燃或關係好轉的跡象，從小處修補。","yb":["迷途知返，及時回頭，大吉。","美好的回復，親近仁者，吉。","屢次失而復返，雖危而無咎。","在群眾中獨自回歸正道。","敦厚篤實地回歸，無悔。","執迷不悟、不知回頭，凶。"],"bad":[6],"gcb":"亨通。出入沒有災患，朋友來也無過失；循環往復，七天後回來，利於有所前往。","jk":["x","x","x","x","x","bad"],"jl":"吉"},"14":{"no":25,"name":"天雷無妄","short":"無妄","gc":"元，亨，利，貞。其匪正有眚，不利有攸往。","tuan":"無妄，剛自外來而為主於內，動而健，剛中而應，大亨以正，天之命也，其匪正有眚，不利有攸往。無妄之往，何之矣。天命不祐，行矣哉。","xiang":"象曰：天下雷行，物與無妄，先王以茂對時育萬物。","lines":[["初九：無妄，往吉。","象曰：無妄之往，得志也。"],["六二：不耕穫，不菑畲，則利有攸往。","象曰：不耕穫，未富也。"],["六三：無妄之災，或繫之牛，行人之得，邑人之災。","象曰：行人得牛，邑人災也。"],["九四：可貞，無咎。","象曰：可貞無咎，固有之也。"],["九五：無妄之疾，勿藥有喜。","象曰：無妄之藥，不可試也。"],["上九：無妄，行有眚，無攸利。","象曰：無妄之行，窮之災也。"]],"kw":"真誠、無妄、順天","luck":2,"sum":"無妄卦象徵不妄為。傳統解說指出一切遭遇皆由念頭而生，念頭不端正就有災，世間幾乎沒有毫無妄念的人，所以占到此卦多半有災，不宜帶著目的前往。行事須順應天理、心存真誠，切勿投機妄動。","work":"踏實做事、不投機取巧，自然有好結果。","biz":"不宜投機或炒作，按部就班經營才不會出錯。","love":"以真心相待，不玩手段，感情自然發展。","yb":["不妄為地前進，吉。","不計較收穫，順其自然則有利。","無故遭受意外之災，宜防損失。","守正可行，無咎。","無妄之病，不需用藥自然好轉。","此時不宜妄動，行動必有災。"],"bad":[3,6],"gcb":"大為亨通、利於守正；若心念不正就有災禍，不利於有所前往。","jk":["x","x","bad","x","x","bad"],"jl":"凶"},"71":{"no":26,"name":"山天大畜","short":"大畜","gc":"利貞，不家食吉，利涉大川。","tuan":"大畜，剛健篤實輝光，日新其德，剛上而尚賢。能止健，大正也。不家食吉，養賢也。利涉大川，應乎天也。","xiang":"象曰：天在山中，大畜，君子以多識前言往行，以畜其德。","lines":[["初九：有厲，利己。","象曰：有厲，利己，不犯災也。"],["九二：輿說輹。","象曰：輿說輹，中無尤也。"],["九三：良馬逐，利艱貞。日閒輿衛，利有攸往。","象曰：利有攸往，上合志也。"],["六四：童牛之牿，元吉。","象曰：六四元吉，有喜也。"],["六五：豶豕之牙，吉。","象曰：六五之吉，有慶也。"],["上九：何天之衢，亨。","象曰：何天之衢，道大行也。"]],"kw":"大蓄、積累、止健","luck":4,"sum":"大畜卦天在山中，象徵大量蓄積，利於守正。不要在家吃閒飯，到外面歷練則吉，利於渡過大河。宜累積學識與實力、任用賢才，時機成熟可大有作為。","work":"宜進修充實，累積專業與人脈，為未來大展身手做準備。","biz":"資本累積充足，可規劃大型投資，但須審慎。","love":"感情穩定累積，互相成長，可規劃未來。","yb":["有危險，宜停止。","車軸脫落，宜暫停。","良馬馳逐，日日練習，前往有利。","預防於未然，大吉。","控制關鍵，以柔制剛，吉。","前途通達，大道暢行。"],"bad":[],"gcb":"利於守正，不在家吃閒飯（出外任事）則吉，利於渡過大河。","jk":["x","x","x","x","x","x"],"jl":"吉"},"74":{"no":27,"name":"山雷頤","short":"頤","gc":"貞吉。觀頤，自求口實。","tuan":"頤貞吉，養正則吉也。觀頤，觀其所養也；自求口實，觀其自養也。天地養萬物，聖人養賢，以及萬民；頤之時大矣哉！","xiang":"象曰：山下有雷，頤。君子以慎言語，節飲食。","lines":[["初九：舍爾靈龜，觀我朵頤，凶。","象曰：觀我朵頤，亦不足貴也。"],["六二：顛頤，拂經于丘頤，征凶。","象曰：六二，征凶，行失類也。"],["六三：拂頤，貞凶，十年勿用，無攸利。","象曰：十年勿用，道大悖也。"],["六四：顛頤，吉。虎視耽耽，其欲逐逐，無咎。","象曰：顛頤之吉，上施光也。"],["六五：拂經，居貞吉，不可涉大川。","象曰：居貞之吉，順以從上也。"],["上九：由頤，厲吉。利涉大川。","象曰：由頤，厲吉，大有慶也。"]],"kw":"頤養、飲食、言語","luck":4,"sum":"頤卦象徵頤養，守正則吉。要觀察自己的飲食所需與謀生之道，自力更生；並慎言語、節飲食。也代表照顧他人、培育人才。","work":"靠自身努力取得成果，勿依賴他人，並注意言行。","biz":"經營重在養客戶、培育團隊，穩健發展。","love":"多照顧對方的生活需要，彼此相互扶持。","yb":["捨棄自身優勢，羨慕他人，凶。","違背常理求養，前往凶。","違背頤養正道，長久不利。","向上求養以施於下，吉。","違背常理但守正可吉，不宜冒大險。","天下由之而養，雖有危險終吉。"],"bad":[1,2,3],"gcb":"守正則吉。觀察養生之道，靠自己求取食物。","jk":["bad","bad","bad","x","x","x"],"jl":"吉"},"25":{"no":28,"name":"澤風大過","short":"大過","gc":"棟橈，利有攸往，亨。","tuan":"大過，大者過也。棟橈，本末弱也。剛過而中，巽而說行，利有攸往，乃亨，大過之時大矣哉。","xiang":"象曰：澤滅木，大過。君子以獨立不懼，遁世無悶。","lines":[["初六：藉用白茅，無咎。","象曰：藉用白茅，柔在下也。"],["九二：枯楊生稊，老夫得其女妻，無不利。","象曰：老夫女妻，過以相與也。"],["九三：棟橈，凶。","象曰：棟橈之凶，不可以有輔也。"],["九四：棟隆，吉。有它，吝。","象曰：棟隆之吉；不橈乎下也。"],["九五：枯楊生華，老婦得其士夫，無咎無譽。","象曰：枯楊生華，何可久也。老婦士夫，亦可醜也。"],["上六：過涉滅頂，凶，無咎。","象曰：過涉之凶，不可咎也。"]],"kw":"過度、重壓、非常","luck":2,"sum":"大過卦象徵陽剛過盛、房梁彎曲，負擔過重；但利於有所前往，仍可亨通。需要非常手段應對，宜獨立不懼，同時剛柔並濟，避免崩潰。","work":"工作負荷過重，需調整分配，不宜再攬新責任。","biz":"擴張過度、財務壓力大，宜減輕負擔、分散風險。","love":"感情中有不對等或壓力，需調整期待。","yb":["以白茅墊物，謹慎小心，無咎。","枯楊發新芽，老夫娶少妻，無不利。","棟樑彎曲，凶。","棟樑隆起，吉，但有他心則有憾。","枯楊開花，難以長久。","涉水過深滅頂，凶，但其志無可責。"],"bad":[3,5,6],"gcb":"棟樑彎曲，利於有所前往，亨通。","jk":["x","x","bad","x","bad","bad"],"jl":"凶"},"66":{"no":29,"name":"坎為水","short":"坎","gc":"習坎，有孚，維心亨，行有尚。","tuan":"習坎，重險也。水流而不盈，行險而不失其信。維心亨，乃以剛中也。行有尚，往有功也。天險不可升也，地險山川丘陵也，王公設險以守其國，坎之時用大矣哉！","xiang":"象曰：水洊至，習坎，君子以常德行，習教事。","lines":[["初六：習坎，入于坎窞，凶。","象曰：習坎入坎，失道凶也。"],["九二：坎有險，求小得。","象曰：求小得，未出中也。"],["六三：來之坎坎，險且枕。入于坎窞，勿用。","象曰：來之坎坎，終無功也。"],["六四：樽酒簋貳，用缶，納約自牖，終無咎。","象曰：樽酒簋貳，剛柔際也。"],["九五：坎不盈，祗既平，無咎。","象曰：坎不盈，中未大也。"],["上六：係用徽纆，寘于叢棘，三歲不得，凶。","象曰：上六失道，凶三歲也。"]],"kw":"險陷、重重困難、誠信","luck":2,"sum":"坎卦兩水相重，象徵重重險阻。渡過危險要有誠心，用心保持亨通，這樣的行動值得讚許。身陷困境時唯有守住誠信、內心堅定，如水流不止、不失其信，才能脫險。","work":"工作困難重重，宜守住本分、步步為營。","biz":"資金或經營陷入困境，切忌冒險，誠信面對債權人。","love":"感情遭遇挫折或誤會，以誠信溝通才能化解。","yb":["陷入重重險坑，凶。","身在險中，求小得可成。","進退皆險，不可輕舉妄動。","以簡樸誠意交流，終無咎。","險未滿溢，將趨平穩，無咎。","被困多年不得脫，凶。"],"bad":[1,3,6],"gcb":"重重險陷之中，只要心存誠信，內心便能亨通，行動會受推崇。","jk":["bad","x","bad","x","x","bad"],"jl":"凶"},"33":{"no":30,"name":"離為火","short":"離","gc":"利貞，亨。畜牝牛，吉。","tuan":"離，麗也；日月麗乎天，百穀草木麗乎土，重明以麗乎正，乃化成天下。柔麗乎中正，故亨；是以畜牝牛吉也。","xiang":"象曰：明兩作，離。大人以繼明照乎四方。","lines":[["初九：履錯然，敬之，無咎。","象曰：履錯之敬，以辟咎也。"],["六二：黃離，元吉。","象曰：黃離，元吉，得中道也。"],["九三：日昃之離，不鼓缶而歌，則大耋之嗟。凶。","象曰：日昃之離，何可久也！"],["九四：突如其來如，焚如，死如，棄如。","象曰：突如其來如，無所容也。"],["六五：出涕沱若，戚嗟若，吉。","象曰：六五之吉，離王公也。"],["上九：王用出征，有嘉折首，獲匪其醜，無咎。","象曰：王用出征，以正邦也。"]],"kw":"光明、依附、文明","luck":4,"sum":"離卦兩火相重，光明照耀，象徵依附正道、發揚光明；守正則吉、亨通，畜養母牛吉。宜柔順守正，依附可靠的人事物。","work":"才華展現的時機，工作成果受矚目，宜依附正確的領導。","biz":"適合文化、媒體、科技等光明產業，宣傳曝光有利。","love":"熱情洋溢，但須避免一時衝動，宜細水長流。","yb":["開始時腳步錯雜，恭敬謹慎則無咎。","黃色光明，大吉。","夕陽西下，宜樂天知命。","突然而來的火勢，燒盡而棄，凶。","憂心落淚，後得吉。","出征除惡，只懲首惡，無咎。"],"bad":[3,4],"gcb":"利於守正，亨通；畜養母牛則吉。","jk":["x","x","bad","bad","x","x"],"jl":"吉"},"27":{"no":31,"name":"澤山咸","short":"咸","gc":"亨，利貞，取女吉。","tuan":"咸，感也。柔上而剛下，二氣感應以相與，止而說，男下女，是以亨，利貞，取女吉也。天地感而萬物化生，聖人感人心而天下和平。觀其所感，而天地萬物之情可見矣。","xiang":"象曰：山上有澤，咸，君子以虛受人。","lines":[["初六：咸其拇。","象曰：咸其拇，志在外也。"],["六二：咸其腓，凶，居吉。","象曰：雖凶居吉，順不害也。"],["九三：咸其股，執其隨，往吝。","象曰：咸其股，亦不處也。志在隨人，所執下也。"],["九四：貞吉，悔亡。憧憧往來，朋從爾思。","象曰：貞吉，悔亡，未感害也。憧憧往來，未光大也。"],["九五：咸其脢，無悔。","象曰：咸其脢，志末也。"],["上六：咸其輔頰舌。","象曰：咸其輔頰舌，滕口說也。"]],"kw":"感應、相感、交流","luck":4,"sum":"咸卦象徵男女相感、心意相通，亨通、利於守正，娶妻吉。這是下經第一卦，以男女感通為例，講述正確的感通法則。以誠感人、虛心接納他人，人際與感情皆能順利。","work":"人際互動良好，容易得到共鳴與支持。","biz":"客戶關係融洽，適合以情感行銷、建立信任。","love":"易有心動對象，雙方互有好感，是戀愛佳卦。","yb":["感應在腳趾，初動未深。","感應在小腿，妄動則凶，安居則吉。","感應在大腿，隨人而動有憾。","守正則吉，心神不定，朋友隨你而思。","感應在背，無悔。","感應只在口舌，說而不實。"],"bad":[3,5],"gcb":"亨通，利於守正，娶妻吉祥。","jk":["x","x","bad","x","bad","x"],"jl":"吉"},"45":{"no":32,"name":"雷風恆","short":"恆","gc":"亨，無咎，利貞，利有攸往。","tuan":"恆，久也。剛上而柔下，雷風相與，巽而動，剛柔皆應，恆。恆亨無咎，利貞；久於其道也，天地之道，恆久而不已也。利有攸往，終則有始也。日月得天，而能久照，四時變化，而能久成，聖人久於其道，而天下化成；觀其所恆，而天地萬物之情可見矣！","xiang":"象曰：雷風，恆，君子以立不易方。","lines":[["初六：浚恆，貞凶，無攸利。","象曰：浚恆之凶，始求深也。"],["九二：悔亡。","象曰：九二悔亡，能久中也。"],["九三：不恆其德，或承之羞，貞吝。","象曰：不恆其德，無所容也。"],["九四：田無禽。","象曰：久非其位，安得禽也。"],["六五：恆其德，貞，婦人吉，夫子凶。","象曰：婦人貞吉，從一而終也。夫子制義，從婦凶也。"],["上六：振恆，凶。","象曰：振恆在上，大無功也。"]],"kw":"恆久、持續、穩定","luck":4,"sum":"恆卦雷風相與，象徵恆久之道；亨通無過失，利於守正，利於有所前往。持之以恆、堅守正道，事業與關係都能長久，但恆不等於僵化，要能與時變通。","work":"工作穩定，持續努力可累積成果，勿輕易換跑道。","biz":"穩健經營、長期耕耘，適合長期合作。","love":"感情穩定長久，適合承諾、步入婚姻。","yb":["一開始就求深入，守正也凶。","悔恨消失。","不能持守德行，招致羞辱。","位置不對，打獵無所獲。","恆守其德，要分辨情況。","動搖不定，凶。"],"bad":[1,3,4,6],"gcb":"亨通，沒有過失，利於守正，利於有所前往。","jk":["bad","x","bad","bad","x","bad"],"jl":"吉"},"17":{"no":33,"name":"天山遯","short":"遯","gc":"亨，小利貞。","tuan":"遯亨，遯而亨也。剛當位而應，與時行也。小利貞，浸而長也。遯之時義大矣哉。","xiang":"象曰：天下有山，遯，君子以遠小人，不惡而嚴。","lines":[["初六：遯尾，厲。勿用有攸往。","象曰：遯尾之厲，不往何災也。"],["六二：執之用黃牛之革，莫之勝說。","象曰：執用黃牛，固志也。"],["九三：係遯，有疾，厲。畜臣妾，吉。","象曰：係遯之厲，有疾憊也。畜臣妾吉，不可大事也。"],["九四：好遯，君子吉，小人否。","象曰：君子好遯，小人否也。"],["九五：嘉遯，貞吉。","象曰：嘉遯貞吉，以正志也。"],["上九：肥遯，無不利。","象曰：肥遯無不利，無所疑也。"]],"kw":"退避、隱遁、保身","luck":2,"sum":"遯卦兩陰在下、四陽在上，陰氣正在上漲，象徵退避。此時以避為上，雖然還有小利也不能留戀，這樣才能亨通。退不是失敗，而是為了將來的進。","work":"職場有小人或不利局勢，宜低調退讓，或考慮轉換環境。","biz":"市場轉弱，宜減少投資、及早撤出不利項目。","love":"感情不宜強求，適度保持距離，給彼此空間。","yb":["退避落後，有危險，勿有所往。","用牛皮綑綁，意志堅定不移。","有牽掛而難退，有疾危，宜照顧下屬。","雖有好感但能果斷退避，君子吉。","退得適時完美，守正則吉。","遠走高飛，無所不利。"],"bad":[],"gcb":"亨通，小事利於守正。","jk":["x","x","x","x","x","x"],"jl":"凶"},"41":{"no":34,"name":"雷天大壯","short":"大壯","gc":"利貞。","tuan":"大壯，大者壯也。剛以動，故壯。大壯利貞；大者正也。正大而天地之情可見矣！","xiang":"象曰：雷在天上，大壯，君子以非禮弗履。","lines":[["初九：壯于趾，征凶，有孚。","象曰：壯於趾，其孚窮也。"],["九二：貞吉。","象曰：九二貞吉，以中也。"],["九三：小人用壯，君子用罔，貞厲。羝羊觸藩，羸其角。","象曰：小人用壯，君子罔也。"],["九四：貞吉，悔亡。藩決不羸，壯于大輿之輹。","象曰：藩決不羸，尚往也。"],["六五：喪羊于易，無悔。","象曰：喪羊於易，位不當也。"],["上六：羝羊觸藩，不能退，不能遂，無攸利。艱則吉。","象曰：不能退，不能遂，不詳也。艱則吉，咎不長也。"]],"kw":"強盛、壯大、守正","luck":3,"sum":"大壯卦雷在天上，聲勢浩大，象徵力量強盛，利於守正。傳統解說提醒人在威猛時容易急躁，大壯之時應以柔和態度處事，非禮勿行，不可恃強妄動。","work":"實力強、表現突出，但要收斂鋒芒，以免樹敵。","biz":"業務強勢成長，宜穩健、勿過度擴張而觸礁。","love":"魅力十足，但不可強勢逼迫對方。","yb":["力量用在腳趾就急進，凶。","守正則吉。","小人恃強，君子不用，如羊角卡在籬笆。","障礙已除，守正則吉。","在不知不覺中失去羊，無悔。","進退兩難，艱苦堅持則吉。"],"bad":[1],"gcb":"利於守正。","jk":["bad","x","x","x","x","x"],"jl":"平"},"38":{"no":35,"name":"火地晉","short":"晉","gc":"康侯用錫馬蕃庶，晝日三接。","tuan":"晉，進也。明出地上，順而麗乎大明，柔進而上行。是以康侯用錫馬蕃庶，晝日三接也。","xiang":"象曰：明出地上，晉，君子以自昭明德。","lines":[["初六：晉如摧如，貞吉。罔孚，裕無咎。","象曰：晉如摧如，獨行正也。裕無咎，未受命也。"],["六二：晉如愁如，貞吉。受茲介福，于其王母。","象曰：受茲介福，以中正也。"],["六三：眾允，悔亡。","象曰：眾允之，志上行也。"],["九四：晉如鼫鼠，貞厲。","象曰：鼫鼠貞厲，位不當也。"],["六五：悔亡。失得勿恤，往吉，無不利。","象曰：失得勿恤，往有慶也。"],["上九：晉其角，維用伐邑。厲，吉。無咎，貞吝。","象曰：維用伐邑，道未光也。"]],"kw":"晉升、前進、光明","luck":5,"sum":"晉卦明出地上，旭日東升，象徵晉升。如康侯得帝王賞賜馬匹、繁榮所轄之地，一天三次受召見。柔順而依附光明，受上位者賞識，前途光明。","work":"有升遷、加薪、被賞識的機會，宜積極表現。","biz":"事業步步高升，適合擴展與曝光宣傳。","love":"感情順利進展，可帶對方見家人。","yb":["前進受阻，守正則吉，寬裕待之無咎。","前進時有憂愁，守正則吉，得長輩福澤。","得到眾人信任，悔恨消失。","如鼫鼠貪而無能，守正也危。","不必在意得失，前往有吉。","前進到極點，宜自我整頓。"],"bad":[4],"gcb":"康侯受賞賜眾多車馬，一天之內三次受到接見。","jk":["x","x","x","bad","x","x"],"jl":"吉"},"83":{"no":36,"name":"地火明夷","short":"明夷","gc":"利艱貞。","tuan":"明入地中，明夷。內文明而外柔順，以蒙大難，文王以之。利艱貞，晦其明也。內難而能正其志，箕子以之。","xiang":"象曰：明入地中，明夷，君子以蒞眾，用晦而明。","lines":[["初九：明夷于飛，垂其翼。君子于行，三日不食。有攸往，主人有言。","象曰：君子於行，義不食也。"],["六二：明夷于左股，用拯馬壯，吉。","象曰：六二之吉，順以則也。"],["九三：明夷于南狩，得其大首，不可疾貞。","象曰：南狩之志，乃大得也。"],["六四：入于左腹，獲明夷之心，于出門庭。","象曰：入於左腹，獲心意也。"],["六五：箕子之明夷，利貞。","象曰：箕子之貞，明不可息也。"],["上六：不明晦。初登于天，後入于地。","象曰：初登於天，照四國也。後入於地，失則也。"]],"kw":"光明受傷、韜晦、隱忍","luck":2,"sum":"明夷卦明入地中，光明被掩蓋，象徵天昏地暗、社會腐敗之時。處境艱難、賢者受害，利於在艱苦中恪守操守，韜光養晦，以待天明。","work":"職場遭打壓或不被理解，宜隱忍低調，勿正面衝突。","biz":"環境不利，經營受挫，宜保守、隱藏實力。","love":"感情受阻或遭誤解，宜忍耐等待時機說明。","yb":["鳥飛而垂翼，宜急速離開，暫時隱忍。","左腿受傷，得良馬救助，吉。","向南出征，捉得首惡，但不可急求速成。","得知內情，及早脫離。","如箕子般隱藏光明，守正則利。","不明而晦暗，先登天後入地。"],"bad":[6],"gcb":"在艱難中堅守正道則有利。","jk":["x","x","x","x","x","bad"],"jl":"凶"},"53":{"no":37,"name":"風火家人","short":"家人","gc":"利女貞。","tuan":"家人，女正位乎內，男正位乎外，男女正，天地之大義也。家人有嚴君焉，父母之謂也。父父，子子，兄兄，弟弟，夫夫，婦婦，而家道正；正家而天下定矣。","xiang":"象曰：風自火出，家人。君子以言有物而行有恆。","lines":[["初九：閒有家，悔亡。","象曰：閒有家，志未變也。"],["六二：無攸遂，在中饋，貞吉。","象曰：六二之吉，順以巽也。"],["九三：家人嗃嗃，悔，厲，吉。婦子嘻嘻，終吝。","象曰：家人嗃嗃，未失也。婦子嘻嘻，失家節也。"],["六四：富家，大吉。","象曰：富家大吉，順在位也。"],["九五：王假有家，勿恤，吉。","象曰：王假有家，交相愛也。"],["上九：有孚，威如，終吉。","象曰：威如之吉，反身之謂也。"]],"kw":"家庭、倫理、內務","luck":4,"sum":"家人卦風自火出，象徵家庭和睦，是居家過日子的準則，利於女子守正。各守其位、以身作則，家道正則天下定；宜重視家庭與內部管理。","work":"重視團隊內部倫理與分工，從內部管理做起。","biz":"家族企業或內部管理是重點，各司其職則興旺。","love":"家庭和樂，適合成家、與家人同住或見家長。","yb":["一開始就立下家規，悔恨消失。","主持家中飲食，守正則吉。","治家嚴厲雖有悔，終吉；過度嬉鬧則有憾。","使家庭富裕，大吉。","以德感化家人，不必憂慮，吉。","以誠信威嚴治家，終吉。"],"bad":[3],"gcb":"利於女子守正。","jk":["x","x","bad","x","x","x"],"jl":"吉"},"32":{"no":38,"name":"火澤睽","short":"睽","gc":"小事吉。","tuan":"睽，火動而上，澤動而下；二女同居，其志不同行；說而麗乎明，柔進而上行，得中而應乎剛；是以小事吉。天地睽，而其事同也；男女睽，而其志通也；萬物睽，而其事類也；睽之時用大矣哉！","xiang":"象曰：上火下澤，睽，君子以同而異。","lines":[["初九：悔亡。喪馬，勿逐，自復。見惡人，無咎。","象曰：見惡人，以避咎也。"],["九二：遇主于巷，無咎。","象曰：遇主於巷，未失道也。"],["六三：見輿曳，其牛掣，其人天且劓。無初有終。","象曰：見輿曳，位不當也。無初有終，遇剛也。"],["九四：睽孤，遇元夫，交孚，厲，無咎。","象曰：交孚，無咎，志行也。"],["六五：悔亡。厥宗噬膚，往，何咎？","象曰：厥宗噬膚，往有慶也。"],["上九：睽孤。見豕負塗，載鬼一車，先張之弧，後說之弧。匪寇，婚媾，往，遇雨，則吉。","象曰：遇雨之吉，群疑亡也。"]],"kw":"乖離、分歧、求同存異","luck":2,"sum":"睽卦火向上、澤向下，彼此背離，象徵二人不同心。不同心時無法一起做大事，做小事仍然吉利。宜求同存異，從小處化解誤會。","work":"團隊意見不合，宜求同存異，小事先溝通。","biz":"合夥人理念不同，大計畫暫緩，先處理小合作。","love":"雙方想法差異大，需要包容與溝通，避免冷戰。","yb":["失馬不必追，會自己回來，見惡人也無咎。","在小巷遇到主人，無咎。","起初困難，最後有好結局。","孤獨時遇到良友，以誠相交，無咎。","親人相助，前往何咎？","疑心生暗鬼，誤會消除後吉。"],"bad":[3],"gcb":"小事吉祥。","jk":["x","x","bad","x","x","x"],"jl":"凶"},"67":{"no":39,"name":"水山蹇","short":"蹇","gc":"利西南，不利東北；利見大人，貞吉。","tuan":"蹇，難也，險在前也。見險而能止，知矣哉！蹇利西南，往得中也；不利東北，其道窮也。利見大人，往有功也。當位貞吉，以正邦也。蹇之時用大矣哉！","xiang":"象曰：山上有水，蹇，君子以反身修德。","lines":[["初六：往蹇，來譽。","象曰：往蹇，來譽，宜待也。"],["六二：王臣蹇蹇，匪躬之故。","象曰：王臣蹇蹇，終無尤也。"],["九三：往蹇，來反。","象曰：往蹇，來反，內喜之也。"],["六四：往蹇來連。","象曰：往蹇來連，當位實也。"],["九五：大蹇，朋來。","象曰：大蹇，朋來，以中節也。"],["上六：往蹇，來碩，吉，利見大人。","象曰：往蹇，來碩，志在內也。利見大人，以從貴也。"]],"kw":"艱難、阻礙、反省","luck":2,"sum":"蹇卦山上有水，前有險阻。往西南有利，往東北不利；利於見到大人物、接受指引，守正則吉。遇難時宜停下反省、修養德行，再尋求出路。","work":"工作推動困難，宜停下檢討，請求支援。","biz":"經營碰壁，不宜硬闖，先調整策略、找合作夥伴。","love":"感情遭遇阻礙，宜反省自身，耐心等待。","yb":["前往有難，回來可得讚譽。","為公奔走，雖難不為自己。","前往有難，返回與家人團聚。","前往有難，回來聯合力量。","大難之時，朋友來助。","前往有難，回來可成大事，宜見貴人。"],"bad":[],"gcb":"往西南有利，往東北不利；利於見到大人物，守正則吉。","jk":["x","x","x","x","x","x"],"jl":"凶"},"46":{"no":40,"name":"雷水解","short":"解","gc":"利西南，無所往，其來復吉。有攸往，夙吉。","tuan":"解，險以動，動而免乎險，解。解利西南，往得眾也。其來復吉，乃得中也。有攸往夙吉，往有功也。天地解，而雷雨作，雷雨作，而百果草木皆甲坼，解之時大矣哉！","xiang":"象曰：雷雨作，解，君子以赦過宥罪。","lines":[["初六：無咎。","象曰：剛柔之際，義無咎也。"],["九二：田獲三狐，得黃矢，貞吉。","象曰：九二貞吉，得中道也。"],["六三：負且乘，致寇至，貞吝。","象曰：負且乘，亦可醜也。自我致戎，又誰咎也。"],["九四：解而拇，朋至斯孚。","象曰：解而拇，未當位也。"],["六五：君子維有解，吉。有孚于小人。","象曰：君子有解，小人退也。"],["上六：公用射隼于高墉之上，獲之，無不利。","象曰：公用射隼，以解悖也。"]],"kw":"解除、解脫、寬赦","luck":4,"sum":"解卦雷雨作，萬物舒展，象徵困難解除，往西南有好處。傳統解說提醒先不要有大動作，好好休養，等陽氣恢復再有目的地行動；問題解決後宜寬恕過錯、回歸平靜。","work":"困擾已久的問題得到解決，工作逐漸順暢。","biz":"債務、糾紛逐步化解，可重新出發。","love":"誤會解開、關係和解，可重修舊好。","yb":["困難初解，無咎。","獵得三隻狐狸，得黃色箭，守正則吉。","揹負重物又乘車，招來盜賊，有憾。","解開束縛，朋友以誠相待。","君子能解除困難，吉。","射下高牆上的鷹隼，無不利。"],"bad":[3],"gcb":"往西南有利；沒有要去的地方，就回來，吉；若有要去的地方，早點去則吉。","jk":["x","x","bad","x","x","x"],"jl":"吉"},"72":{"no":41,"name":"山澤損","short":"損","gc":"有孚，元吉，無咎，可貞，利有攸往。曷之用，二簋可用享。","tuan":"損，損下益上，其道上行。損而有孚，元吉，無咎，可貞，利有攸往。曷之用？二簋可用享；二簋應有時。損剛益柔有時，損益盈虛，與時偕行。","xiang":"象曰：山下有澤，損。君子以懲忿窒欲。","lines":[["初九：已事遄往，無咎。酌損之。","象曰：已事遄往，尚合志也。"],["九二：利貞，征凶。弗損益之。","象曰：九二利貞，中以為志也。"],["六三：三人行，則損一人，一人行，則得其友。","象曰：一人行，三則疑也。"],["六四：損其疾，使遄有喜，無咎。","象曰：損其疾，亦可喜也。"],["六五：或益之十朋之龜，弗克違，元吉。","象曰：六五元吉，自上祐也。"],["上九：弗損益之，無咎，貞吉。利有攸往，得臣無家。","象曰：弗損益之，大得志也。"]],"kw":"減損、付出、節制","luck":2,"sum":"損卦損下益上，象徵適度減損，關鍵在用心。平時用八個簋祭祀，沒錢時用兩個簋也可以，只要用心端正就有利。有所捨才有所得，以誠信減少私慾與浪費，反而得到更大的回報。","work":"宜付出與奉獻，短期吃虧，長期得到回報。","biz":"適度削減開支、調整成本，捨小利求長遠。","love":"感情中願意付出與犧牲，能換來真心。","yb":["事成速去，酌量減損。","守正則利，不損己也可助人。","三人同行則損一人，一人行則得友。","減少缺點，很快有喜事。","有人給予豐厚幫助，大吉。","不損人而益人，大得志。"],"bad":[3],"gcb":"心存誠信，大吉無過失，可以守正，利於有所前往。用什麼祭祀？兩碗簡樸的食物就足夠。","jk":["x","x","bad","x","x","x"],"jl":"凶"},"54":{"no":42,"name":"風雷益","short":"益","gc":"利有攸往，利涉大川。","tuan":"益，損上益下，民說無疆，自上下下，其道大光。利有攸往，中正有慶。利涉大川，木道乃行。益動而巽，日進無疆。天施地生，其益無方。凡益之道，與時偕行。","xiang":"象曰：風雷，益。君子以見善則遷，有過則改。","lines":[["初九：利用為大作，元吉，無咎。","象曰：元吉，無咎，下不厚事也。"],["六二：或益之十朋之龜，弗克違，永貞吉。王用享于帝，吉。","象曰：或益之，自外來也。"],["六三：益之用凶事，無咎。有孚中行，告公用圭。","象曰：益用凶事，固有之也。"],["六四：中行，告公從，利用為依遷國。","象曰：告公從，以益志也。"],["九五：有孚惠心，勿問元吉。有孚惠我德。","象曰：有孚惠心，勿問之矣。惠我德，太得志也。"],["上九：莫益之，或擊之。立心勿恆，凶。","象曰：莫益之，偏辭也。或擊之，自外來也。"]],"kw":"增益、受益、進取","luck":5,"sum":"益卦損上益下，象徵增益，利於有所前往、渡過大河。上位者施惠於下，可得到貴人幫助與資源；宜積極進取、見善則遷、有過則改。","work":"貴人提攜、資源增加，適合推動大計畫。","biz":"收益增加，有客戶或投資者挹注，宜擴展。","love":"桃花運佳，有人主動示好，感情順利增進。","yb":["適合做大事，大吉無咎。","有人主動贈送厚禮，長久守正則吉。","在困難中受益，以誠信行事無咎。","行事中正，得到上級信任。","以誠惠人，不必問也大吉。","不助人反被攻擊，心意不恆，凶。"],"bad":[6],"gcb":"利於有所前往，利於渡過大河。","jk":["x","x","x","x","x","bad"],"jl":"吉"},"21":{"no":43,"name":"澤天夬","short":"夬","gc":"揚于王庭，孚號，有厲，告自邑，不利即戎，利有攸往。","tuan":"夬，決也，剛決柔也。健而說，決而和，揚於王庭，柔乘五剛也。孚號有厲，其危乃光也。告自邑，不利即戎，所尚乃窮也。利有攸往，剛長乃終也。","xiang":"象曰：澤上於天，夬，君子以施祿及下，居德則忌。","lines":[["初九：壯于前趾，往不勝，為咎。","象曰：不勝而往，咎也。"],["九二：惕號，莫夜有戎，勿恤。","象曰：有戎勿恤，得中道也。"],["九三：壯于頄，有凶。君子夬夬，獨行遇雨若濡，有慍，無咎。","象曰：君子夬夬，終無咎也。"],["九四：臀無膚，其行次且。牽羊悔亡，聞言不信。","象曰：其行次且，位不當也。聞言不信，聰不明也。"],["九五：莧陸夬夬，中行無咎。","象曰：中行無咎，中未光也。"],["上六：無號，終有凶。","象曰：無號之凶，終不可長也。"]],"kw":"決斷、果決、清除","luck":3,"sum":"夬卦五陽決一陰，象徵果斷清除小人。傳統解說指出小人居高位而張狂，君子察覺危險後應暗中通知所屬注意防範，不宜立刻動手；等籌備完善再除去，才是正確做法。須公開表明立場，但以和平手段決斷。","work":"宜果斷處理工作上的問題，但溝通方式要和緩。","biz":"須果斷停損或剔除不良業務，但避免衝突擴大。","love":"感情該斷則斷，拖泥帶水只會更傷。","yb":["急進而不能勝，有過失。","心存警惕，夜間有敵來也不必擔心。","果斷行事，雖遭誤解終無咎。","進退不得，聽人勸告卻不相信。","果斷且中道而行，無咎。","無處呼救，終有凶。"],"bad":[1,6],"gcb":"在朝廷上公開揭發，以誠信號召大家警惕危險；先告知自己的城邑，不宜立即動武，利於有所前往。","jk":["bad","x","x","x","x","bad"],"jl":"平"},"15":{"no":44,"name":"天風姤","short":"姤","gc":"女壯，勿用取女。","tuan":"姤，遇也，柔遇剛也。勿用取女，不可與長也。天地相遇，品物咸章也；剛遇中正，天下大行也，姤之時義大矣哉。","xiang":"象曰：天下有風，姤。后以施命誥四方。","lines":[["初六：繫于金柅，貞吉。有攸往，見凶。羸豕孚蹢躅。","象曰：繫於金柅，柔道牽也。"],["九二：包有魚，無咎。不利賓。","象曰：包有魚，義不及賓也。"],["九三：臀無膚，其行次且，厲，無大咎。","象曰：其行次且，行未牽也。"],["九四：包無魚，起凶。","象曰：無魚之凶，遠民也。"],["九五：以杞包瓜，含章，有隕自天。","象曰：九五含章，中正也。有隕自天，志不舍命也。"],["上九：姤其角，吝，無咎。","象曰：姤其角，上窮吝也。"]],"kw":"相遇、邂逅、防範","luck":3,"sum":"姤卦一陰爻居五陽爻之下，陰氣正在上升，象徵不期而遇，也代表一女五夫。女子過於強勢，不宜以此方式娶妻。相遇雖帶來機會，須防範小人與不正當的誘惑，不宜貿然結合。","work":"易遇到新機會或新同事，但須觀察，提防小人。","biz":"意外的合作機會出現，但需審慎評估對方誠信。","love":"易有邂逅，但對方不一定適合長久，勿輕易託付。","yb":["用金屬煞車控制，守正則吉，放任則凶。","廚中有魚，不宜轉給外人。","進退不安，有危險但無大咎。","廚中無魚，失去民心，起事則凶。","以杞葉包瓜，含藏美德，福從天降。","相遇於角，雖有憾但無咎。"],"bad":[4,6],"gcb":"女子過於強勢，不宜娶這樣的女子。","jk":["x","x","x","bad","x","bad"],"jl":"平"},"28":{"no":45,"name":"澤地萃","short":"萃","gc":"亨。王假有廟，利見大人，亨，利貞。用大牲吉，利有攸往。","tuan":"萃，聚也。順以說，剛中而應，故聚也。王假有廟，致孝享也；利見大人，亨，聚以正也；用大牲，吉，利有攸往，順天命也。觀其所聚，而天地萬物之情可見矣。","xiang":"象曰：澤上於地，萃。君子以除戎器，戒不虞。","lines":[["初六：有孚不終，乃亂乃萃。若號，一握為笑。勿恤，往無咎。","象曰：乃亂乃萃，其志亂也。"],["六二：引吉，無咎。孚乃利用禴。","象曰：引吉，無咎，中未變也。"],["六三：萃如嗟如，無攸利。往無咎，小吝。","象曰：往無咎，上巽也。"],["九四：大吉，無咎。","象曰：大吉，無咎，位不當也。"],["九五：萃有位，無咎。匪孚，元永貞，悔亡。","象曰：萃有位，志未光也。"],["上六：齎咨涕洟，無咎。","象曰：齎咨涕洟，未安上也。"]],"kw":"聚集、團聚、匯聚","luck":4,"sum":"萃卦澤上於地，象徵相聚。王者凝聚人心時，應讓有德行的人指導，誠心以大牲禮祭祀祖先，利於有所前往。宜以正道凝聚人心與資源，並事先防範聚眾產生的混亂。","work":"適合組織團隊、匯集資源，獲得上級支持。","biz":"聚集資金與人才，時機來臨時可順利創業。","love":"聚會中易遇對象，展現誠意與魅力。","yb":["誠信不足，聚而復亂，勿憂，前往無咎。","受人引薦則吉，以誠心祭祀。","聚集不成而嘆息，前往無咎有小憾。","大吉無咎。","居位聚眾無咎，但要以德服人。","憂嘆流淚，可免禍。"],"bad":[6],"gcb":"亨通。君王到宗廟祭祀，利於見大人物，亨通、利於守正；用大的牲禮祭祀則吉，利於有所前往。","jk":["x","x","x","x","x","bad"],"jl":"吉"},"85":{"no":46,"name":"地風升","short":"升","gc":"元亨，用見大人，勿恤，南征吉。","tuan":"柔以時升，巽而順，剛中而應，是以大亨；用見大人，勿恤，有慶也；南征吉，志行也。","xiang":"象曰：地中生木，升。君子以順德，積小以高大。","lines":[["初六：允升，大吉。","象曰：允升，大吉，上合志也。"],["九二：孚乃利用禴，無咎。","象曰：九二之孚，有喜也。"],["九三：升虛邑。","象曰：升虛邑，無所疑也。"],["六四：王用亨于岐山，吉，無咎。","象曰：王用亨於岐山，順事也。"],["六五：貞吉，升階。","象曰：貞吉，升階，大得志也。"],["上六：冥升。利于不息之貞。","象曰：冥升在上，消不富也。"]],"kw":"上升、成長、漸進","luck":5,"sum":"升卦地中生木，象徵由下而上成長，一開始就亨通。以「升」之道去見大人物不必憂慮，往南方有利。宜循序漸進、步步高升，順勢積極向上。","work":"職位穩定上升，努力會被看見，宜持續精進。","biz":"事業穩步成長，適合逐步擴張。","love":"感情穩定加溫，關係逐步升級。","yb":["受信任而上升，大吉。","以誠心祭祀，無咎。","如入無人之城，暢通無阻。","王在岐山祭祀，吉無咎。","守正而登階，大得志。","昏暗中仍要上升，宜持之以恆。"],"bad":[],"gcb":"大為亨通，宜去見大人物，不必擔憂，往南方前進吉。","jk":["x","x","x","x","x","x"],"jl":"吉"},"26":{"no":47,"name":"澤水困","short":"困","gc":"亨，貞，大人吉，無咎，有言不信。","tuan":"困，剛揜也。險以說，困而不失其所亨，其唯君子乎。貞大人吉，以剛中也；有言不信，尚口乃窮也。","xiang":"象曰：澤無水，困。君子以致命遂志。","lines":[["初六：臀困于株木，入于幽谷，三歲不覿。","象曰：入於幽谷，幽不明也。"],["九二：困于酒食。朱紱方來，利用亨祀。征凶，無咎。","象曰：困於酒食，中有慶也。"],["六三：困于石，據于蒺藜。入于其宮，不見其妻，凶。","象曰：據於蒺藜，乘剛也。入於其宮，不見其妻，不祥也。"],["九四：來徐徐，困于金車，吝，有終。","象曰：來徐徐，志在下也，雖不當位，有與也。"],["九五：劓刖，困于赤紱，乃徐有說，利用祭祀。","象曰：劓刖，志未得也。乃徐有說，以中直也。利用祭祀，受福也。"],["上六：困于葛藟，于臲卼，曰動悔。有悔，征吉。","象曰：困于葛藟，未當也。動悔有悔，吉行也。"]],"kw":"困窮、受困、堅守","luck":2,"sum":"困卦澤中無水，象徵困窮。處境不利時只有大人物才能吉而無咎；人在落魄時說的話不容易被相信。宜少說多做、堅守志向，君子處困而不失其志，終能亨通。","work":"工作受困、不受信任，宜以實際成果證明。","biz":"資金短缺、經營困難，宜節流並尋求援助。","love":"感情陷入困境，多做少說，以行動表達心意。","yb":["困坐樹樁下，陷入幽谷，久不見天日。","困於酒食，有貴人來，宜祭祀求福。","困於石，又坐蒺藜，凶。","援助來得緩慢，有憾但有好結果。","受上下夾困，慢慢會有轉機。","困於葛藤，有悔後行動則吉。"],"bad":[1,3],"gcb":"亨通，守正，有德的大人吉而無過失；只是說話沒人相信。","jk":["bad","x","bad","x","x","x"],"jl":"凶"},"65":{"no":48,"name":"水風井","short":"井","gc":"改邑不改井，無喪無得，往來井井。汔至，亦未繘井，羸其瓶，凶。","tuan":"巽乎水而上水，井；井養而不窮也。改邑不改井，乃以剛中也。汔至亦未繘井，未有功也。羸其瓶，是以凶也。","xiang":"象曰：木上有水，井。君子以勞民勸相。","lines":[["初六：井泥不食，舊井無禽。","象曰：井泥不食，下也。舊井無禽，時舍也。"],["九二：井谷射鮒，甕敝漏。","象曰：井谷射鮒，無與也。"],["九三：井渫不食，為我心惻。可用汲，王明，並受其福。","象曰：井渫不食，行惻也。求王明，受福也。"],["六四：井甃，無咎。","象曰：井甃無咎，修井也。"],["九五：井冽，寒泉食。","象曰：寒泉之食，中正也。"],["上六：井收勿幕，有孚元吉。","象曰：元吉在上，大成也。"]],"kw":"井養、資源、修身","luck":3,"sum":"井卦象徵水井養人而不窮。居住地點會變，井卻不變，沒有失去也沒有獲得；來取水的人很多，但發現井水乾涸時不去修井、反而打破水瓶，就有凶險。宜修身養德、持續維護根本，才能長久發揮作用。","work":"專業能力是根本，持續進修維持競爭力。","biz":"維護既有客源與資源，不斷改善產品品質。","love":"穩定付出、細心經營，感情才能長長久久。","yb":["井底淤泥不可食，無人理會。","井底射小魚，瓶子破漏。","井水清澈卻無人取用，令人惋惜。","修整井壁，無咎。","井水清涼可食。","井水供人取用不加蓋，大吉。"],"bad":[1,2],"gcb":"城邑可以遷移，水井卻不會改變，不增不減，人來人往都靠它；若快到井口繩子卻不夠長，或打破了水瓶，就凶。","jk":["bad","bad","x","x","x","x"],"jl":"平"},"23":{"no":49,"name":"澤火革","short":"革","gc":"巳日乃孚，元亨利貞，悔亡。","tuan":"革，水火相息，二女同居，其志不相得，曰革。巳日乃孚；革而信也。文明以說，大亨以正，革而當，其悔乃亡。天地革而四時成，湯武革命，順乎天而應乎人，革之時大矣哉！","xiang":"象曰：澤中有火，革。君子以治曆明時。","lines":[["初九：鞏用黃牛之革。","象曰：鞏用黃牛，不可以有為也。"],["六二：巳日乃革之，征吉，無咎。","象曰：巳日革之，行有嘉也。"],["九三：征凶，貞厲。革言三就，有孚。","象曰：革言三就，又何之矣。"],["九四：悔亡，有孚，改命吉。","象曰：改命之吉，信志也。"],["九五：大人虎變，未占有孚。","象曰：大人虎變，其文炳也。"],["上六：君子豹變，小人革面。征凶，居貞吉。","象曰：君子豹變，其文蔚也。小人革面，順以從君也。"]],"kw":"變革、改革、更新","luck":4,"sum":"革卦澤中有火，水火相息，象徵變革。時機成熟（巳日）才能變革，一開始就亨通，利於守正，悔恨消失。獲得眾人信任後進行改革，順天應人。","work":"適合轉換跑道、推動改革，但要準備充分並取得共識。","biz":"宜轉型、更新產品或商業模式，汰舊換新。","love":"感情面臨轉變，可能升級關係或需要改變相處模式。","yb":["用黃牛皮固守，時機未到勿變革。","時機成熟再變革，前往吉。","急進則凶，改革需反覆討論。","以誠信改變命運，吉。","大人如虎般大變，不占也有信。","君子如豹般改變，小人改頭換面。"],"bad":[],"gcb":"到了巳日才能取信於人，大為亨通、利於守正，悔恨消失。","jk":["x","x","x","x","x","x"],"jl":"吉"},"35":{"no":50,"name":"火風鼎","short":"鼎","gc":"元吉，亨。","tuan":"鼎，象也。以木巽火，亨飪也。聖人亨以享上帝，而大亨以養聖賢。巽而耳目聰明，柔進而上行，得中而應乎剛，是以元亨。","xiang":"象曰：木上有火，鼎。君子以正位凝命。","lines":[["初六：鼎顛趾，利出否。得妾以其子，無咎。","象曰：鼎顛趾，未悖也。利出否，以從貴也。"],["九二：鼎有實，我仇有疾，不我能即，吉。","象曰：鼎有實，慎所之也。我仇有疾，終無尤也。"],["九三：鼎耳革，其行塞，雉膏不食。方雨虧悔，終吉。","象曰：鼎耳革，失其義也。"],["九四：鼎折足，覆公餗，其形渥，凶。","象曰：覆公餗，信如何也。"],["六五：鼎黃耳，金鉉，利貞。","象曰：鼎黃耳，中以為實也。"],["上九：鼎玉鉉，大吉，無不利。","象曰：玉鉉在上，剛柔節也。"]],"kw":"鼎新、穩固、養賢","luck":5,"sum":"鼎卦木上有火，烹煮食物，象徵鼎新與穩固，一開始就吉利亨通。三足鼎立，基礎穩固，宜任用賢能、正位凝命，是吉祥昌盛之卦。","work":"地位穩固，有被重用、授權的機會。","biz":"事業穩定興旺，適合合作三方共榮。","love":"感情穩定，適合成家立業。","yb":["鼎倒而倒出廢物，因禍得福。","鼎中有實，他人嫉妒也無法傷害。","鼎耳變形難以移動，終吉。","鼎足折斷，傾覆食物，凶。","黃色鼎耳金色鼎鉉，守正則利。","玉製鼎鉉，大吉無不利。"],"bad":[2,3,4],"gcb":"大吉，亨通。","jk":["x","bad","bad","bad","x","x"],"jl":"吉"},"44":{"no":51,"name":"震為雷","short":"震","gc":"亨。震來虩虩，笑言啞啞。震驚百里，不喪匕鬯。","tuan":"震，亨。震來虩虩，恐致福也。笑言啞啞，後有則也。震驚百里，驚遠而懼邇也。出可以守宗廟社稷，以為祭主也。","xiang":"象曰：洊雷震。君子以恐懼修省。","lines":[["初九：震來虩虩，後笑言啞啞，吉。","象曰：震來虩虩，恐致福也。笑言啞啞，後有則也。"],["六二：震來厲，億喪貝，躋于九陵。勿逐，七日得。","象曰：震來厲，乘剛也。"],["六三：震蘇蘇，震行，無眚。","象曰：震蘇蘇，位不當也。"],["九四：震遂泥。","象曰：震遂泥，未光也。"],["六五：震往來厲，億無喪，有事。","象曰：震往來厲，危行也。其事在中，大無喪也。"],["上六：震索索，視矍矍，征凶。震不于其躬，于其鄰，無咎。婚媾有言。","象曰：震索索，中未得也。雖凶無咎，畏鄰戒也。"]],"kw":"震動、驚懼、警惕","luck":3,"sum":"震卦兩雷相疊，象徵震驚。雷聲來時令人驚懼，之後卻能笑出來；雷驚動百里，卻不影響祭祀。突如其來的變動雖令人恐懼，若能戒慎反省，反能轉危為安。","work":"工作有突發變動，保持冷靜應對，修正自身缺失。","biz":"市場震盪，宜謹慎應對，不可慌亂決策。","love":"感情有突發狀況，冷靜處理，切勿衝動。","yb":["震雷來時恐懼，之後談笑自若，吉。","震雷來勢猛烈，損失財物，不必追，自然復得。","驚懼不安，戒懼而行則無災。","陷入泥中，無法振作。","震雷往來皆危，謹慎可無損失。","驚恐不安，前進則凶，宜防範於先。"],"bad":[4,6],"gcb":"亨通。雷聲襲來令人驚恐，事後卻能談笑自若；雷震百里，主祭的人仍不失手中的祭器。","jk":["x","x","x","bad","x","bad"],"jl":"平"},"77":{"no":52,"name":"艮為山","short":"艮","gc":"艮其背，不獲其身，行其庭，不見其人，無咎。","tuan":"艮，止也。時止則止，時行則行，動靜不失其時，其道光明。艮其止，止其所也。上下敵應，不相與也。是以不獲其身，行其庭不見其人，無咎也。","xiang":"象曰：兼山，艮。君子以思不出其位。","lines":[["初六：艮其趾，無咎。利永貞。","象曰：艮其趾，未失正也。"],["六二：艮其腓，不拯其隨，其心不快。","象曰：不拯其隨，未退聽也。"],["九三：艮其限，列其夤，厲，薰心。","象曰：艮其限，危薰心也。"],["六四：艮其身，無咎。","象曰：艮其身，止諸躬也。"],["六五：艮其輔，言有序，悔亡。","象曰：艮其輔，以中正也。"],["上九：敦艮，吉。","象曰：敦艮之吉，以厚終也。"]],"kw":"停止、靜止、知止","luck":3,"sum":"艮卦兩山相疊，象徵止。可比喻為兩人背對背在庭院擦肩而過，互不相見，沒有過錯。時止則止、時行則行，宜安分守己、思不出其位，靜以觀變。","work":"宜守住崗位，不要越權或急於轉換。","biz":"暫停擴張，維持現狀，等待時機。","love":"感情平穩但不宜急進，保持適當距離。","yb":["止於腳趾，及早停止，無咎。","小腿停止而無法救助他人，心中不快。","腰部停止，上下隔絕，危險。","止於自身，無咎。","止住口舌，言之有序。","以敦厚止之，吉。"],"bad":[2,3],"gcb":"止於背後，看不見自身；走在庭院中，也看不到他人，沒有過失。","jk":["x","bad","bad","x","x","x"],"jl":"平"},"57":{"no":53,"name":"風山漸","short":"漸","gc":"女歸吉，利貞。","tuan":"漸之進也，女歸吉也。進得位，往有功也。進以正，可以正邦也。其位剛，得中也。止而巽，動不窮也。","xiang":"象曰：山上有木，漸。君子以居賢德善俗。","lines":[["初六：鴻漸于幹，小子厲，有言，無咎。","象曰：小子之厲，義無咎也。"],["六二：鴻漸于磐，飲食衎衎，吉。","象曰：飲食衎衎，不素飽也。"],["九三：鴻漸于陸。夫征不復，婦孕不育，凶。利禦寇。","象曰：夫征不復，離群醜也。婦孕不育，失其道也。利用禦寇，順相保也。"],["六四：鴻漸于木，或得其桷，無咎。","象曰：或得其桷，順以巽也。"],["九五：鴻漸于陵。婦三歲不孕，終莫之勝，吉。","象曰：終莫之勝，吉，得所願也。"],["上九：鴻漸于陸，其羽可用為儀，吉。","象曰：其羽可用為儀，吉，不可亂也。"]],"kw":"漸進、循序、婚嫁","luck":4,"sum":"漸卦山上有木，樹木漸漸成長，象徵循序漸進。可比喻為女孩等待男孩，吉祥，利於守正。凡事不躁進，按部就班必有好結果，尤利婚嫁。","work":"按部就班升遷，不可急於求成。","biz":"穩健成長，逐步拓展市場。","love":"感情循序漸進，是談婚論嫁的好卦。","yb":["大雁漸進至水邊，年輕人有危險但無咎。","大雁漸進至磐石，飲食和樂，吉。","大雁漸進至陸地，夫征不歸，凶。","大雁漸進至樹上，找到棲身之處。","大雁漸進至山陵，終能如願，吉。","大雁漸進至高處，羽毛可作儀範，吉。"],"bad":[3],"gcb":"女子出嫁吉祥，利於守正。","jk":["x","x","bad","x","x","x"],"jl":"吉"},"42":{"no":54,"name":"雷澤歸妹","short":"歸妹","gc":"征凶，無攸利。","tuan":"歸妹，天地之大義也。天地不交，而萬物不興，歸妹人之終始也。說以動，所歸妹也。征凶，位不當也。無攸利，柔乘剛也。","xiang":"象曰：澤上有雷，歸妹，君子以永終知敝。","lines":[["初九：歸妹以娣。跛能履，征吉。","象曰：歸妹以娣，以恆也。跛能履，吉相承也。"],["九二：眇能視，利幽人之貞。","象曰：利幽人之貞，未變常也。"],["六三：歸妹以須，反歸以娣。","象曰：歸妹以須，未當也。"],["九四：歸妹愆期，遲歸有時。","象曰：愆期之志，有待而行也。"],["六五：帝乙歸妹。其君之袂，不如其娣之袂良。月幾望，吉。","象曰：帝乙歸妹，不如其娣之袂良也。其位在中，以貴行也。"],["上六：女承筐無實，士刲羊無血，無攸利。","象曰：上六無實，承虛筐也。"]],"kw":"歸妹、婚嫁、不正","luck":2,"sum":"歸妹卦象徵少女出嫁，原指妹妹隨姐姐出嫁，古代可泛指小妾，現代可指第三者。過於衝動就有凶險，不利於有所前往。名分不正或操之過急則凶，宜守本分、慎始慎終。","work":"位置不穩或名不正言不順，宜釐清職責，勿急於表現。","biz":"合作關係不對等，須先確立名分與權責。","love":"感情容易衝動，或名分不正，宜冷靜思考再承諾。","yb":["以偏房身分出嫁，安守本分則吉。","目力不佳仍能看，宜安靜守正。","想嫁卻等待，只能以偏房出嫁。","延誤婚期，遲嫁自有時機。","不重外表重內在，吉。","承筐無實，徒勞無功。"],"bad":[6],"gcb":"前往則凶，沒有什麼好處。","jk":["x","x","x","x","x","bad"],"jl":"凶"},"43":{"no":55,"name":"雷火豐","short":"豐","gc":"亨，王假之，勿憂，宜日中。","tuan":"豐，大也。明以動，故豐。王假之，尚大也。勿憂宜日中，宜照天下也。日中則昃，月盈則食，天地盈虛，與時消息，而況於人乎？況於鬼神乎？","xiang":"象曰：雷電皆至，豐。君子以折獄致刑。","lines":[["初九：遇其配主，雖旬無咎。往有尚。","象曰：雖旬無咎，過旬災也。"],["六二：豐其蔀，日中見斗。往得疑疾，有孚發若，吉。","象曰：有孚發若，信以發志也。"],["九三：豐其沛，日中見沫。折其右肱，無咎。","象曰：豐其沛，不可大事也。折其右肱，終不可用也。"],["九四：豐其蔀，日中見斗。遇其夷主，吉。","象曰：豐其蔀，位未當也。日中見斗，幽不明也。遇其夷主，吉行也。"],["六五：來章，有慶譽，吉。","象曰：六五之吉，有慶也。"],["上六：豐其屋，蔀其家，窺其戶，闃其無人，三歲不覿，凶。","象曰：豐其屋，天際翔也。窺其戶，闃其無人，自藏也。"]],"kw":"豐盛、盛大、日中","luck":4,"sum":"豐卦雷電皆至，象徵豐盛壯大，亨通。君王到宗廟以誠相感，不必憂慮；在如日中天時要處盛防衰。宜光明普照、把握當下，也要明白日中則昃。","work":"事業處巔峰，宜把握機會，同時規劃後續。","biz":"營收豐盛，但須預留準備金防範衰退。","love":"感情熱烈充實，宜珍惜，並為長久打算。","yb":["遇到相配的主人，雖滿而無咎。","遮蔽光明，以誠信啟發則吉。","光明被遮，折損右臂，但無咎。","光明被遮，遇到同道則吉。","招來賢才，有喜慶吉。","豪宅中空無一人，三年不見，凶。"],"bad":[2,6],"gcb":"亨通，君王能達到盛大之境，不必憂慮，宜如日正當中般普照。","jk":["x","bad","x","x","x","bad"],"jl":"吉"},"37":{"no":56,"name":"火山旅","short":"旅","gc":"小亨，旅貞吉。","tuan":"旅，小亨，柔得中乎外，而順乎剛，止而麗乎明，是以小亨，旅貞吉也。旅之時義大矣哉！","xiang":"象曰：山上有火，旅。君子以明慎用刑，而不留獄。","lines":[["初六：旅瑣瑣，斯其所取災。","象曰：旅瑣瑣，志窮災也。"],["六二：旅即次，懷其資，得童僕貞。","象曰：得童僕貞，終無尤也。"],["九三：旅焚其次，喪其童僕，貞厲。","象曰：旅焚其次，亦以傷矣。以旅與下，其義喪也。"],["九四：旅于處，得其資斧，我心不快。","象曰：旅於處，未得位也。得其資斧，心未快也。"],["六五：射雉，一矢亡，終以譽命。","象曰：終以譽命，上逮也。"],["上九：鳥焚其巢，旅人先笑後號咷，喪牛于易，凶。","象曰：以旅在上，其義焚也。喪牛於易，終莫之聞也。"]],"kw":"旅行、漂泊、客居","luck":2,"sum":"旅卦山上有火，火勢遊移不定，象徵羈旅在外。出門在外很難有大的亨通，守正則吉。客居他鄉宜謙和低調、謹慎小心，小事可成。","work":"可能出差、外派或換工作，宜謙和低調適應環境。","biz":"適合外地拓展或短期合作，但根基不穩，宜謹慎。","love":"聚少離多或遠距戀情，需要信任與溝通。","yb":["旅途中瑣碎小氣，自取其禍。","客居有所，懷有資財，得忠僕。","旅舍失火，失去僕人，危險。","暫居於處，雖有資財但心不快。","射雉一箭，終得美名。","鳥巢被焚，先笑後哭，凶。"],"bad":[1,3,6],"gcb":"小有亨通，旅居在外守正則吉。","jk":["bad","x","bad","x","x","bad"],"jl":"凶"},"55":{"no":57,"name":"巽為風","short":"巽","gc":"小亨，利有攸往，利見大人。","tuan":"重巽以申命，剛巽乎中正而志行。柔皆順乎剛，是以小亨，利有攸往，利見大人。","xiang":"象曰：隨風，巽。君子以申命行事。","lines":[["初六：進退，利武人之貞。","象曰：進退，志疑也。利武人之貞，志治也。"],["九二：巽在牀下。用史巫紛若，吉，無咎。","象曰：紛若之吉，得中也。"],["九三：頻巽，吝。","象曰：頻巽之吝，志窮也。"],["六四：悔亡，田獲三品。","象曰：田獲三品，有功也。"],["九五：貞吉，悔亡，無不利，無初有終。先庚三日，後庚三日，吉。","象曰：九五之吉，位中正也。"],["上九：巽在牀下，喪其資斧，貞凶。","象曰：巽在牀下，上窮也。喪其資斧，正乎凶也。"]],"kw":"順從、深入、謙遜","luck":3,"sum":"巽卦兩風相重，象徵順入，小有亨通，利於有所前往、見有德行的大人物。以柔順謙遜的方式深入人心，但須果斷，避免猶豫不決。","work":"宜配合上意，深入了解任務，再執行。","biz":"適合業務拓展、深入市場，以柔性方式說服客戶。","love":"以溫柔體貼打動對方，但不要過於優柔寡斷。","yb":["進退猶豫，宜以武人果斷之貞。","謙卑至床下，以誠心祈福則吉。","反覆順從，有憾。","悔恨消失，打獵收穫豐富。","守正則吉，先後三日謹慎則吉。","卑順過度，喪失資財，凶。"],"bad":[3,6],"gcb":"小有亨通，利於有所前往，利於見到大人物。","jk":["x","x","bad","x","x","bad"],"jl":"平"},"22":{"no":58,"name":"兌為澤","short":"兌","gc":"亨，利貞。","tuan":"兌，說也。剛中而柔外，說以利貞，是以順乎天而應乎人。說以先民，民忘其勞，說以犯難，民忘其死，說之大，民勸矣哉。","xiang":"象曰：麗澤，兌，君子以朋友講習。","lines":[["初九：和兌，吉。","象曰：和兌之吉，行未疑也。"],["九二：孚兌，吉，悔亡。","象曰：孚兌之吉，信志也。"],["六三：來兌，凶。","象曰：來兌之凶，位不當也。"],["九四：商兌未寧，介疾有喜。","象曰：九四之喜，有慶也。"],["九五：孚于剝，有厲。","象曰：孚於剝，位正當也。"],["上六：引兌。","象曰：上六引兌，未光也。"]],"kw":"喜悅、和悅、溝通","luck":4,"sum":"兌卦兩澤相連，象徵喜悅，亨通、利於守正。以和悅之道與人交往，朋友講習、互相切磋；喜悅須以正道為本，不可諂媚取悅。","work":"人際和諧，溝通順利，適合團隊合作與講習。","biz":"適合服務、娛樂、餐飲、教育等需要溝通的行業。","love":"感情愉快甜蜜，彼此互相欣賞。","yb":["和悅待人，吉。","以誠信喜悅，吉而悔亡。","諂媚取悅，凶。","權衡喜悅，戒除不正則有喜。","誠信被小人剝蝕，有危險。","引誘他人喜悅，未能光明。"],"bad":[3],"gcb":"亨通，利於守正。","jk":["x","x","bad","x","x","x"],"jl":"吉"},"56":{"no":59,"name":"風水渙","short":"渙","gc":"亨。王假有廟，利涉大川，利貞。","tuan":"渙，亨。剛來而不窮，柔得位乎外而上同。王假有廟，王乃在中也。利涉大川，乘木有功也。","xiang":"象曰：風行水上，渙，先王以享於帝，立廟。","lines":[["初六：用拯馬壯，吉。","象曰：初六之吉，順也。"],["九二：渙奔其機，悔亡。","象曰：渙奔其機，得願也。"],["六三：渙其躬，無悔。","象曰：渙其躬，志在外也。"],["六四：渙其群，元吉。渙有丘，匪夷所思。","象曰：渙其群，元吉，光大也。"],["九五：渙汗其大號，渙王居，無咎。","象曰：王居無咎，正位也。"],["上九：渙其血，去逖出，無咎。","象曰：渙其血，遠害也。"]],"kw":"渙散、離散、化解","luck":3,"sum":"渙卦風行水上，象徵渙散與化解，亨通。君王到宗廟誠心祭拜以凝聚人心，利於渡過大河、利於守正。人心渙散時需重建向心力，也代表疏通阻滯、化解困境。","work":"團隊渙散，需重新凝聚向心力；或化解舊有問題。","biz":"資源分散，宜整合核心事業；也利於海外拓展。","love":"關係疏離，需要重新凝聚彼此的心。","yb":["拯救渙散，得良馬相助，吉。","渙散時奔向可依靠之處，悔亡。","不顧自身，志在外。","解散小團體，大吉。","發布重要號令，凝聚人心，無咎。","遠離傷害，無咎。"],"bad":[],"gcb":"亨通。君王到宗廟祭祀，利於渡過大河，利於守正。","jk":["x","x","x","x","x","x"],"jl":"平"},"62":{"no":60,"name":"水澤節","short":"節","gc":"亨。苦節不可貞。","tuan":"節，亨，剛柔分，而剛得中。苦節不可貞，其道窮也。說以行險，當位以節，中正以通。天地節而四時成，節以制度，不傷財，不害民。","xiang":"象曰：澤上有水，節。君子以制數度，議德行。","lines":[["初九：不出戶庭，無咎。","象曰：不出戶庭，知通塞也。"],["九二：不出門庭，凶。","象曰：不出門庭，凶，失時極也。"],["六三：不節若，則嗟若，無咎。","象曰：不節之嗟，又誰咎也。"],["六四：安節，亨。","象曰：安節之亨，承上道也。"],["九五：甘節，吉，往有尚。","象曰：甘節之吉，居位中也。"],["上六：苦節，貞凶，悔亡。","象曰：苦節貞凶，其道窮也。"]],"kw":"節制、節約、規範","luck":3,"sum":"節卦澤上有水，象徵節制，亨通；但過分的節制不是正道，難以長久。宜建立規範、量入為出，節而有度。","work":"遵守制度、適度安排時間與資源。","biz":"控制成本、節約開支，建立良好財務制度。","love":"感情中保持分寸，不過度依賴或要求。","yb":["不出戶庭，知所進退，無咎。","該出門而不出，失去時機，凶。","不知節制而嘆息，咎由自取。","安然節制，亨通。","甘於節制，吉，前往受讚賞。","過度節制，守之則凶。"],"bad":[2,3,6],"gcb":"亨通；但過度節制不可長久堅持。","jk":["x","bad","bad","x","x","bad"],"jl":"平"},"52":{"no":61,"name":"風澤中孚","short":"中孚","gc":"豚魚吉，利涉大川，利貞。","tuan":"中孚，柔在內而剛得中。說而巽，孚，乃化邦也。豚魚吉，信及豚魚也。利涉大川，乘木舟虛也。中孚以利貞，乃應乎天也。","xiang":"象曰：澤上有風，中孚。君子以議獄緩死。","lines":[["初九：虞吉，有它不燕。","象曰：初九虞吉，志未變也。"],["九二：鳴鶴在陰，其子和之，我有好爵，吾與爾靡之。","象曰：其子和之，中心願也。"],["六三：得敵，或鼓，或罷，或泣，或歌。","象曰：或鼓，或罷，位不當也。"],["六四：月幾望，馬匹亡，無咎。","象曰：馬匹亡，絕類上也。"],["九五：有孚攣如，無咎。","象曰：有孚攣如，位正當也。"],["上九：翰音登于天，貞凶。","象曰：翰音登於天，何可長也。"]],"kw":"誠信、中孚、感化","luck":3,"sum":"中孚卦象徵內心誠信。傳統解說指出江中的豚魚能指引風向、從不出錯，守住了誠信；人能守住這種德性，就利於渡過大河、利於守正。誠意是成事的根本。","work":"以誠信建立口碑，獲得主管與同事信任。","biz":"重視誠信經營，客戶信任度高，生意長久。","love":"以真心打動對方，彼此互信，感情穩固。","yb":["安守誠信則吉，有他心則不安。","鶴鳴子和，同聲相應，分享美好。","遇到對手，心神不定。","月近圓滿，捨棄同類，無咎。","以誠信聯繫，無咎。","虛聲上達於天，不實則凶。"],"bad":[3,6],"gcb":"誠信能感動豬和魚，吉祥；利於渡過大河，利於守正。","jk":["x","x","bad","x","x","bad"],"jl":"平"},"47":{"no":62,"name":"雷山小過","short":"小過","gc":"亨，利貞，可小事，不可大事。飛鳥遺之音，不宜上宜下，大吉。","tuan":"小過，小者過而亨也。過以利貞，與時行也。柔得中，是以小事吉也。剛失位而不中，是以不可大事也。有飛鳥之象焉，有飛鳥遺之音，不宜上宜下，大吉；上逆而下順也。","xiang":"象曰：山上有雷，小過。君子以行過乎恭，喪過乎哀，用過乎儉。","lines":[["初六：飛鳥以凶。","象曰：飛鳥以凶，不可如何也。"],["六二：過其祖，遇其妣。不及其君，遇其臣，無咎。","象曰：不及其君，臣不可過也。"],["九三：弗過，防之，從或戕之，凶。","象曰：從或戕之，凶如何也。"],["九四：無咎，弗過，遇之。往厲，必戒。勿用，永貞。","象曰：弗過遇之，位不當也。往厲，必戒，終不可長也。"],["六五：密雲不雨，自我西郊。公弋取彼在穴。","象曰：密雲不雨，已上也。"],["上六：弗遇過之，飛鳥離之，凶，是謂災眚。","象曰：弗遇過之，已亢也。"]],"kw":"小過、謹慎、低調","luck":3,"sum":"小過卦象徵小有過越，亨通、利於守正，可做小事、不可做大事。如飛鳥剛過、聲音猶在，不宜向上、宜向下才吉。小處稍有過越無妨，大處不可越界；寧可稍過於恭敬、節儉，低調為宜。","work":"做好細節，不宜爭取大型專案或冒進。","biz":"小規模經營可行，大投資則不宜。","love":"低調經營感情，不宜做重大決定。","yb":["飛鳥逆勢上衝，凶。","越過祖父遇到祖母，守分無咎。","不加防範，易遭傷害，凶。","不過分而遇合，前往有危險須戒。","密雲不雨，取得穴中之物。","不遇而過，飛鳥被網，凶。"],"bad":[1,3,6],"gcb":"亨通，利於守正，可做小事，不可做大事；飛鳥留下的鳴聲，不宜向上、宜向下，大吉。","jk":["bad","x","bad","x","x","bad"],"jl":"平"},"63":{"no":63,"name":"水火既濟","short":"既濟","gc":"亨，小利貞，初吉終亂。","tuan":"既濟，亨，小者亨也。利貞，剛柔正而位當也。初吉，柔得中也。終止則亂，其道窮也。","xiang":"象曰：水在火上，既濟。君子以思患而豫防之。","lines":[["初九：曳其輪，濡其尾，無咎。","象曰：曳其輪，義無咎也。"],["六二：婦喪其茀，勿逐，七日得。","象曰：七日得，以中道也。"],["九三：高宗伐鬼方，三年克之。小人勿用。","象曰：三年克之，憊也。"],["六四：繻有衣袽，終日戒。","象曰：終日戒，有所疑也。"],["九五：東鄰殺牛，不如西鄰之禴祭，實受其福。","象曰：東鄰殺牛，不如西鄰之時也；實受其福，吉大來也。"],["上六：濡其首，厲。","象曰：濡其首，厲，何可久也。"]],"kw":"既濟、完成、守成","luck":4,"sum":"既濟卦水在火上，各爻皆得其位，象徵事已完成，但亨通有限，利於守正；一開始吉利，後來又亂。成功之後最容易鬆懈，宜思患預防、守住成果。","work":"工作已有成果，宜守成並預防後續問題。","biz":"事業已上軌道，宜防範風險、避免守成不力。","love":"感情已有結果，要持續經營，防止日久生變。","yb":["拖住車輪、沾濕尾巴，謹慎無咎。","失去車簾，不必追尋，七日復得。","攻伐鬼方三年才勝，小人勿用。","衣服破損需防漏，終日戒備。","簡樸誠心勝過奢華，實受其福。","頭部浸濕，危險。"],"bad":[6],"gcb":"亨通，小事利於守正；起初吉祥，最終會亂。","jk":["x","x","x","x","x","bad"],"jl":"吉"},"36":{"no":64,"name":"火水未濟","short":"未濟","gc":"亨，小狐汔濟，濡其尾，無攸利。","tuan":"未濟，亨；柔得中也。小狐汔濟，未出中也。濡其尾，無攸利；不續終也。雖不當位，剛柔應也。","xiang":"象曰：火在水上，未濟。君子以慎辨物居方。","lines":[["初六：濡其尾，吝。","象曰：濡其尾，亦不知極也。"],["九二：曳其輪，貞吉。","象曰：九二貞吉，中以行正也。"],["六三：未濟，征凶。利涉大川。","象曰：未濟，征凶，利涉大川，位不當也。"],["九四：貞吉，悔亡。震用伐鬼方，三年有賞于大國。","象曰：貞吉，悔亡，志行也。"],["六五：貞吉，無悔。君子之光。有孚，吉。","象曰：君子之光，其暉吉也。"],["上九：有孚于飲酒，無咎。濡其首，有孚失是。","象曰：飲酒，濡首，亦不知節也。"]],"kw":"未濟、未完成、希望","luck":2,"sum":"未濟卦火在水上，象徵事未完成，仍然亨通。如年輕的狐狸試著過河，快到對岸時沾濕了尾巴，不利於有所前往。事情未完成前要保持謹慎，不可放縱張狂；雖未成功，仍充滿希望。","work":"工作尚未完成，仍需努力，前景可期。","biz":"事業正在發展中，宜步步為營，勿急於求成。","love":"感情尚在發展，未定之數，用心經營可成。","yb":["沾濕尾巴，不知節制，有憾。","拖住車輪，守正則吉。","未能渡河，前往凶，但可涉大川。","守正則吉，奮起伐敵，三年有賞。","守正則吉，君子光輝，誠信吉。","飲酒有誠無咎，但過度則失。"],"bad":[],"gcb":"亨通；小狐狸快渡過河時，沾濕了尾巴，沒有什麼好處。","jk":["x","x","x","x","x","x"],"jl":"凶"}};
+const STROKE_SRC="1:一乙|2:丁乂乃乜了二人儿入几凵刀刁力匕匚卜厂又|3:万丈三上下丌丫丸久乇么乞也亍于亡兀凡刃勺千叉口囗土士夕大女子孑孓寸小尢尸屮山川工己已巳巾干廾弋弓彳兀|4:不与丏丐丑中丮丰丹之予云互亓井亢什仁仂仃仄仆仇仈仉今介仍允元內公兮冇冗冘凶分切刈勻勼勾勿化匹卅升午卞卬厄厹及友反四圠壬夃天太夫夬夭孔尐少尤尹尺屯巴巿幻廿弔引心戈戶手才支文斗斤方日曰月木欠止歹殳毋毌比毛氏气水火爪父爻爿片牙牛犬王|5:且丕世丘丙丱主丼乍乎乏五仔仕他仗付仙仚仜仝仞仟仡代令以仨仩兄冉冊冬凸凹出刉刊刌功加包匆北匜匝卉半卌占卡卮卯去古句另叨叩只叫召叭叮可台叱史右叵司叻叼囚圢圣外夗央夯失奴奶孕宁它宄尒尕尻尼屳屴左巧巨市布帄平幼庀庂弁弗弘必戉戊扎斥旡旦未末本札朮正母氐民氕氶永犮玄玉瓜瓦甘生用甩田由甲申疋白皮皿目矛矢石示禸禾穴立|6:丞丟乒乓乩亙交亥亦仰仱仲仳仴仵件价任份仿伀企伂伄伅伈伉伊伋伍伎伏伐休伒伓伔伕优伙伝伢伬充兆兇先光全六共再冰冱刎刐刑划刓刖列劣劦匈匟匠匡匢卍印危厊吁吃各吆吇合吉吊吋同名后吏吐向吒囝回囟因囡在圩圪圬圭圮圯地圳圴夙多夷夸夼奷奸她奻奼好奾奿妀妁如妃妄妅孖字存宅宇守安寺尖尥屹屺屻屼屾州巟帆年幵庄异式弚弛彴忉戌戍戎成扐扑扒打扔收攷旨早旬旭旮旯曲曳有朱朳朴朵朸朹机朻朼朽朾朿次此死氖氘氻氾氿汀汁求汃汆灰灱牝牞牟犯犰玊甪百癿穵竹米糸缶网羊羽老考而耒耳聿肉臣自至臼舌舛舟艮色艸虍虫血行衣襾西|7:七串些亨伭伯估伳伴伶伸伺伻似伽伾伿佁佃但佇佈佉佌位低住佐佑佒体佔何佖佗佘余佚佛作佝佞佟你佡佢佣佤佧克兌免兵冏冶冷冹刜初刞刡判別刨利刪助努劫劬劭劮匉匣卣卲即卵厎厏吘吙君吜吝吞吟吠吤吥否吧吨吩吪含听吭吮吰吱吳吵吶吷吸吹吻吼吽吾呀呁呂呃呅呆呇呈告呎呏呔囤囥囧囪囫囮困圻圾址坁坅均坉坊坋坌坍坎坏坐坑坒壯夆夾奀妊妎妏妐妒妓妖妗妘妙妝妞妠妡妢妣妤妥妦妧妨孚孛孜孝宋完宎宏宒尨尪尬尾尿局屁岆岈岉岊岋岌岏岐岑岒岓岔岕巠巫帊希帎庇庈庉床庋庌庍序延廷弄弅弝弟形彤彶彷彸役忌忍忏忐忑忒忔忕忖志忘忙我戒戺托扙扚扛扜扞扠扡扢扣扤扥扦攸改攻旰旱旲旳旴旵更杅杆杇杈杉杋杌杍李杏材村杓杕杖杗杙杚杜杝杞束杠极步每毐氙氚汊汋汌汍汎汏汐汒汔汕汗汙汛汜汝汞江池污灴灶灸灺灼災牠牡牢牣犴犵玎甫甬男甸甹町疔疕皁皂盯矣礽禿秀私究系羋耴肊良見角言谷豆豕豸貝赤走足身車辛辰邑酉釆里|8:並丳乖乳事亞亟享京佩佪佫佬佮佯佰佳佴併佶佷佸佹佺佻佼佽佾使侀侁侂侃侄侅來侇侈侉例侍侏侐侑侒侔侕侖侗侘侚供侜依侞兒兔兕兩八其具典冞冼冽冾函刮到刱刲刳刵制刷券刺刻剁劻劼劾匊匋匼卑卒卓協卦卷卸卹厒厔叔取受呠呡呢呣呤呥呦呧周呫呬呯呰呱呲味呴呵呶呷呸呺呻呼命呾呿咀咁咂咄咆咇咈咋和咍咎咐咑咒咕咖咘咚囷囹固坡坢坤坦坨坩坪坫坭坯坰坱坲坳坴坵坶坷坻坼坽垀垂垃夌夜奄奅奇奈奉奔妮妯妱妲妳妴妵妶妹妺妻妼妽妾姀姁姃姅姆姇姈姊始姌姍姎姏姐姑姒姓委姖孟孢季孤孥宓宕宗官宙定宛宜尚屄居屆屇屈岝岟岠岡岢岣岤岥岦岧岨岩岪岫岬岭岮岯岰岱岳岵岶岷岸帑帔帕帖帗帘帙帚帛并幸底庖店庚庛府弢弣弤弦弧弨弩彔彼彽彾彿往征徂忝忞忠忡忣忤忥忨忪快忭忮忯忱忳忴念忷忸忺忻忽忿怀戔戕或戽戾房所扭扮扯扰扱扲扳扴扶扷批扺扻扼扽找承技抁抃抄抆抇抈抉把抌抎抏抑抒抓抔投抖抗折攽放政斧斨斻於旺旻旼旽昀昂昃昄昅昆昇昈昉昊昋昌昍明昏昐昑昒易昔昕曶朊朋服杪杬杭杯杰東杲杳杴杵杶杷杸杹杺杻杼杽松板枃构枅枆枇枉枋枌枍枎析枑枒枓枔枕林枘枙枚果枝枟欣欥武歧歾歿殀毒毞氓氛氝汥汦汧汨汩汪汫汭汯汰汱汲汳汴汶汸決汻汽汾沀沁沂沃沄沅沆沇沈沉沊沋沌沍沎沏沐沒沓沔沕沖沘沙沚沛沜沝炂炃炄炅炆炊炎炑炒炓炔炕炖炘炙炚爬爭爸版牧物牪牬犺犽犿狀狁狂狃狄狅狆玒玓玔玕玖玗瓝瓨瓩甽甾甿畀疌疘疙疚疝的皯盂盰盱盲盳直盵知矷矸矹矺矻矼矽社礿祀祁祂秅秈秉穸穹空穻竺竻籵糽糾羌耵肋肌肏臥臾舍舠艼艽艾艿芀虎虭虮虯虰虱豖軋采金長門阜隹雨青非|9:九亭亮侮侯侲侳侵侶侷侹侺侻便俀俁係促俄俅俇俉俊俋俍俎俏俐俑俓俔俖俗俘俙俚俛俜保俞俟俠信俬兗兙冑冒冠剃剄剆則剉削剋剌前剎勀勁勂勃勇勉匍匽南卻卼厖厗厘厙厚叛咠咡咢咥咦咧咨咩咪咫咬咭咮咯咰咱咳咶咷咸咺咻咼咽咾咿哀品哂哃哄哅哆哇哈哉哎哏哖哞囿型垌垏垓垔垕垗垘垙垚垛垝垞垟垠垢垣垤垥垮垵城壴复奎奏奐契奓奕妍姘姚姛姜姝姞姠姡姣姤姥姦姨姩姪姭姮姱姲姳姴姵姶姷姺姻姼姽姾姿娀威娃孩客宣室宥宦宨封屋屌屍屎屏岍峆峇峈峉峊峋峌峎峏峐峒峓峔峖峗峘峙峚峛峞峟巷巹帝帟帠帡帢帣帤帥幽庠庢庣庤庥度建弇弈弭弮彖彥待徆徇很徉徊律後怉怊怋怌怍怎怏怐怑怒怓怔怕怖怗怙怚怛怜思怞怠怡怢怤急怦性怨怩怪怫怬怭怮怯怲怳怴怵怷怹扁扂扃抨抩抪披抬抭抮抯抰抱抳抴抵抶抸抹抻押抽抾抿拂拄拆拇拈拉拊拋拌拍拎拏拐拑拒拓拔拖拗拘拙拚招拜敁敃故斪斫施斿既昜昝星映昡昢昤春昦昧昨昫昭昮是昱昲昳昴昵昶昹昺曷朏朐枮枯枰枲枳枴枵架枷枸枹枺枻柀柁柂柃柄柅柆柈柉柊柋柌柍柎柏某柑柒染柔柘柙柚柛柜柝柞柟柢柣柤查柦柧柩柪柫柬柭柮柯柰柱柲柳柴柵柶柷柸柺柼柿欨歪殂殃殄殆段殶毖毗毘毠氟氠氡沫沬沭沮沰沱河沴沶沷沸油沺治沼沽沾沿泀況泂泃泄泅泆泇泉泊泌泍泏泐泑泒泓泔法泖泗泙泛泜泝泞泠泡波泣泥泧注泩泫泬泭泮泯泰泱泲泳泵泹炟炡炤炩炫炬炭炮炯炰炱炳炴炵炷炸為炾爰牁牉牊牮牯牰牲牳牴狉狊狋狌狎狐狑狒狔狖狗狘狙狚狜玅玝玟玠玡玢玤玥玦玨玩玫玬玭瓬瓮甚甭甮畇畈畋界畎畏疢疣疤疥疧疪疫疺癸癹皆皇皈盃盄盅盆盈盷相盹盺盻盼盾省眃眄眅眇眈眉眊看矜矧矨砂砃砅砆砉砌砍砎砏砐砑砒砓研祄祅祆祇祈祉祊祋祌禹禺秋种秎秏科秒秕秖穾穿窀突竑竽竿笀笁籸籹籺籽籿粀粁紀紁紂紃約紅紆紇紈紉缸罔罕羍美羑羾羿耍耎耏耐耑耔耶耷肐肒肓肕肖肘肙肚肛肜肝致臿舡舢芃芄芅芊芋芍芎芏芐芑芒芓芔虐虳虴虷虹虺虻虼衁衍衎衧表衩衪衫要觓觔訂訃訄訇計貞負赲赳赴趴軌軍酊酋重釓釔閂面革韋韭音頁風飛食首香|10:乘亳修俯俱俳俴俵俶俷俸俺俾倀倅倆倇倉個倌倍倎倏們倒倓倔倕倖倗倘候倚倛倜倞借倠倡倢倣倥倦倧倨倩倪倫倬倭倯倰倱倳倵倷值党兛兼冓冔冢冤冥凄凅准凈凊凋凌凍凎剒剔剕剖剚剛剜剝剞剟剡剢勍匎匪十卿厜厝厞原叟哠員哢哤哥哦哧哨哩哪哫哭哮哱哲哳哷哸哺哻哼哽哿唁唃唄唅唆唇唈唉唊唋唌唎唏唐唑唒唔唗唚唦唧圁圂圃圄垶垸垹垺垼垽垿埁埂埃埆埇埋埌埏埐埒埔埕夎夏奊套奘奚姬娉娊娌娏娑娓娕娖娗娘娙娛娜娞娟娠娣娥娩娭娮娳孫孬宧宬宭宮宰害宴宵家宸容尃射屐屑屔展屖屘峨峪峬峭峮峰峱峴島峷峸峹峻峽峿崀崁巡差帨帩師席座庨庪庫庬庭庮弰弱弳彧徐徑徒恀恁恂恃恄恅恆恇恉恌恍恐恓恔恕恘恙恚恛恝恞恟恢恣恤恥恦恧恨恩恪恫恬恭恮息恰恲戙扆扇拫括拭拮拯拰拱拲拳拴拵拶拷拸拹拺拻拼拽拾拿挀持挂挃指挈按挋挌挍挎挏挐挑挓挔挕挖敆效敉敊料旁旂旃旄旅旆晁時晃晅晇晉晊晌晏晑晒書朒朓朔朕栒栓栔栖栗栘栚栜栝栟栠校栥栦栨栩株栫栭栮栯栱栲栳栴栵核根栺栻格栽桀桁桂桃桄桅框案桉桋桌桍桎桏桐桑桓桔欬欭欯欱歭殈殉殊殷毢毣毤毦毧毨氣氤氥氦氧氨泚洀洁洃洄洇洈洉洊洋洌洎洏洐洑洒洗洘洙洚洛洝洞洟洠洢津洧洨洩洪洫洬洭洮洯洰洱洲洳洴洵洶洷洸洹洺活洼洽派洿浀流浂烅烆烇烈烊烋烍烎烏烑烒烓烔烗烘烙烚烜烝烞烠烡烢烤爹牂牶牷牸特狟狠狡狣狤狦狨狩狪狫玆玲玳玴玵玶玷玸玹玻玼玾玿珀珂珃珅珆珇珈珊珋珌珍瓞瓟瓴瓵甡畔留畚畛畜畝畟疰疲疳疵疶疸疹疻疼疽疾疿痀痁痂痄病症皉皊皋皰盉益盍盎眐眑眒眓眕眙眚眛眝真眠眢眣眥眧眨眩矩砝砟砠砡砢砣砥砦砧砨砩砪砫砬砭砮砯砰砱砲砳破砵砷砸祏祐祑祒祓祔祕祖祗祚祛祜祝神祟祠祡秘秜秝秞租秠秣秤秦秧秩秪秫秬秭秮窄窅窆窇窈窉窊窋窌竘站笅笆笈笉笊笎笏笐笑笒笓粄粅粈粉粊粌粍粑紊紋紌納紎紏紐紑紒紓純紕紖紗紘紙級紛紜紝紞紟素紡索缹缺罘羒羔羖翀翁翂翃翅耄者耆耕耖耗耘耙耹耽耾耿肂股肢肣肥肩肪肫肭肮肯肱育肴肵肸肺臬臭舀舁舐舥舨航舫般舯芘芙芚芛芝芞芟芠芡芢芣芤芥芧芨芩芫芬芭芮芯芰花芳芴芵芶芷芸芹芺芻芼芽芾苀苂苃虒虓虔蚅蚆蚇蚊蚋蚌蚍蚎蚐蚑蚓蚔蚕蚖蚗蚘蚙蚚蚜蚝蚞蚡蚢蚣蚤蚥蚧蚨蚩蚪衃衄衭衯衰衱衲衴衵衶衷衹衼衽衾衿袀袁袂袃訊訌討訏訐訑訒訓訕訖託記豇豈豗豹豺豻財貢貣貤赶起赸趵趶趷躬軏軑軒軓軔辱辿迂迄迅迆迉邔邕邗邘邙邛酌配酎酏酐酒釕釗釘釙釚釜針釢閃阞隻隼馬骨高髟鬥鬯鬲鬼|11:乾乿偀偁偃偅偆假偈偉偊偋偌偍偎偏偑偓偕偗做偛停偝偞偟偠偡偢偣偤健偨偩偪偫偭偮偯偰偲偳側偵偶偷偺偽兜兝兞冕凐凰剪剫剬剭剮副勒勓動勖勗勘務匏匐匙匭匾匿區參唪唬唭售唯唰唱唲唳唴唵唶唷唸唹唻唼唾啀啁啃啄啅商啈啊啋啍啎問啐啑啒啕啖啗啜啞啟啡啢啣啤啥啦啪啵啶啷圇圈圉圊國埜域埠埡埢埣埤埥埧埩埬埭埮埰埱埲埳埴埵埶執埸培基埻埼埽堀堁堂堄堅堆堇堈堉堊堋堌堍堎堐堔夠奜娵娶娷娸娹娼娾婀婁婂婃婄婆婇婈婉婊婌婍婐婑婒婓婕婖婗婘婚婛婜婝婞婟婠婢婤婥婦婧婩婪婬婭婰孮孰孲宿寀寁寂寄寅密寇將專尉屙屜屝崆崇崋崌崍崎崏崑崒崔崖崗崙崚崛崝崞崟崠崢崣崤崥崦崧崨崩崮崰巢帳帴帶帷常庰庱庲庳庴庵庶康庸庹張弶強弸彗彩彪彫彬徖得徘徙徛徜從徟徠御恿悀悁悃悄悅悆悇悈悉悊悌悍悎悐悒悔悕悖悗悚悛悜悝悟悠悢患您戚戛扈挨挩挪挫挬挭振挲挳挴挶挸挹挺挻挼挽挾捀捁捂捃捄捅捆捇捈捉捊捋捌捍捎捏捐捑捔捕捖捗捘捙捚敏救敓敔敕敖敗敘教斌斛斜斬旋旌旍旎族晙晚晛晜晝晞晟晡晢晤晥晦晨曹曼朗朘望桫桭桮桯桱桲桴桵桶桷桸桹桻桼桽桾桿梀梁梂梃梅梆梇梉梊梋梌梏梐梑梒梓梔梖梗梛梜條梟梠梡梢梣梤梧梨梩梪梫梬梭梮梯械梱梲梳梴梵欲欳欴欶欷欸殌殍殎殏殑殺毫毬氪氫洍洖浘浙浚浞浟浠浡浢浣浤浥浦浧浨浩浪浬浭浮浯浰浴浵浶海浸浹浺浻浼浽浾浿涀涂涃涄涅涆涇消涉涊涋涌涍涎涐涑涒涓涔涕涗涘烯烰烳烴烶烷烸烹烺烻烼烽烿焀焂焄焆焉焊焋焌焍焎焐焓焗爽牻牼牽牾牿犁狳狴狶狷狸狹狺狻狼狽狾狿猀猁率玈珒珓珔珖珗珘珙珚珛珜珝珞珠珣珥珧珨珩珪珫班珮琉瓠瓶瓷甜產畢畣畤略畦異痊痋痌痍痎痏痐痑痒痔痕皎皏盒盓盔盛眭眯眱眲眳眴眵眶眷眸眹眺眻眼眽眾硃硅硈硉硊硌硍硎硐硒祣祤祥祧票祩祪祫祭离秶秷秸秺移窏窐窒窔窕竟章笘笙笚笛笝笞笠笢笣笤笥符笨笪笫第笭笮笯笰笱笲笳笴笵笸笻粒粔粕粖粗粘粣紨紩紫紬紮累細紱紲紳紵紶紸紹紺紻紼紽紾紿絀絁終絃組絅絆絇絊缽罛罜罝罞罟罠罡羕羚羛羜羝羞翇翉翊翋翌翍翎翏翐翑習耇耛耜耞耟聃聆聇聈聊胂胃胄胅胇胈胉胊背胍胎胏胐胑胔胕胖胗胘胙胚胛胜胝胞胠胡胣胤胥胦舂舑舲舳舴舵舶舷舸船舺艴苑苒苓苔苕苖苗苙苛苜苞苟苠苡苣苤若苦苧苨苪苫苬苭苯苰英苲苳苴苵苶苹苺苻苾茀茁茂范茄茅茆茇茈茉茌茍處虖虙蚯蚰蚱蚳蚴蚵蚶蚷蚸蚹蚺蚻蚼蚽蚾蚿蛀蛁蛂蛃蛄蛅蛆蛇蛈蛉蛋蛌衒術袈袉袋袌袍袎袑袒袓袕袖袗袘袙袚袛袞袟袡袢袤袧袨袪被袬覂規覓觕觖觙訛訝訞訟訢訣訥訧訪訬設訰許谹谻豉豚豜豝豽貥貧貨販貪貫責赦赹赻赽趹趺趾趿跁跂軗軘軛軜軝軞軟軠軡迋迍迎近迒迓返迕迖迗邞邟邠邡邢那邥邦邧邪酓酕酖酗酘酚野釣釤釦釧釨釩釪釫釬釭釮釱釳釴釵釷釸釹閆閈閉阠阡阢阣阤隿雀雩雪靪頂頃頄飢飣馗魚鳥鹵鹿麥麻|12:傀傂傃傅傇傋傌傍傎傑傒傔傕傖傘備傚傛傜傝傞傢傣兟凔凱剩割剴創勛勝勞匑匒博厤厥厧啻啼啽啾啿喀喁喂喃善喇喈喉喊喋喌喎喏喑喒喓喔喕喘喙喚喜喝喟喡喢喣喤喥喦喧喨喪喫喬喭單喱喲喳喵喻圌圍堙堛堜堝堞堠堡堣堤堥堧堨堩堪堬堭堮堯堰報堲堳場堵堶堷堸堹堻堿塈壹壺奠奡奢婷婸婺婻婼婽婿媃媄媊媋媌媎媏媒媓媔媕媗媚媛媜媝媞媟媢媥媦媧媩媬媮媯孱寊寋富寍寎寐寑寒寓寔寪尊尋尌尰就屠崱崲崳崴崵崶崷崸崹崺崼崽崿嵀嵁嵂嵃嵅嵇嵉嵋嵌嵎嵐嵑嵒嵕嵙巽帽帾幀幁幃幄幅幾庾廁廂廊弼彘彭徥徦徨復循徫悰悱悲悴悵悶悷悸悹悺悻悼悽悾悿惀惁惃惄情惆惇惈惉惊惋惌惍惎惏惑惓惔惕惘惙惚惛惜惝惟惠惡惢惤惦戟扉扊捥捧捨捩捫捭据捯捰捱捲捵捶捷捸捺捻捼捽掀掁掂掃掄掅掇授掉掊掌掍掎掏掐掑排掔掖掗掘掙掛掜掝掞掟掠採探掣掤接控推掩措掫掬掭掮掯掰掱掽攲敜敝敞敢散敤敥敦敧敨敪斐斑斝斮斯旐晪晬普景晰晱晲晴晶晷晸晹智晻晼晾暀暑曾替最朁朝期棄棆棇棈棉棋棌棍棎棐棑棒棓棔棕棖棗棘棚棜棝棞棟棠棡棣棤棦棧棨棩棪棫棬森棯棰棱棲棳棴棵棶棷棸棹棺棻棼棽椄椅椆椇椈椊椋椌植椎椏椐椑椒椓椔椕椗椥椪欹欺欻欼欽款欿殔殕殖殗殘殙殼殽毯毰毲毳氬氮氯氰涪涫涬涮涯液涳涴涵涷涸涺涻涼涽涾涿淀淂淄淅淆淇淈淉淊淋淌淍淏淐淑淒淓淔淕淖淗淘淙淚淛淜淝淞淟淠淡淢淣淤淥淦淨淩淪淫淬淭淮淯淰深淲淳淴淵淶混淹淺添淼淽渀清渚湴焙焚焛焜焞焟焠無焢焣焥焦焨焮焯焰焱焲然焺煮牋牌牚犀犄犅犆犈犉犋猇猈猊猋猌猏猑猒猓猖猗猘猙猛猜猝猞珴珵珶珸珺珼珽現珿琀琁球琄琅理琇琈琊琋琌琍瓻甥甦甯番畫畬畯疏痗痘痙痚痛痝痞痟痠痡痢痣痤痦痧登發皒皓皕皖皴盚盜睄睅睆睇睊睋睌睍睎睏矞矬短硜硝硞硠硢硤硥硨硩硪硫硬硭确硯硰硱祰祲祳祴稀稂稃稄稅稈稊程稌稍窖窗窘窙竣竤童竦笄筀筄筅筆筇筈等筊筋筌筍筎筏筐筑筒答策筘粞粟粡粢粥粨絎絏結絑絒絓絔絕絖絘絜絞絟絡絢絣給絧絨絩絪絫絭絮絯絰統絲絳缾缿罣羠羡羢翔翕翗耋聏聐聑聒胭胯胰胱胲胳胴胵胸胹胺胻胼能胾脀脁脂脅脆脈脊臦臮臷臸舄舒舜舼舽舿茖茗茙茛茜茞茠茢茤茥茦茧茨茩茪茫茬茭茯茱茲茳茴茵茶茷茸茹茺茻茼茿荀荁荂荃荄荅荇荈草荊荋荌荍荎荏荐荑荒荔荖虛虜蛐蛑蛓蛔蛗蛘蛙蛚蛛蛜蛝蛞蛟蛢蛣蛤蛦蛨蛩蛪蛫蛬蛭衈衕衖街袱袲袶袷袸袹袺袼袽袾裀裁裂裉覃覕視覗覘觚觛觝訴訶訹診註証訾訿詀詁詄詅詆詈詊詌詍詎詏詐詑詒詔評詖詗詘詙詛詞詠豟象貀貁貂貯貰貲貳貴貵貶買貸貹貺費貼貽貾貿賀賁赧趀趁趄超趉越跅跆跇跈跋跌跍跎跏跐跑跓跕跖跗跘跙跚跛跜距軥軦軧軨軩軫軬軮軯軱軴軵軶軷軸軹軺軻軼辜迠迡迢迣迤迥迦迨迪迫迭迮述邯邰邱邲邳邴邵邶邸酟酠酡酢酣酤酥釉量釽釿鈀鈁鈂鈃鈄鈅鈆鈇鈉鈊鈌鈍鈏鈐鈑鈒鈔鈕鈖鈗鈙鈚鈜鈞鈣鈤鈥鈦鈧镺開閌閍閎閏閐閑閒間閔阨阪阬阭阮阯阰阱防雁雂雃雄雅集雇雈雯雰雱雲靬靮靰韌項順頇須颩飥飧馭馮鳦黃黍黑黹|13:亂亃亄亶催傭傮傯傰傱傲傳傴債傶傷傸傺傻傽傾傿僁僂僄僅僆僇僈僉僊僋兡凗剷剸剺剻剼剽剿募勢勣勤勦匯喍喿嗀嗂嗃嗄嗅嗆嗇嗈嗉嗊嗋嗌嗍嗎嗏嗐嗑嗒嗓嗔嗕嗖嗙嗚嗛嗜嗝嗟嗡嗢嗣嗤嗥嗦嗧嗨嗩嗯嗲園圓圔堽塉塊塋塌塍塎塏塑塒塓塔塕塗塘塙塚塛塝塞塢塣塤塥塨填塭塯塱壼奧媐媰媱媲媳媴媵媶媷媸媹媺媻媼媽媾媿嫀嫁嫂嫄嫆嫇嫈嫉嫊嫋嫌嫍孳寖寘寙尟尳嵊嵞嵢嵣嵥嵧嵨嵩嵫嵬嵯嵱嵲巰幊幋幌幍幎幏幹廅廆廇廈廉廋廌弒彀彙徬徭微徯惰惱惲想惴惵惶惷惸惹惺惻惼惾惿愀愁愃愄愅愆愈愉愊愋愍愎意愐愒愓愔愕愖愘愚愛愜愝感愣慨戠戡戢戣戤戥掾揀揂揃揄揆揇揈揉揊揋揌揍揎描提插揓揕揖揗揘揙揚換揜揝揟揠握揣揤揥揧揨揩揪揫揭揮揯揰揱揲揳援揵揶揹搜敬敯斒斞斟新旒旓暄暆暇暈暉暊暋暌暍暐暔暕暖暗暘暙會朠椯椰椲椳椴椵椷椸椹椻椼椽椿楀楁楂楄楅楈楉楊楋楌楎楏楑楒楓楔楖楗楘楙楚楛楜楝楞楟楠楢楣楥楦楨楩楪楫楬業楮楯楰楱楴極楶楷楸楹楺楻概榃榆榔歁歂歃歅歆歇歈歲殛殿毀毓毷毸毹毻毼毽渃渙減渜渝渟渠渡渢渣渤渥渦渧渨渫測渭渮港渰渱渲渳渴渵渶游渹渺渻渼渽渾渿湀湁湃湄湅湆湇湉湊湋湍湎湑湒湓湔湕湖湘湚湛湜湝湞湟湠湡湢湣湤湥湦湧湨湩湫湮湯湱湲湳湷湸湹溈溉滋煁煂煃煄煆煇煉煋煌煍煎煐煒煓煔煖煘煙煚煜煝煞煟煠煡煢煣煤煥煦照煨煩煪煬煰煲煸爺牏牒犌犍犎犐犑猢猣猥猦猧猩猭猰猱猲猳猴猵猶猷琖琚琛琝琠琡琢琣琤琥琦琨琩琪琫琬琭琮琯琰琱琲琳琴琵琶琺瓡瓽瓾瓿甀甝當畷畸畹痭痯痰痱痲痳痴痵痶痷痸痹痺痻痼痽痾痿瘀瘁瘃皙皵盝盞盟睒睔睕睖睙睚睛睜睞睟睠睢督睥睦睧睨睩睪睫睬睭矠矮硹硻硼硿碀碃碄碅碆碇碉碌碎碏碑碓碔碕碖碗碘碙碚碰祹祺祼祽祿禁禂禽稐稑稒稓稔稕稗稘稙稚稛稜稞稟稠稢窞窟窠窢窣竫筠筡筣筤筥筦筧筩筭筮筰筱筲筳筴筵筶筷筸節粯粱粲粳粴粵絛絹絺絻絼絽絿綀綁綃綄綅綆綈綌綍綎綏綑綒經綔綖罥罦群羥羦羧羨義翛翜耡聖聘肄肅肆脕脖脘脙脛脝脞脟脡脢脣脤脥脧脩脫脬脭脯脰臹舅舝艀艂艄艅艇艉荳荴荵荶荷荸荺荻荼荽荾荿莁莃莆莇莈莉莊莋莌莍莎莏莐莒莓莔莕莖莗莘莙莚莛莝莞莠莢莣莤莥莦莧莨莩莪莫莮莯莰莽萬虞號蛖蛵蛶蛷蛸蛹蛺蛻蛾蜀蜁蜂蜃蜄蜅蜆蜇蜈蜉蜊蜋蜌蜍蜎蜑蜒蜓蝆衙裊裋裌裍裎裐裒裔裕裖裗裘裙裚裛補裝裞裟裡覅覛覜觜觟觠觡觢解觤觥触詡詢詣試詨詩詫詬詭詮詰話該詳詴詵詶詷詹詺詻詼詿誁誂誃誄誅誆誇誠谼豊豋豢豤豥豦貄貅貆貉貊賂賃賄賅資賈賊賌赨赩趌趍趎趏趐趑趒趓趔趼跟跠跡跢跣跤跦跧跨跩跪跫跬跮路跰跱跲跳跴跺躲軾軿輀輁輂較輅輆輇輈載輊輋辟農迴迵迶迷迸迺迻迼追迾迿退送适逃逄逅逆邽邾邿郁郃郅郇郈郊郋郎酨酩酪酬酮酯鈭鈮鈰鈱鈲鈳鈴鈶鈷鈸鈹鈺鈽鈾鈿鉀鉅鉆鉈鉉鉊鉋鉌鉍鉎鉏鉐鉑鉒鉓鉔鉖鉗鉚鉛鉞鉠鉡鉣鉤鉥鉦鉧鉬鉭鉯鉰鉲镻閘閛閜閞閟阹阺阻阼阽阿陀陂陃附雉雊雋雌雍雎雵零雷雸雹雺電雽靖靲靳靴靶靷靸頊頌頍頎頏預頑頒頓颬飩飪飫飭飯飲馯馰馱馲馳馴馵骫骭髡魛鳧鳩鳪鳭麀麂黽鼎鼓鼠嗀|14:僎像僑僓僔僕僖僗僚僛僝僠僣僤僥僦僧僨僩僪僬僭僮僯僰僱僳兢凘凳劀劁劂劃劄勩勫匰匱厬厭嗶嗷嗹嗺嗼嗽嗾嗿嘀嘁嘂嘄嘆嘈嘉嘌嘍嘎嘏嘐嘒嘓嘔嘕嘖嘗嘛嘜嘝嘧噓圖團塴塵塶塹塺塻塼塽塾塿墀墁墂境墅墆墇墈墉墊墋墎墏墐墑墓墔墘壽壾夢夤夥奩奪奫嫕嫖嫗嫘嫙嫚嫛嫜嫝嫞嫟嫠嫡嫢嫣嫥嫦嫨嫩嫪嫫嫬嫭嫮孵孷寞察寠寡寢寣寤寥實寧寨對屢屣嵷嵹嵺嵼嵽嵾嵿嶀嶁嶂嶄嶆嶇嶈嶉嶊嶍幓幔幕幗幘幙幛廄廎廑廒廓廔廕廖廗廘彃彄彯彰愧愨愩愫愬愮愯愲愴愶愷愻愾愿慀慁慄慅慆慇慈慉慊態慌慍慎慏戧戩截戫搆搉搊搋搌損搎搏搐搒搓搔搕搖搗搘搚搛搞搟搠搡搢搣搤搥搦搧搨搪搫搬搭搮搯搰搳搴搵搶搷搹搽搾搿摀摁摃敲敳斠斡斲旖旗暝暟暠暡暢暨朄朅朢榍榎榐榑榓榕榖榗榙榚榛榜榞榠榡榣榤榥榦榧榨榩榪榫榬榭榮榯榰榱榳榴榵榶榷榹榻榼榽榾榿槁槂槃槄槆槉槊構槌槍槎槏槐槓槔槙歉歊歋歌歍殞殟殠毃毄毾氳溍溎溏源溒溓溔準溗溘溙溛溜溝溞溟溠溡溢溣溤溥溦溧溪溫溮溯溰溱溲溳溴溶溷溹溺溼溽溾溿滀滁滂滃滄滅滆滇滈滉滊滍滎滏滐滑滒滓滔滕滖滘滜漓煻煽熀熁熂熄熅熆熇熉熊熏熐熒熔熗熙爾牄牓犒犓犕犖犗猺猻猼猾猿獀獂獃獅獉獊琿瑀瑁瑂瑄瑆瑊瑋瑍瑎瑏瑐瑑瑒瑔瑕瑗瑙瑚瑛瑜瑞瑟甂甃甄畽疐疑瘈瘉瘊瘋瘌瘍瘏瘐瘑瘓瘔瘕瘖瘟瘧皸盡監睡睮睯睹睼睽睾睿瞀瞁瞂瞃瞄瞅硾碞碟碠碡碢碣碤碥碧碨碩碪碫碬碭碲碳碴磁禈禊禋禍禎福禐禒禓禔禕禖禗禘稦稨稫種稯稰稱穊窨窩窪窫窬竭端箂箄箅箇箈箊箋箌箍箎箏箐箑箔箕箖算箘箙箚箛箜箝箠管箤粹粺粻粼粽精粿綜綝綞綟綠綡綢綣綦綧綩綪綬維綮綯綰綱網綴綵綷綸綹綺綻綼綽綾綿緀緁緂緄緅緆緇緉緊緋緌緎緒罧罨罩罪罫罬罭置署翞翟翠翡翢翣耤聚聜聝聞肇脹脺脽脾腃腄腆腇腊腋腌腍腎腏腐腑腒腓腔腕臧臺與舔舕舞艋艵荓莿菀菁菂菃菄菅菆菇菈菉菊菋菌菎菏菑菔菕菖菗菘菙菛菜菝菞菟菠菡菢菣菤菥菧菨菩菪菫菬菮華菰菱菲菳菴菵菶菸菹菺菻菼菽菾菿萁萃萄萆萇萉萊萋萌萍萎萏萐萑萒萓萛萣著蒸虡蜘蜙蜚蜛蜜蜞蜠蜡蜢蜣蜤蜥蜦蜧蜨蜩蜪蜬蜭蜮蜰蜱蜲蜳蜴蜵蜷蜸蜺蜻蜼蜾蜿蝀蝁蝂蝃裧裨裫裬裮裯裰裱裲裳裴裶裷裸裹裺裻裼製裾褁褂覝覞覟覡觨觩觫誋誌認誏誑誒誓誕誖誘誙誚語誡誣誤誥誦誧誨說誫谽豨豩豪貌貍賏賑賒賓賕賗赫趕趖趙跼跽跾跿踀踂踃踄踅踆踇踉踊踍輍輎輐輑輒輓輔輕辣逋逌逍透逐逑途逕逖逗這通逛逜逝逞速造逡逢連逤郔郕郖郗郘郙郚郛郜郝郟郠郡郢郣郤郥酲酳酴酵酷酸酹酺鉶鉸鉹鉺鉻鉽鉾鉿銀銂銃銅銆銇銈銊銋銌銍銎銑銓銔銕銖銗銘銙銚銛銜銝銠銡銢銣銤銥銦銧銨銩銪銫銬閡閣閤閥閨閩陊陋陌降陎陏限陑陓陔雒雿需靘靺靻靼靽靾靿鞀鞁鞂鞃鞄鞅韍韎韶頖頗領颭颮颯颱飴飶飹飼飽飾馜馝馹馺馻馽駁駂駃駇骯骰骱髣髦髧鬾鬿魁魂魟魠魡鳱鳲鳳鳴鳵鳶麧麼鼻齊|15:僵僶僸價僻僽僾僿儀儂儃億儅儆儇儈儉儊儋儌凜劇劈劉劊劋劌劍勯勰勱厲嘟嘩嘪嘬嘮嘯嘰嘲嘳嘴嘵嘶嘸嘹嘺嘻嘽嘾嘿噀噁噂噅噆噈噉噊噌噎噗噘噙噚噴圚墜墝增墟墠墡墣墥墦墨墩墫墬墮墯墱墳壿奭嫳嫴嫵嫶嫷嫸嫹嫻嫽嫿嬁嬂嬃嬅嬇嬈嬉嬋嬌嬏審寫寬寮導層履屧嶒嶓嶔嶕嶗嶙嶚嶜嶝嶞嶟嶠嶡嶢幜幝幟幠幡幢幣廙廚廛廜廝廞廟廠廡廢廣弊彆彈彉影徲徵徶德徹慒慓慔慕慖慘慚慛慝慞慟慡慢慣慥慦慧慪慫慬慮慰慱慲慳慴慵慶慷慹慺慼慾憀憂憃戭戮揅摋摍摎摐摑摒摓摔摘摙摛摜摝摞摟摠摡摥摦摧摨摩摫摬摭摮摯摰摲摳摴摵摶摷摸摹摺摻摽摿撂撇整敵敶敷數敹敺敻斳暩暪暫暮暯暰暱暲暴暵暷朡槢槤槥槦槧槨槫槬槭槮槱槲槳槴槶槷槸槻槼槽槾槿樀樁樂樄樅樆樇樈樉樊樍樏樑樓樔樕樖樗樘標樛樝樞樟樠模樣樥樦樧樨歎歐歑歶殢殣殤殥殦毅毆毿氀氁氂滌滫滬滭滮滯滱滲滴滵滶滷滸滹滻滼滽滾滿漀漁漂漃漅漆漇漈漉漊漍漎漏漒演漕漘漙漚漜漞漟漠漡漢漣漥漦漧漩漪漫漬漭漮漯漰漱漲漳漵漶漷漸漹漺漻漼漾漿潀潁潃熚熛熜熝熞熟熠熡熤熥熧熨熩熪熬熯熰熱熲熳熵牖犘犚犛獄獌獍獎獐獑獒瑢瑣瑤瑧瑩瑪瑭瑮瑯瑰瑱瑲瑳瑵甇甈畾畿瘙瘚瘛瘜瘝瘞瘠瘡瘢瘣瘤瘥瘦瘨瘩皚皛皜皝皞皺盤瞇瞈瞉瞋瞌瞍瞎瞏瞑確碻碼碾磃磄磅磈磉磊磋磌磍磎磏磐磑磔磕禚禛禜禠禡禢稷稹稻稼稽稿穀窮窯窱窲窳窴箬箭箯箱箴箵箷箸箹箾篁範篆篇篊篋篌篎糅糈糊糋糌糎緗緘緙線緛緝緞緟締緡緣緦緧編緩緪緬緮緯緰緱緲緳練緶緷緹緺緻縃罰罳羬羭羯羰翥翦翨翩翪翫翬翭耦聤聧腛腜腞腠腡腢腤腥腦腧腩腫腮腯腰腱腲腳腴腶腷腸腹腺興舖艎艏艐艑艒艓萩萫萭萯萰萱萲萳萴萵萶萷萸萹萺萻萼落萿葀葂葃葄葅葆葇葉葋葌葍葎葐葑葒葔葖葙葚葛葝葞葟葠葡董葥葦葧葨葩葫葬葭葮葯葰葳葴葵葶葷葸葹葺葽葾蒂蒆蒍蒎蒏虢虣蝌蝍蝎蝏蝐蝑蝒蝓蝔蝕蝖蝗蝘蝙蝚蝛蝜蝝蝞蝟蝠蝡蝢蝣蝤蝥蝦蝧蝨蝩蝪蝫蝬蝭蝮蝯蝳蝴蝵蝶蝷蝸蝺蝻蟡衚衛衝褅褆複褉褊褋褌褎褐褑褒褓褔褕褖褗褘褙褚覢覣覤觬觭誰課誶誸誹誺誻誼誽誾調諀諂諃諄諅諆談諈諉請諍諏諑諒諓諔諕論諗諘諙谾豌豍豎貏賙賚賜賝賞賟賠賡賢賣賤賥賦賧賨質賬趛趜趟趠趡趣踏踐踑踒踓踔踕踖踗踘踙踚踛踜踝踞踟踠踡踢踣踤踥踦踧踩踮躺輖輗輘輚輛輜輝輞輟輠輣輤輥輦輩輪輬逭逮逯週進逴逵逶逸部郩郪郫郬郭郯郰郱郲郳郴郵醀醁醂醃醄醅醆醇醉醊醋銲銳銴銵銶銷銻銼鋀鋁鋂鋃鋄鋅鋆鋇鋈鋉鋊鋋鋌鋍鋎鋏鋐鋑鋒鋓鋕鋗鋘鋙鋝鋞鋟鋠鋡鋤鋦鋧鋨鋩鋪鋮鋯鋰鋱閫閬閭閮閰閱陘陛陜陝陞陟陡院陣除雓霂霄霅霆震霈霉靚靠鞈鞊鞋鞍鞎鞏韏韐頛頜頝頞頠頡頦頧頨頩頫颲颳飺餀餂餃餅餇餈餉養餌駉駋駌駍駎駏駐駑駒駓駔駕駖駗駘駙駛駜駝駟骳骴骷髫髬髭髮髯髱髲髳鬧魃魄魅魆魤魦魧魨魬魯魰魱魴魵魶魷鳷鳹鳺鳻鳼鳽鳿鴀鴃鴄鴅鴆鴇鴈鴉麃麩麾黎黓鼏鼐齒|16:儐儑儒儓儔儕儗儘儚儜兣冀冪凝凞劑劓勳匴叡噞噠噢噣噤噥噦器噩噪噫噬噭噮噯噰噱噲噳噶噷噸噹圛圜墺墼墽墾墿壁壂壅壆壇壈壉奮嬐嬓嬔嬖嬗嬙嬚嬛嬝嬞嬠嬡嬴學寯寰嶧嶨嶩嶪嶬嶭嶮嶯嶰嶱嶲嶴嶵幦幧幨幩廥廦廧廨廩彊彋徻徼憉憊憋憌憍憎憐憑憒憓憔憖憚憛憝憟憡憢憤憧憨憩憪憫憬憭憮憯憰憱憲憳戰撅撈撉撊撋撌撏撐撒撓撕撖撗撘撙撚撜撝撞撟撠撢撣撤撥撦撩撫撬播撮撰撱撲撳攳敼敿斢暸暹暺暻暽暾曀曄曆曇曈曉曊曋曌朣樲樴樵樸樹樺樻樼樽樾樿橀橁橄橆橇橈橉橋橍橎橏橐橑橔橕橖橘橙橚橛橝橞機橠橡橢橤橦橧橨橩橪橫橭橯橶歔歕歖歙歷殧殪殫毇毈氃氄氅氆潎潏潐潑潒潓潔潕潗潘潚潛潝潞潟潠潡潢潣潤潦潧潩潪潫潬潭潮潯潰潲潳潶潷潸潺潻潼潽潾潿澂澄澅澆澇澈澉澋澌澍澎澐澒澓澔澕澖澗熸熹熼熽熾熿燀燁燂燃燄燅燆燇燈燉燊燋燎燏燐燒燔燕燖燘燙燚燛燜犝犞獗獘獙獚獛獝獞獟獠獡獢瑹瑼瑽瑾瑿璀璁璃璅璆璇璈璉璊璋瓢甋甌甍疀瘭瘯瘰瘱瘲瘳瘴瘵瘸瘺瘼瘽皻盥盦盧瞕瞗瞙瞚瞛瞜瞝瞞瞟瞠瞡瞢瞣磚磛磝磞磟磠磡磢磣磥磧磨磩磪磬磭禤禦穄穆穇穈穋穌積穎窵窶窷窸窺竮築篔篕篘篙篚篛篜篝篞篟篠篡篢篣篤篥篦篧篨篩篪篫簑糐糑糒糔糕糖糗縈縉縊縋縌縍縎縏縐縑縒縓縔縕縖縗縚縛縜縝縞縟縠縡縢縣縤縥罃罵罶罷羱羲翮翯翰翱耨耩耪聬腿膀膂膃膆膇膈膉膊膋膌膍膏臲臻舉艕艖艗艘艙蒐蒑蒔蒗蒘蒙蒚蒛蒜蒝蒞蒟蒠蒡蒢蒤蒧蒨蒩蒪蒫蒬蒮蒯蒰蒱蒲蒴蒶蒹蒺蒻蒼蒿蓀蓁蓂蓄蓅蓆蓇蓉蓊蓋蓌蓍蓎蓏蓐蓑蓒蓓蓔蓖蓗蓛虤虥蝹螁螂螃螄螅螇螈螉融螏螐螑螒螓螔螖螗螘螚螛螜螝螞螟螢螣螤衡褞褟褡褢褣褥褦褧褩褪褫褬褭褮褯褰褱褲覦親觰觱諛諜諝諞諟諠諡諢諤諦諧諨諫諭諮諯諰諱諲諳諴諵諶諷諸諺諻諼諾諿謀謁謂豫豬豭貐貑貒貓賭賮賰賱賳賴賵赬赭赮趥趧踫踰踱踳踴踵踶踸踹踼踽踾踿蹀蹁蹂蹄蹅躽輮輯輲輳輴輵輶輷輸輹輻辦辨逼逽逾逿遁遂遄遇遉遊運遍過遏遐遑遒道達違郹郺郻郼都郾郿鄀鄁鄂鄃鄄鄅鄆鄇鄈鄉醍醏醐醑醒醓鉼鋷鋸鋹鋺鋻鋼鋾鋿錀錁錂錄錆錈錉錋錌錍錎錏錐錒錓錔錕錖錘錙錚錛錝錞錟錠錡錢錣錤錥錦錧錩錪錫錭錮錯錳錴錵錶錸錹錼鍆镼閵閶閹閺閻閼閽閾閿闀陪陫陬陭陯陰陱陲陳陴陵陶陷陸雔雕霋霍霎霏霐霑霒霓霖靛靜靦鞔鞗鞘鞙韰韸頤頭頯頰頲頵頷頸頹頻餐餑餒餓餔餕餖餗餘馞駢駣駤駥駧駩駪駬駭駮駰駱骸骹骻骼髶髷髹髺髻鬨鬳魺魻魼魽魾鮀鮂鮅鮆鮇鮈鮐鮑鮒鮓鮕鴐鴒鴔鴕鴗鴘鴙鴛鴝鴞鴟鴠鴢鴣鴥鴦鴨鴩麆麇麈麭麮黔黕黖默黺鼒鼽龍龜|17:償儠儡儢儤儥儦儩優勴勵噾噿嚀嚁嚂嚃嚄嚅嚆嚇嚌嚍嚎嚏嚐嚓壎壏壑壒壓壔壕壖嬣嬤嬥嬦嬧嬨嬪嬬嬭嬮嬯嬰嬲孺孻寱寲尷屨嶷嶸嶺嶼嶽幪幫幬彌徽徾憴憵憶憸憺憼憾憿懁懂懃懅懆懇懈應懊懋懌懍戲戴撻撼撽撾撿擁擂擃擄擅擇擉擊擋操擎擏擐擒擔擖擗擘擙據擛斀斁斂斶旚曏曒曖曚橾橿檀檁檃檄檅檇檉檌檍檎檐檑檒檓檔檕檖檗檚檛檜檞檟檠檡檢檣檤檥檦檨歛歜殭殮毚氈氉澞澠澡澢澣澤澥澦澧澨澩澪澫澬澭澮澯澰澱澲澳澴澶澸澹澺澼澽澿激濁濂濃濄濆濇濈濉濊濋濌濍濎濏營燠燡燢燤燥燦燧燨燬燭燮燰燱燲燴牆獥獦獧獨獩獪獫獬璐璒璔璕璗璘璚璜璞璟璠璡璣甏甐甑甒疄療癃癆癇癈癉癌皤盩盪瞥瞧瞨瞪瞫瞬瞭瞰瞱瞲瞳瞴瞵瞶瞷矯矰磯磲磳磴磷磹磺磻磼磽磾磿礁礂礄礅禧禨禪禫穔穖穗穘穚穛穜窾窿竀竁篰篱篲篳篴篷篸篹篻篽篾篿簀簁簂簃簅簆簇簉簊簋簌簍簎簏簐糙糜糝糞糟糠糢糨縩縪縫縭縮縯縰縱縲縳縴縵縶縷縸縹縺縻縼總績縿繀繁繂繃繄繅繆繇繉繌罄罅罹罺罻罼翲翳翴翵翼耬聯聰聱聲聳膕膗膘膙膚膛膜膝膞膟膠膢膣臨臩艚艛艜艱蓧蓨蓩蓪蓫蓬蓮蓯蓰蓱蓲蓳蓴蓶蓷蓹蓺蓻蓼蓽蓾蓿蔀蔂蔆蔇蔈蔉蔊蔋蔌蔍蔎蔏蔑蔒蔓蔔蔕蔖蔗蔘蔙蔚蔜蔝蔞蔟蔠蔡蔣蔤蔥蔦蔧蔨蔩蔪蔫蔬蔭蔮蔯蔰蔱蔻虧虨螪螫螬螭螮螯螰螲螳螴螵螶螷螸螹螺螻螼螽螾螿蟀蟂蟃蟄蟅蟆蟈蟉蟊蟋蟌蟑蟒褳褵褶褷褸褻褼褽褾襁襂襄覬覭覮覯觲觳謄謅謆謇謈謊謋謍謎謏謐謑謒謓謔謕謖謗謘謙謚講謜謝謞謠謢谿豁豏豯豰豱豲豳貔貕賸賹賺賻購賽赯趨蹇蹈蹉蹊蹋蹌蹍蹎蹐蹓輾輿轀轂轃轄轅遘遙遛遜遝遞遠遢遣鄋鄍鄎鄏鄐鄑鄒鄔鄖鄗醙醚醛醜醝醞醟醠醡醢醣錨鍇鍉鍊鍋鍌鍍鍎鍏鍐鍑鍒鍔鍕鍖鍗鍘鍙鍚鍛鍜鍞鍠鍡鍣鍤鍥鍧鍪鍬鍭鍰鍱鍵鍶鍷鍹鍺鍻鍼鍾鎀鎂鎃閷闃闅闆闇闈闉闊闋闌闍陼陽陾隀隃隄隅隆隇隈隉隊隋隍階隸雖霘霙霜霝霞霟霠鞚鞜鞝鞞鞠鞡韓韔韕韱顁顃顄顅顆顈顉顊颶餚餛餞餟餡餤餥餧館餩馘馡馣駴駶駷駸駹駺駻駼駽駾駿騁騂騃骾髼髽髾鬁魈鮚鮛鮞鮠鮡鮢鮤鮥鮦鮨鮪鮫鮭鮮鮯鴭鴮鴯鴰鴱鴳鴶鴷鴸鴻鴽鴾鴿鵀鵁鵂鵃鵅麉麊麋麰黈黏黚黛黜黝點黻黿鼢鼣鼤鼾齋齔龠|18:儭儮儰儱儲叢嚕嚗嚘嚙嚚嚜嚝壘壙奰嬸嬼嬽屩屪巀巂幭幮幯彝彞懖懘懞懟懠懣懤懥懦懧懨戳擠擢擣擤擦擨擩擫擬擭擯擰擱斃斷旛曘曙曛曜朦檬檭檮檯檳檴檶檷檸檹檺檻檽櫂櫃櫅櫆櫇歞歟歸殯氋澀濔濕濘濛濜濝濞濟濠濡濢濣濤濦濧濨濩濫濬濭濮濯濰濱濲濴濷燸燹燻燼燽燾燿爁爂爃爵獮獯獰獲獳璥璦璧璨璩璪璫璭璯環璱璲甓甔甕癐癒癓癖癗癘癙癚癜皦皽盬瞺瞻瞼瞽瞿矂礉礌礎礐礑礒礓礔禬禭禮穟穠穡穢竄竅簙簜簝簞簟簠簡簢簣簥簦簧簨簩簪簫簬簭簰糧繈繐繑繒繓織繕繖繗繘繙繚繜繞繟繠繡繢繣罈罽罾罿羳羵翷翸翹翻聵聶職膦膧膨膩膫膬膮膰膱膲膳膴膵舊艞艟蔽蔾蕀蕁蕃蕄蕅蕆蕇蕈蕉蕊蕍蕎蕑蕓蕔蕕蕖蕗蕘蕙蕛蕝蕞蕠蕡蕢蕣蕤蕥蕦蕧蕨蕩蕪蕫蕬蕭蕮蕱蕵虩蟓蟔蟗蟘蟙蟛蟜蟝蟞蟟蟠蟢蟣蟤蟥蟦蟧蟨蟪蟫蟬蟭蟯蟲蟳蟴蠁襆襉襋襌襏襐襑襒襓覆覲觴謣謤謥謦謧謨謪謫謬謮謯謰謱謳謵謶謷謹謺謻謼謽謾豂豐豵貗貘貙賾贀贂贄贅蹔蹕蹖蹗蹙蹚蹛蹜蹝蹞蹟蹠蹡蹢蹣蹤蹥蹦蹧軀轆轇轈轉轋遧遨適遫遭遮遯遰遳鄘鄙鄚鄛鄜鄝鄞鄟鄠鄡鄢鄣鄤醥醧醨醪醫醬釐鎈鎉鎊鎌鎍鎎鎏鎑鎒鎔鎕鎖鎗鎘鎙鎚鎛鎝鎞鎟鎡鎢鎣鎤鎥鎦鎧鎨鎪鎬鎮鎯鎰鎱鎲鎳鎴鎵鎷闐闑闒闓闔闕闖隑隒隓隔隕隗隘隙雗雘雙雚雛雜雝雞雟霢霣霤霥鞢鞣鞤鞥鞦鞨鞪鞫鞬鞭鞮韖韗韘韙韹韺題額顎顏顐顑顒顓颸颺餪餫餬餭餮餯餰餱餲餳餵馥騄騅騆騇騉騊騋騍騎騏騑骿髀髁髜鬃鬄鬅鬆鬈鬩鬵魊魋魌魍魎魏鮵鮶鮸鮹鮽鮿鯀鯁鯃鯄鯆鯇鯈鯉鯊鯓鯽鵊鵋鵌鵏鵑鵒鵓鵔鵖鵗鵘鵙鵚鵛鵜鵝鵟鵠鵡麌麍麎黟黠鼀鼁鼕鼖鼥鼨鼩鼪鼫鼬齌齕|19:儳儴儵劖勷厴嚥嚦嚧嚨嚪嚫嚬嚭嚮壚壛壝壞壟壢夒嬾嬿寵巃幰廬徿懩懪懫懭懮懰懱懲擲擳擴擷擸擺擻擼擽擾擿攀攁攃攄攆斄斔旝旞曝曞曠櫋櫌櫍櫏櫐櫑櫓櫙櫚櫛櫜櫝櫞櫟櫠櫡櫥櫫歠殰毉氌濺濻濼濾濿瀀瀁瀄瀅瀆瀇瀉瀊瀋瀌瀍瀎瀏瀑瀔爅爆爇爊爌爍牘犡犢犣犤犥犦獵獶獷獸璵璶璷璸璺璻璽璾璿瓀瓁瓂瓣甖疆疇癟癠癡矄矇矉矊矱礗礙礛礜礝礞礡禰禱穧穨穩穫簳簷簸簹簻簼簽簾簿籀糪糬繨繩繪繫繭繯繰繲繳繴繵繶繷繸繹繺罊罋羶羷羸羹翽翾聸膷膹膺膻膼膽膾膿臀臂臃臄臅臆臇臉臊臌舋艡艣艤蕶蕷蕸蕹蕺蕻蕼蕾薀薁薂薃薄薅薆薇薈薉薊薋薌薍薎薏薐薑薔薕薖薘薙薚薛薜薝薞薟薠薡薢薣薤薦薧薨薪蟶蟷蟹蟺蟻蟼蟾蟿蠀蠂蠃蠅蠆蠈蠉蠊蠋蠌蠍襖襗襘襙襚襛襜襝襞襟襠襡襢覈覶覷觶譀譁譂譅譆譇譈證譊譋譎譏譐譑譒譓譔譕譖譗識譙譚譜豃豷貚贆贇贈贉贊趪趫趬趭蹩蹪蹬蹭蹯蹲蹳蹴蹶蹸蹺蹻蹼軂轍轎轏轐轑轒轓轔辭辴遲遴遵遶遷選遹遺遻遼邆鄦鄧鄨鄩鄪鄫鄬鄭鄮鄯鄰鄱鄲醭醮醯醰醱鎩鏀鏂鏃鏄鏇鏈鏊鏌鏍鏎鏏鏐鏑鏒鏔鏕鏖鏗鏘鏙鏚鏜鏝鏞鏟鏡鏢鏣鏤鏦鏧鏨鏬鏮鏹闚闛關際障隞隡雡離難霦霧霨霩霪霫霬靡鞳鞶鞷韜韝韞韟韻顗願顙顛顜顝類颻颼颽颾颿飀餺餼餽餾餿饁馦馧騔騕騖騙騚騛騜騝騞騠騢騣騤騥騧髂鬊鬋鬌鬍鬎鬷鯔鯕鯖鯗鯙鯚鯛鯜鯞鯠鯡鯢鯤鯥鯦鯧鯨鯪鯫鯬鯰鵧鵨鵩鵪鵫鵬鵯鵰鵱鵲鵳鵴鵵鵷鵸鵹鵻鵽鵿鶀鶁鶂鶄鶅鶆鶇鶈鶉鶊鶋鶌麑麒麓麔麗麴黀黼鼭齀齁齍齖齗齘龐|20:勸匷嚲嚳嚴嚵嚶嚷壣壤孀孃孅孽寶巆巇巉巋廮廯忀忁懵懶懷懸攇攉攌攍攎攏攐旟曣曤曦曨朧櫧櫨櫪櫬櫮櫯櫰櫱櫳瀕瀖瀗瀘瀙瀚瀛瀜瀝瀟瀠瀡瀢瀣瀤瀦瀧瀨瀩瀪瀫爐爓爔犧犨獺獻瓃瓅瓊瓋癢癤癥皪皫皾盭矌矍矎矏矲礣礤礥礦礧礨礩礪礫礬禲穬穭穮竇競竷籃籅籇籈籉籊籌籍糮糯糰繻繼繽繾纀纁纂罌羃羅羆羺翿耀聹臍臏臐臑臒艦艨艩薩薯薰薱薳薴薵薶薷薸薹薺薽薾薿藀藂藃藄藅藆藇藈藉藋藍藎藏藐藑藒蘤蠐蠑蠓蠔蠕蠖蠗蠙襣襤襦覹覺觷觸譝譟譠譣譥警譧譨譪譫譬譭譯議豶贍贏趮躁躂躄躅躆躇躈躉轕轖轗轘轙轚辮遽遾避邀邁邂邃還邅鄳鄴鄵鄶醲醳醴醵醷釋鏵鏶鏷鏸鏺鏻鏼鏽鏾鏿鐀鐃鐆鐇鐉鐊鐋鐌鐍鐎鐏鐐鐑鐒鐓鐔鐕鐖鐘鐙鐠鐨镽闞闟闠闡隢隤霮霯霰露鞹鞻韽韾響顟顠顢顣飁飂飄饃饅饇饈饉馨騩騪騫騬騭騮騰騱騲騴騵騶騷騸髆髇髊鬐鬑鬒鯷鯸鰅鰆鰇鰈鰉鰋鰍鰎鰒鰓鰔鰗鶐鶒鶔鶖鶗鶘鶙鶚鶛鶜鶝鶞鶟鶠鶡鶢鶣鶤鶦鶧鶨鶩鶪鹹麙麚麛麵黤黥黦黧黨鼮鼯鼰齙齛齜齝齞齟齠齡齣龑|21:亹儷儸儹儺劗劘嚼嚽嚾囀囁囂囃囍孇孈屬巍巏廱懹懺懻攓攔攕攖攗攘攙斕曩櫸櫹櫺櫻櫼欀欂欃欄殲瀯瀰瀱瀲瀳瀴瀵瀷瀸瀹瀺瀻瀼瀾瀿灀灁爙爚爛獼獽瓏甗癩癪矐矓礭礯礱籐籓籔糲纆纇纈纊纋續纍纏罍羻羼耰臕臗臘藕藗藘藙藚藜藝藞藟藡藢藣藤藥藦藨藩藪藫藬藭藯藰藱藲蠛蠜蠝蠟蠠蠡蠢蠣蠤衊襩襪襫襬襭襮覽觺譴護譸譹譺譻譽贐贓贔趯躊躋躌躍躎轛轝轞轟辯邇邈鄸鄹醹醺鐩鐪鐫鐬鐮鐰鐱鐲鐳鐵鐶鐷鐸鐹鐺鐻鐼鐽鐿鑀闢闣闤闥隧隨隩險霵霸霹霺鞿韡顤顥顧飆飉饋饌饎饐饑饒饓騹騺騽騾騿驀驁驂驃驄驅驆髍髏鬕鬖鬗鬘鬺魑魒魔鰜鰝鰡鰣鰤鰥鰨鰩鰫鰬鰭鶬鶭鶯鶱鶲鶳鶴鶵鶶鶷鶸鶹鶺鶻鶼鶾鶿鷁鷂鷃鷅鷇鷈鷊鷌鷍鷎鷏鹺麜麝黫黭黮黯鼘鼙鼚鼛鼱齎齤齥齦齧龒|22:儻儼囅囆囈囉囊囋夔奱孋孌孿巑巒巔巕廲彎懼懽懾懿攛攜攝欈欉權欋歡氍灂灃灄灅灆灈灉灊灌爝爞爟犩獾獿瓔瓕瓖瓤疊癬癭癮礵禳禴穰竊籗籙籚籛籜籟籠糱糴纑罏聽聾臙臚臛艫藶藷藸藹藺藻藽藾藿蘀蘁蘄蘅蘆蘇蘉蘊蘋蘌蘑蘢蠥蠦蠨蠩蠪蠫蠬襯襱襲覾覿觻觼譾譿讀讂讄讅贕贖贗躐躑躒躓躔躕躖轠轡轢邊邋鄺鄻鄾鑄鑅鑆鑇鑈鑉鑊鑋鑌鑏鑐鑑鑒隬隮隰隱霽霾霿韁韃韣顩顪顫飋饔饕饖饗饘饙驈驉驊驌驍驎驏驐驒驓驔驕髐鬙鬚鬫鬻魕魖鰱鰲鰳鰴鰶鰷鰹鰻鰼鰽鰾鰿鱀鱁鱄鱆鱈鷋鷐鷑鷒鷓鷕鷖鷗鷘鷙鷚鷛鷜鷝鷞鷟麶黐黰鼲鼳鼴鼵齂齪齫齬龔龕龢|23:儽劙囌壧壨孍巖巘彏戀戁攠攡攢攣攤攦斖曫曬欏欐欑欒毊灑灒灕灖灗灘爢玀瓗瓘瓙癰皭矔穱籣籤籥籦籧纓纔纕纖羇臝艬蘗蘘蘙蘚蘛蘜蘞蘟蘠蘡蘣蘥蘦蘧蘩蘪蘬蘭蘮蠮蠯蠰蠱蠲蠳襳襴觾讆讈變讋讌讎豅贙躗躘躚轣轤邍鄿酀醼鑕鑗鑝鑞鑠鑢鑣鑤隳靨韄韅頀顯饛饜驖驗驙驚驛髑髒髓體鬞鬟鬠鱉鱊鱋鱌鱍鱎鱐鱒鱔鱕鱖鱗鱘鱙鷡鷢鷣鷤鷥鷦鷨鷩鷫鷬鷭鷮鷯鷰鷲鷳鷴鷵鷶鷷鷸鷺鷻麟黲黳黴鼆鼇鼜鼶鼷鼸齃齏齮齯齰齱|24:囑囓壩奲孎屭戃戄攥攩攪攫曭曮欓灚灛爣犪玁玂玃瓚瓥癱癲矕矗礸禶禷籪纗罐臞臟艭艷蘲蘳蘴蘵蘶蠵蠶蠷蠸蠹衋衢襶讒讓讔讕讖贛躝躞躟躠酁酃醽醾釀鑨鑩鑪鑫隴雥靂靃靄靆靇靈韆韇韥顰驞驟髕鬢魘魙鱞鱟鱠鱢鱣鱦鱧鷹鷽鷾鷿鸀鸁鸂鸃鸄鸅鸆鸇鸉鹼鹽麠黂鼞齆齲齴齵齶齷|25:囔廳攬攭斸欖欗欘欙欚灝灞灟灠灡爦瓛矘矙礹籩籫籬籮糶纘纙纚纛羈羉臠臡臢蘱蘸蘹蘺蘻蘼蘾蘿虀蠻襹襺襻襼觀觿讘讙躡躣躤躥酄酅酆釁釂鑭鑮鑯鑰鑱鑲鑳靉顱顲髖鬣鱨鱭鱮鸋鸍鸏鸐鸑鸒麡黌黵鼉齇齸齹齺齻|26:圞攮灢灣矚籯虃虪蠼讚趲躦邏邐酇酈釃鑴鑵鑶鑷鑸韉饞饟驠驢鱱鱳鱴鱵鸓鸔黶鼊龤|27:灤灥灦糷纜虆虇虈蠽蠾讜讞貜躩躪軉釅鑼鑽鑾鑿靋顳顴飌馫驤驥驦驧鬤鬮鱷鱸鸕鸗黷齈|28:戇欞灨爧蠿豔躨钀钁钂饡驨驩鸙鸚|29:爨讟钃驪鬱鱹鸛麷|30:癵驫鱺鸝鸞|31:虋虌|32:灩籲|33:灪爩麤|35:齾|36:齉|48:龘";
+const NAMECHARS=[["偉",11,9,"M"],["傑",12,9,"M"],["豪",14,152,"M"],["雄",12,172,"M"],["強",11,57,"M"],["剛",10,18,"M"],["勇",9,19,"M"],["毅",15,79,"M"],["威",9,38,"M"],["武",8,77,"N"],["軍",9,159,"M"],["峰",10,46,"M"],["嶽",17,46,"M"],["岳",8,46,"M"],["山",3,46,"M"],["松",8,75,"N"],["柏",9,75,"N"],["棟",12,75,"M"],["樑",15,75,"M"],["楷",13,75,"N"],["模",15,75,"M"],["宏",7,40,"N"],["弘",5,57,"N"],["鴻",17,196,"N"],["浩",11,85,"N"],["瀚",20,85,"N"],["海",11,85,"N"],["濤",18,85,"N"],["洋",10,85,"N"],["江",7,85,"N"],["河",9,85,"N"],["川",3,47,"M"],["淵",12,85,"N"],["源",14,85,"N"],["泉",9,85,"N"],["沛",8,85,"N"],["澤",17,85,"N"],["霖",16,173,"N"],["霆",15,173,"M"],["震",15,173,"M"],["雷",13,173,"M"],["宇",6,40,"N"],["宙",8,40,"N"],["乾",11,5,"M"],["坤",8,32,"M"],["昊",8,72,"N"],["天",4,37,"M"],["翔",12,124,"N"],["鵬",19,196,"M"],["飛",9,183,"N"],["騰",20,187,"M"],["駿",17,187,"N"],["驥",27,187,"M"],["騏",18,187,"M"],["麟",23,198,"M"],["龍",16,212,"M"],["虎",8,141,"M"],["彪",11,141,"M"],["豹",10,153,"M"],["鷹",24,196,"M"],["衛",15,144,"M"],["國",11,31,"M"],["邦",11,163,"M"],["政",8,66,"M"],["治",9,85,"M"],["權",22,75,"M"],["銘",14,167,"N"],["鈞",12,167,"N"],["鋒",15,167,"N"],["鑫",24,167,"M"],["鎧",18,167,"M"],["鐸",21,167,"M"],["鼎",13,206,"N"],["堯",12,32,"M"],["舜",12,136,"M"],["禹",9,114,"N"],["湯",13,85,"M"],["文",4,67,"N"],["德",15,60,"N"],["仁",4,9,"N"],["義",13,123,"M"],["禮",18,113,"N"],["智",12,72,"N"],["信",9,9,"N"],["忠",8,61,"M"],["孝",7,39,"M"],["勤",13,19,"M"],["儉",15,9,"M"],["廉",13,53,"N"],["正",5,77,"N"],["直",8,109,"M"],["誠",13,149,"N"],["謙",17,149,"N"],["恭",10,61,"M"],["良",7,138,"N"],["善",12,30,"N"],["凱",12,16,"M"],["捷",12,64,"N"],["勝",12,19,"M"],["贏",20,154,"M"],["冠",9,14,"M"],["魁",14,194,"N"],["俊",9,9,"M"],["彥",9,59,"N"],["士",3,33,"M"],["夫",4,37,"M"],["賢",15,154,"N"],["哲",10,30,"N"],["聖",13,128,"N"],["睿",14,109,"N"],["聰",17,128,"M"],["穎",16,115,"N"],["達",16,162,"M"],["通",14,162,"M"],["遠",17,162,"N"],["望",11,74,"M"],["志",7,61,"N"],["恆",10,61,"N"],["堅",11,32,"M"],["韌",12,178,"M"],["耀",20,124,"N"],["輝",15,159,"M"],["煌",13,86,"M"],["燦",17,86,"N"],["烽",11,86,"M"],["烈",10,86,"N"],["焱",12,86,"M"],["炎",8,86,"M"],["炫",9,86,"M"],["晟",11,72,"N"],["昇",8,72,"N"],["昌",8,72,"N"],["盛",11,108,"N"],["旺",8,72,"M"],["隆",17,170,"N"],["興",15,134,"N"],["榮",14,75,"N"],["華",14,140,"N"],["富",12,40,"M"],["貴",12,154,"M"],["福",14,113,"N"],["祿",13,113,"M"],["壽",14,33,"M"],["康",11,53,"N"],["泰",9,85,"N"],["安",6,40,"N"],["寧",14,40,"N"],["平",5,51,"N"],["和",8,30,"N"],["祥",11,113,"N"],["瑞",14,96,"N"],["吉",6,30,"M"],["慶",15,61,"M"],["喜",12,30,"M"],["樂",15,75,"N"],["暉",13,72,"N"],["曜",18,72,"N"],["晨",11,72,"N"],["旭",6,72,"M"],["陽",17,170,"N"],["光",6,10,"N"],["明",8,72,"N"],["朗",11,74,"N"],["亮",9,8,"M"],["啟",11,66,"M"],["嘉",14,30,"M"],["承",8,64,"N"],["宗",8,40,"N"],["祖",10,113,"M"],["彬",11,59,"M"],["斌",11,67,"N"],["賓",14,154,"M"],["楨",13,75,"M"],["棋",12,75,"M"],["梓",11,75,"M"],["桓",10,75,"M"],["樺",16,75,"N"],["楓",13,75,"M"],["森",12,75,"N"],["林",8,75,"N"],["杰",8,75,"N"],["東",8,75,"M"],["南",9,24,"M"],["北",5,21,"M"],["西",6,146,"M"],["中",4,2,"N"],["錦",16,167,"M"],["鈺",13,167,"M"],["銓",14,167,"M"],["鏞",19,167,"M"],["鋼",16,167,"M"],["鐵",21,167,"M"],["磊",15,112,"N"],["石",5,112,"N"],["堂",11,32,"M"],["培",11,32,"N"],["基",11,32,"M"],["垣",9,32,"M"],["城",9,32,"M"],["壬",4,33,"M"],["癸",9,105,"M"],["丞",6,1,"M"],["丕",5,1,"M"],["介",4,9,"M"],["朋",8,74,"M"],["群",13,123,"M"],["翰",16,124,"M"],["墨",15,203,"M"],["書",10,73,"N"],["詩",13,149,"N"],["章",11,180,"N"],["斐",12,67,"M"],["瑋",14,96,"M"],["瑜",14,96,"M"],["瑾",16,96,"M"],["璋",16,96,"M"],["琛",13,96,"M"],["琦",13,96,"M"],["琨",13,96,"M"],["璽",19,96,"M"],["玠",9,96,"M"],["珩",11,96,"M"],["瑢",15,96,"M"],["峻",10,46,"M"],["崇",11,46,"M"],["巍",21,46,"M"],["嶸",17,46,"M"],["崙",11,46,"M"],["昕",8,72,"N"],["晉",10,72,"N"],["朔",10,74,"M"],["晏",10,72,"N"],["暢",14,72,"M"],["曦",20,72,"N"],["曄",16,72,"M"],["美",9,123,"F"],["麗",19,198,"F"],["娟",10,38,"F"],["婷",12,38,"F"],["婉",11,38,"F"],["媛",12,38,"F"],["嫻",15,38,"F"],["嬌",15,38,"F"],["娥",10,38,"F"],["嫦",14,38,"F"],["姿",9,38,"F"],["妍",9,38,"F"],["妙",7,38,"F"],["姬",10,38,"F"],["嬿",19,38,"F"],["嫣",14,38,"F"],["娜",10,38,"F"],["妮",8,38,"F"],["姍",8,38,"F"],["姝",9,38,"F"],["如",6,38,"F"],["好",6,38,"F"],["妤",7,38,"F"],["姵",9,38,"F"],["婕",11,38,"F"],["婧",11,38,"F"],["媚",12,38,"F"],["雅",12,172,"N"],["靜",16,174,"N"],["淑",12,85,"F"],["惠",12,61,"N"],["慧",15,61,"N"],["敏",11,66,"N"],["秀",7,115,"F"],["蘭",23,140,"F"],["芳",10,140,"F"],["芬",10,140,"F"],["芝",10,140,"F"],["芷",10,140,"F"],["芸",10,140,"F"],["芯",10,140,"F"],["苓",11,140,"F"],["茵",12,140,"F"],["茜",12,140,"F"],["荷",13,140,"F"],["莉",13,140,"F"],["莎",13,140,"F"],["菁",14,140,"F"],["菲",14,140,"F"],["萍",14,140,"F"],["蓉",16,140,"N"],["蓓",16,140,"F"],["蕙",18,140,"F"],["蕾",19,140,"F"],["薇",19,140,"F"],["薰",20,140,"F"],["藍",20,140,"F"],["蘋",22,140,"F"],["蘊",22,140,"N"],["花",10,140,"F"],["英",11,140,"F"],["卉",5,24,"F"],["蓮",17,140,"F"],["葳",15,140,"F"],["萱",15,140,"F"],["芃",9,140,"N"],["茹",12,140,"F"],["茉",11,140,"F"],["莓",13,140,"F"],["莞",13,140,"F"],["菀",14,140,"F"],["菱",14,140,"F"],["葶",15,140,"F"],["蔓",17,140,"F"],["蓁",16,140,"F"],["璇",16,96,"F"],["瑤",15,96,"F"],["琳",13,96,"F"],["琪",13,96,"F"],["琴",13,96,"F"],["瑟",14,96,"F"],["珊",10,96,"F"],["珍",10,96,"F"],["珠",11,96,"F"],["玲",10,96,"F"],["瓏",21,96,"F"],["玫",9,96,"F"],["瑰",15,96,"F"],["璐",17,96,"F"],["瑛",14,96,"F"],["瑩",15,96,"F"],["玥",9,96,"F"],["瑀",14,96,"F"],["璟",17,96,"F"],["瑗",14,96,"F"],["瓊",20,96,"F"],["彤",7,59,"F"],["丹",4,3,"F"],["虹",9,142,"F"],["霓",16,173,"F"],["霞",17,173,"F"],["雲",12,173,"F"],["雪",11,173,"F"],["霜",17,173,"F"],["露",20,173,"F"],["晴",12,72,"N"],["月",4,74,"N"],["星",9,72,"N"],["辰",7,161,"N"],["宸",10,40,"N"],["詠",12,149,"N"],["韻",19,180,"F"],["音",9,180,"F"],["律",9,60,"F"],["舒",12,135,"N"],["怡",9,61,"N"],["悅",11,61,"N"],["欣",8,76,"N"],["歆",13,76,"F"],["馨",20,186,"N"],["香",9,186,"F"],["芊",9,140,"F"],["倩",10,9,"F"],["佩",8,9,"F"],["佳",8,9,"F"],["伶",7,9,"F"],["依",8,9,"F"],["儀",15,9,"F"],["彩",11,59,"F"],["綵",14,120,"F"],["綺",14,120,"F"],["綾",14,120,"F"],["絲",12,120,"F"],["紋",10,120,"F"],["素",10,120,"F"],["紫",11,120,"F"],["絹",13,120,"F"],["縈",16,120,"F"],["纖",23,120,"F"],["柔",9,75,"N"],["嫚",14,38,"F"],["蘅",22,140,"F"],["凌",10,15,"F"],["翎",11,124,"F"],["羽",6,124,"N"],["燕",16,86,"N"],["鶯",21,196,"F"],["鳳",14,196,"F"],["凰",11,16,"F"],["鸞",30,196,"F"],["鷺",23,196,"F"],["鴛",16,196,"F"],["鶴",21,196,"F"],["蝶",15,142,"F"],["黛",17,203,"F"],["眉",9,109,"F"],["卿",10,26,"F"],["嬋",15,38,"F"],["妃",6,38,"F"],["姣",9,38,"F"],["娉",10,38,"F"],["嬪",17,38,"F"],["瑄",14,96,"F"],["宜",8,40,"N"],["宣",9,40,"N"],["甄",14,98,"F"],["晶",12,72,"F"],["亭",9,8,"F"],["貞",9,154,"N"],["一",1,1,"N"],["元",4,10,"N"],["大",3,37,"N"],["真",10,109,"N"],["心",4,61,"N"],["思",9,61,"N"],["念",8,61,"N"],["意",13,61,"N"],["恩",10,61,"N"],["沐",8,85,"N"],["清",12,85,"N"],["暖",13,72,"N"],["昱",9,72,"N"],["晞",11,72,"N"],["采",8,165,"N"],["宥",9,40,"N"],["廷",7,54,"N"],["庭",10,53,"N"],["然",12,86,"N"],["若",11,140,"N"],["可",5,30,"N"],["言",7,149,"N"],["語",14,149,"N"],["逸",15,162,"N"],["軒",10,159,"N"],["亦",6,8,"N"],["奕",9,37,"N"],["弈",9,55,"N"],["以",5,9,"N"],["伊",6,9,"N"],["允",4,10,"N"],["昀",8,72,"N"],["景",12,72,"N"],["聆",11,128,"N"],["聽",22,128,"N"],["諾",16,149,"N"],["博",12,24,"N"],["學",16,39,"N"],["儒",16,9,"N"],["品",9,30,"N"],["綸",14,120,"N"],["維",14,120,"N"],["緯",15,120,"N"],["紘",10,120,"N"],["紹",11,120,"N"],["統",12,120,"N"],["繼",20,120,"N"],["傳",13,9,"N"],["家",10,40,"N"],["業",13,75,"N"],["成",6,62,"N"],["功",5,19,"N"],["立",5,117,"N"],["建",9,54,"N"],["樹",16,75,"N"],["育",10,130,"N"],["植",12,75,"N"],["禾",5,115,"N"],["稷",15,115,"N"],["稻",15,115,"N"],["秋",9,115,"N"],["春",9,72,"N"],["夏",10,35,"N"],["冬",5,15,"N"],["季",8,39,"N"],["節",13,118,"N"],["時",10,72,"N"],["年",6,51,"N"],["歲",13,77,"N"],["久",3,4,"N"],["長",8,168,"N"],["永",5,85,"N"],["旻",8,72,"N"],["靖",13,174,"N"],["竣",12,117,"N"],["竹",6,118,"N"],["筠",13,118,"N"],["箴",15,118,"N"],["範",15,118,"N"],["簡",18,118,"N"],["籍",20,118,"N"],["杉",7,75,"N"],["梧",11,75,"N"],["桐",10,75,"N"],["楠",13,75,"N"],["榆",13,75,"N"],["槿",15,75,"N"],["檸",18,75,"N"],["翊",11,124,"N"],["翌",11,124,"N"],["翼",17,124,"N"],["帆",6,50,"N"],["航",10,137,"N"],["舟",6,137,"N"],["遊",16,162,"N"],["洛",10,85,"N"],["泓",9,85,"N"],["泳",9,85,"N"],["沂",8,85,"N"],["沁",8,85,"N"],["泊",9,85,"N"],["津",10,85,"N"],["淳",12,85,"N"],["涵",12,85,"N"],["渝",13,85,"N"],["湘",13,85,"N"],["溪",14,85,"N"],["潔",16,85,"N"],["澄",16,85,"N"],["潤",16,85,"N"],["霈",15,173,"N"],["雨",8,173,"N"],["霏",16,173,"N"],["零",13,173,"N"],["澍",16,85,"N"],["瀅",19,85,"N"],["澈",16,85,"N"],["灝",25,85,"N"],["昶",9,72,"N"],["暄",13,72,"N"],["燁",16,86,"N"],["熙",14,86,"N"],["熠",15,86,"N"],["炘",8,86,"N"],["炅",8,86,"N"],["烜",10,86,"N"],["照",13,86,"N"],["斗",4,68,"N"],["寰",16,40,"N"],["容",10,40,"N"],["寬",15,40,"N"],["實",14,40,"N"],["守",6,40,"N"],["定",8,40,"N"],["室",9,40,"N"],["寶",20,40,"N"],["尚",8,42,"N"],["少",4,42,"N"],["序",7,53,"N"],["度",9,53,"N"],["征",8,60,"N"],["徐",10,60,"N"],["惟",12,61,"N"],["慈",14,61,"N"],["慕",15,61,"N"],["憲",16,61,"N"],["懋",17,61,"N"],["敦",12,66,"N"],["新",13,69,"N"],["方",4,70,"N"],["旅",10,70,"N"],["昂",8,72,"N"],["映",9,72,"N"],["昭",9,72,"N"],["晃",10,72,"N"],["暘",13,72,"N"],["曉",16,72,"N"],["曖",17,72,"N"],["朝",12,74,"N"],["期",12,74,"N"],["木",4,75,"N"],["本",5,75,"N"],["朱",6,75,"N"],["果",8,75,"N"],["柚",9,75,"N"],["柯",9,75,"N"],["栩",10,75,"N"],["根",10,75,"N"],["桂",10,75,"N"],["楊",13,75,"N"],["槐",14,75,"N"],["樸",16,75,"N"],["橋",16,75,"N"],["檀",17,75,"N"],["歌",14,76,"N"],["毓",13,80,"N"],["池",7,85,"N"],["法",9,85,"N"],["洪",10,85,"N"],["湛",13,85,"N"],["溢",14,85,"N"],["滔",14,85,"N"],["漢",15,85,"N"],["漪",15,85,"N"],["瀾",21,85,"N"],["灃",22,85,"N"],["炳",9,86,"N"],["焜",12,86,"N"],["煥",13,86,"N"],["熊",14,86,"N"],["璞",17,96,"N"],["甫",7,101,"N"],["畇",9,102,"N"],["登",12,105,"N"],["白",5,106,"N"],["皓",12,106,"N"],["益",10,108,"N"],["瞻",18,109,"N"],["知",8,111,"N"],["祐",10,113,"N"],["祺",13,113,"N"],["禎",14,113,"N"],["禧",17,113,"N"],["秉",8,115,"N"],["科",9,115,"N"],["程",12,115,"N"],["穆",16,115,"N"],["究",7,116,"N"],["童",12,117,"N"],["端",14,117,"N"],["笙",11,118,"N"],["策",12,118,"N"],["箏",14,118,"N"],["紀",9,120,"N"],["純",10,120,"N"],["紳",11,120,"N"],["經",13,120,"N"],["緣",15,120,"N"],["羲",16,123,"N"],["胤",11,130,"N"],["致",9,133,"N"],["臻",16,133,"N"],["苑",11,140,"N"],["茂",11,140,"N"],["茗",12,140,"N"],["萬",13,114,"N"],["葦",15,140,"N"],["蔚",17,140,"N"],["薌",19,140,"N"],["虔",10,141,"N"],["裕",13,145,"N"],["評",12,149,"N"],["誌",14,149,"N"],["詮",13,149,"N"],["誼",15,149,"N"],["諭",16,149,"N"],["謹",18,149,"N"],["豐",18,151,"N"],["賀",12,154,"N"],["超",12,156,"N"],["越",12,156,"N"],["迪",12,162,"N"],["進",15,162,"N"],["鄭",19,163,"N"],["醇",15,164,"N"],["里",7,166,"N"],["重",9,166,"N"],["金",8,167,"N"],["鎮",18,167,"N"],["閎",12,169,"N"],["闊",17,169,"N"],["陶",16,170,"N"],["集",12,172,"N"],["雍",13,172,"N"],["雙",18,172,"N"],["靈",24,173,"N"],["青",8,174,"N"],["韋",9,178,"N"],["韓",17,178,"N"],["頌",13,181,"N"],["順",12,181,"N"],["頤",16,181,"N"],["顥",21,181,"N"],["高",10,189,"N"],["麒",19,198,"N"],["黎",15,202,"N"],["齊",14,210,"N"]];
+"use strict";
+/* ========== 基礎資料 ========== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const TRI={1:{n:'乾',x:'天',e:'金',b:[1,1,1],dir:'西北'},2:{n:'兌',x:'澤',e:'金',b:[1,1,0],dir:'西'},3:{n:'離',x:'火',e:'火',b:[1,0,1],dir:'南'},4:{n:'震',x:'雷',e:'木',b:[1,0,0],dir:'東'},5:{n:'巽',x:'風',e:'木',b:[0,1,1],dir:'東南'},6:{n:'坎',x:'水',e:'水',b:[0,1,0],dir:'北'},7:{n:'艮',x:'山',e:'土',b:[0,0,1],dir:'東北'},8:{n:'坤',x:'地',e:'土',b:[0,0,0],dir:'西南'}};
+const GAN='甲乙丙丁戊己庚辛壬癸', ZHI='子丑寅卯辰巳午未申酉戌亥', SX='鼠牛虎兔龍蛇馬羊猴雞狗豬';
+const GAN_WX={甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水'};
+const ZHI_WX={子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+const GEN={木:'火',火:'土',土:'金',金:'水',水:'木'}, KE={木:'土',土:'水',水:'火',火:'金',金:'木'};
+const WX_INFO={木:{dir:'東方',zhi:'寅、卯',col:'綠色、青色',item:'綠色植物、木製品'},火:{dir:'南方',zhi:'巳、午',col:'紅色、紫色',item:'燈飾、紅色物品'},土:{dir:'東北或西南方',zhi:'辰、戌、丑、未',col:'黃色、咖啡色',item:'陶瓷、玉石'},金:{dir:'西方',zhi:'申、酉',col:'白色、金色',item:'金屬製品、風鈴'},水:{dir:'北方',zhi:'亥、子',col:'黑色、藍色',item:'魚缸、流水擺設'}};
+const YAO_POS=['初','二','三','四','五','上'];
+const m8=n=>((n%8)+8)%8||8, m6=n=>((n%6)+6)%6||6;
+const STROKE={}; STROKE_SRC.split('|').forEach(p=>{const [n,cs]=p.split(':');for(const c of cs)STROKE[c]=+n;});
+const H=HEX; // key = 上卦數+下卦數
+const NUM81=[null,
+['吉','萬物開泰，太極之數'],['凶','混沌未定，分離破敗'],['吉','進取如意，名利雙收'],['凶','坎坷不平，難以成就'],['吉','陰陽和合，福祿長壽'],['吉','天德地祥，家門隆昌'],['吉','剛毅果斷，獨立權威'],['吉','意志剛健，勤勉發展'],['凶','興盡凶始，窮乏困苦'],['凶','萬事終局，空虛無成'],
+['吉','草木逢春，穩健發展'],['凶','薄弱無力，孤立無援'],['吉','智略超群，博學多才'],['凶','浮沉不定，家緣淡薄'],['吉','福壽圓滿，興家聚財'],['吉','貴人得助，眾望所歸'],['吉','剛強不屈，突破萬難'],['吉','有志竟成，內外有運'],['凶','風雲蔽日，辛苦重來'],['凶','非業破運，災禍不斷'],
+['吉','明月中天，獨立權威'],['凶','秋草逢霜，困難疾弱'],['吉','旭日東昇，壯麗壯觀'],['吉','家門餘慶，金錢豐盈'],['吉','資性英敏，才能奇特'],['凶','變怪奇異，波瀾重疊'],['半吉','增長權勢，易受毀謗'],['凶','闊水浮萍，遭難離散'],['吉','智謀優秀，財力歸集'],['半吉','浮沉不定，吉凶參半'],
+['吉','春日花開，智勇得志'],['吉','寶馬金鞍，僥倖多望'],['吉','旭日昇天，家門隆昌'],['凶','破家亡身，見識短小'],['吉','溫和平靜，優雅發展'],['凶','波瀾重疊，常陷困境'],['吉','權威顯達，猛虎添翼'],['半吉','磨鐵成針，藝界有成'],['吉','富貴榮華，財帛豐盈'],['半吉','謹慎保安，一盛一衰'],
+['吉','德望高大，純陽獨秀'],['凶','博識多能，難以專精'],['凶','雨夜之花，外祥內苦'],['凶','愁眉難展，破家亡身'],['吉','順風揚帆，新生泰和'],['凶','載寶沉舟，浪裡淘金'],['吉','點石成金，開花結果'],['吉','青松立鶴，德智兼備'],['半吉','轉變之數，吉凶難分'],['凶','一成一敗，小舟入海'],
+['半吉','盛衰交加，一盛一衰'],['吉','先見之明，達眼卓識'],['凶','憂愁困苦，內憂外患'],['凶','石上栽花，難得有成'],['半吉','善惡相伴，外美內苦'],['凶','浪裡行舟，歷盡艱辛'],['吉','寒雪青松，日照春松'],['半吉','晚行遇月，先苦後甜'],['凶','寒蟬悲風，意志衰退'],['凶','無謀之數，爭名奪利'],
+['吉','牡丹芙蓉，名利雙收'],['凶','衰敗之象，內外不和'],['吉','舟出平海，富貴榮華'],['凶','非命之數，骨肉分離'],['吉','富貴長壽，事事如意'],['凶','黑夜碰月，進退失據'],['吉','順風通達，家道繁昌'],['吉','順風吹帆，智慮周密'],['凶','非業非力，坐立不安'],['凶','殘菊逢霜，寂寞無望'],
+['半吉','石上金花，內心勞苦'],['凶','勞苦之數，先甘後苦'],['半吉','志高力微，平安吉祥'],['凶','殘花經霜，沉淪逆境'],['半吉','退守保吉，發跡甚遲'],['凶','離散之數，傾覆破產'],['半吉','半吉半凶，先苦後甘'],['半吉','晚境淒涼，先甘後苦'],['凶','雲頭望月，挽回乏力'],['凶','凶星入度，一生辛苦'],
+['吉','萬物回春，還本歸元']];
+const FEMALE_AVOID=[21,23,29,33,39];
+const n81=n=>{while(n>81)n-=80;return NUM81[Math.max(1,n)];};
+const numScore=n=>({吉:100,半吉:60,凶:20})[n81(n)[0]];
+const numWx=n=>['水','木','木','火','火','土','土','金','金','水'][n%10];
+
+/* ========== 卦象工具 ========== */
+const linesOf=(u,l)=>[...TRI[l].b,...TRI[u].b];
+const triOf=b=>+Object.keys(TRI).find(k=>TRI[k].b.join('')===b.join(''));
+const fromLines=L=>({u:triOf(L.slice(3)),l:triOf(L.slice(0,3))});
+const flip=(u,l,mv)=>{const L=linesOf(u,l);mv.forEach(i=>L[i-1]=1-L[i-1]);return fromLines(L);};
+const huGua=(u,l)=>{const L=linesOf(u,l);return {u:triOf(L.slice(2,5)),l:triOf(L.slice(1,4))};};
+const hx=(u,l)=>H[''+u+l];
+const yaoName=(u,l,i)=>{const L=linesOf(u,l);const p=L[i-1]?'九':'六';return i===1?'初'+p:i===6?'上'+p:p+YAO_POS[i-1];};
+function lineLuck(t){let s=3;if(/元吉|大吉/.test(t))s=5;else if(/吉/.test(t))s=4;if(/凶/.test(t))s=/吉/.test(t)?2:1;if(s===3&&/吝|厲|悔(?!亡)/.test(t))s=2;return s;}
+const luckWord=s=>s>=5?'大吉':s>=4?'吉':s>=3?'平':'凶';
+const luckCls=s=>s>=4?'v-good':s>=3?'v-mid':'v-bad';
+const luckTag=s=>`<span class="verdict ${luckCls(s)}">${luckWord(s)}</span>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+function hexFig(u,l,mv=[],cap=''){
+  const L=linesOf(u,l);let h='<div class="hexfig"><div class="yaos">';
+  for(let i=0;i<6;i++){const m=mv.includes(i+1);h+=`<div class="yao${m?' mv':''}"><span class="pos">${YAO_POS[i]}</span><span class="bar">${L[i]?'<i></i>':'<i></i><i></i>'}</span><span class="dot"></span></div>`;}
+  const d=hx(u,l);
+  return h+`</div><div class="cap">${d.name}${cap?`<small>${cap}</small>`:''}</div></div>`;
+}
+function relation(ti,yo){ // 體、用 五行
+  if(ti===yo)return{t:'體用比和',s:4,d:'彼此同氣，事情順利、易得助力。'};
+  if(GEN[yo]===ti)return{t:'用生體',s:5,d:'外力生扶自身，最為吉利，所求易成。'};
+  if(GEN[ti]===yo)return{t:'體生用',s:2,d:'自身付出耗損，事雖可為但辛苦，宜量力而行。'};
+  if(KE[ti]===yo)return{t:'體剋用',s:4,d:'自身可掌控局面，事情可成，但需費心力。'};
+  return{t:'用剋體',s:1,d:'外在環境不利於己，宜守不宜攻，慎防阻礙。'};
+}
+function trend(a,b){const w=x=>x>=4?'吉':x>=3?'平':'凶';return w(a)===w(b)?w(a):w(a)+'→'+w(b);}
+const TRI_ZHI={1:'戌、亥',2:'酉',3:'午',4:'卯',5:'辰、巳',6:'子',7:'丑、寅',8:'未、申'};
+const ITEM={木:'綠色植物、木製品',火:'燈具、紅色物品',土:'陶瓷、石材、黃色物品',金:'金屬製品、白色物品',水:'魚缸、流水擺設、黑藍色物品'};
+function huajie(u,l,i){ // 依體用生剋取化解
+  const d=hx(u,l);if(d.jk&&d.jk[i-1]==='bad')return {k:'bad',t:(d.jh?d.jh[i-1]:'不利，無法化解。')+'宜謹慎守成、避開風險。'};if(!d.jk&&d.bad.includes(i))return {k:'bad',t:'此爻不利，無法化解；宜謹慎守成、避開風險。'};
+  const ti=i>3?l:u, yo=i>3?u:l, a=TRI[ti].e, b=TRI[yo].e;let e,why;
+  if(a===b){e=GEN[a];why=`體用比和（同屬${a}），取${a}所生的${e}使氣流通`;}
+  else if(GEN[b]===a)return {k:'none',t:`無需化解（用卦${TRI[yo].n}${b}生體卦${TRI[ti].n}${a}）。`};
+  else if(KE[a]===b)return {k:'none',t:`無需化解（體卦${TRI[ti].n}${a}剋用卦${TRI[yo].n}${b}，局面可掌控）。`};
+  else if(GEN[a]===b){e=a;why=`體卦${a}生用卦${b}而受洩，取同類的${a}比助`;}
+  else{e=GEN[b];why=`用卦${b}剋體卦${a}，取${e}通關（${b}生${e}、${e}生${a}）`;}
+  const zs=TRI_ZHI[ti].split('、');
+  
+  return {k:'do',e,t:`${zs.map(z=>z+'日'+z+'時').join('，或')}，在居住地的${TRI[ti].dir}方，安放與五行「${e}」有關的物體（如${ITEM[e]}），於室內進行。`,why};
+}
+const hjHtml=(u,l,i)=>{const h=huajie(u,l,i);return `<p class="hj hj-${h.k}"><b>◎ 化解：</b>${esc(h.t)}${h.why?`<br><small class="hint">理由：${esc(h.why)}</small>`:''}</p>`;};
+function classicBlock(d){
+  return `<div class="classic"><p><span class="lbl">卦辭</span>${esc(d.short)}：${esc(d.gc)}</p><p class="bh">白話：${esc(d.gcb)}</p><p><span class="lbl">彖傳</span>${esc(d.tuan)}</p><p><span class="lbl">大象</span>${esc(d.xiang.replace(/^象曰：/,''))}</p></div>`;
+}
+function lineBlock(d,u,l,i){
+  const [t,x]=d.lines[i-1];let s=lineLuck(t);if(d.bad.includes(i))s=Math.min(s,2);
+  return `<div class="period ${s>=4?'good':s>=3?'mid':'bad'}"><p class="classic" style="font-size:16px">◎ 爻辭：${esc(t)} ${luckTag(s)}</p>${x?`<p class="hint">小象：${esc(x.replace(/^象曰：/,''))}</p>`:''}<p>◎ 白話：${esc(d.yb[i-1])}</p>${d.ja?`<p class="ja"><b>◎ 本法分析：</b>${esc(d.ja[i-1])}</p>`:''}${hjHtml(u,l,i)}</div>`;
+}
+const trio=d=>`<div class="trio"><div><b>工作運勢</b>${esc(d.work)}</div><div><b>創業經商</b>${esc(d.biz)}</div><div><b>感情桃花</b>${esc(d.love)}</div></div>`;
+
+/* ========== 共用 ========== */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),1800);}
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}}
+function copyOut(sel){const txt=$(sel).innerText.trim();if(!txt){toast('請先產生結果');return;}
+  navigator.clipboard.writeText(txt).then(()=>toast('已複製結果文字'),()=>{const r=document.createRange();r.selectNodeContents($(sel));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('已選取結果，請按複製');});}
+const pad=n=>String(n).padStart(2,'0');
+function nowLocal(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function lunarOf(y,mo,d,h=12,mi=0){return Solar.fromYmdHms(y,mo,d,h,mi,0).getLunar();}
+function lunarText(L){return `農曆${L.getYear()}年${L.getMonth()<0?'閏':''}${Math.abs(L.getMonth())}月${L.getDay()}日 ${ZHI[L.getTimeZhiIndex()]}時`;}
+const gIdx=c=>GAN.indexOf(c)+1, zIdx=c=>ZHI.indexOf(c)+1;
+
+/* ========== 分頁 ========== */
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{
+  $$('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  $$('[data-pane]').forEach(p=>p.hidden=p.dataset.pane!==b.dataset.tab);
+  try{localStorage.setItem('ic-tab',b.dataset.tab);}catch(e){}
+  if(b.dataset.tab==='rec')renderRecords();
+});
+
+/* ========== 1. 問事占卜 ========== */
+let method='time', coins=[], lastDiv=null;
+$$('#d-method button').forEach(b=>b.onclick=()=>{method=b.dataset.m;$$('#d-method button').forEach(x=>x.setAttribute('aria-pressed',x===b));['time','num','coin','manual'].forEach(m=>$('#dm-'+m).hidden=m!==method);});
+(function fillHexSelect(){const s=$('#d-hex');for(let u=1;u<=8;u++)for(let l=1;l<=8;l++){const o=document.createElement('option');o.value=''+u+l;o.textContent=`${u}${l} ${hx(u,l).name}`;s.appendChild(o);}})();
+$('#d-time').value=nowLocal();
+$('#d-now').onclick=()=>{$('#d-time').value=nowLocal();toast('已取當地時間 '+$('#d-time').value.replace('T',' '));};
+function tossOnce(){ // 3 枚銅錢：字=2、背=3
+  const c=[0,0,0].map(()=>Math.random()<.5?2:3);const s=c.reduce((a,b)=>a+b);return {c,s};}
+function renderCoins(){$('#d-coins').innerHTML=coins.map((t,i)=>`<span>${YAO_POS[i]}爻：${t.c.map(x=>x===3?'背':'字').join('')}＝${({6:'老陰×',7:'少陽',8:'少陰',9:'老陽○'})[t.s]}</span>`).join('')+(coins.length<6?`<span>還要搖 ${6-coins.length} 次</span>`:'');}
+$('#d-toss').onclick=()=>{if(coins.length>=6){toast('已搖滿六爻，按「起卦解卦」');return;}coins.push(tossOnce());renderCoins();};
+$('#d-toss-reset').onclick=()=>{coins=[];renderCoins();};
+
+function castDivination(){
+  const tv=$('#d-time').value||nowLocal();const [dp,tp]=tv.split('T');const [Y,M,D]=dp.split('-').map(Number);const [hh,mm]=(tp||'12:00').split(':').map(Number);
+  const L=lunarOf(Y,M,D,hh,mm);const yz=L.getYearZhiIndex()+1, lm=Math.abs(L.getMonth()), ld=L.getDay(), hz=L.getTimeZhiIndex()+1;
+  let u,l,mv,how;
+  if(method==='time'){const a=yz+lm+ld;u=m8(a);l=m8(a+hz);mv=[m6(a+hz)];how=`年支${ZHI[yz-1]}(${yz})＋月${lm}＋日${ld}＝${a}，上卦 ${a}÷8 餘 ${u}；再加時支${ZHI[hz-1]}(${hz})＝${a+hz}，下卦餘 ${l}，動爻 ${a+hz}÷6 餘 ${mv[0]}`;}
+  else if(method==='num'){const a=Math.abs(parseInt($('#d-n1').value)||0),b=Math.abs(parseInt($('#d-n2').value)||0);if(!a||!b){toast('請輸入兩個正整數');return null;}u=m8(a);l=m8(b);mv=[m6(a+b+hz)];how=`${a}÷8 餘 ${u} 為上卦，${b}÷8 餘 ${l} 為下卦，(${a}+${b}+時支${hz})÷6 餘 ${mv[0]} 為動爻`;}
+  else if(method==='coin'){if(coins.length<6){toast(`還要搖 ${6-coins.length} 次`);return null;}const Ls=coins.map(t=>t.s%2);const r=fromLines(Ls);u=r.u;l=r.l;mv=coins.map((t,i)=>t.s===6||t.s===9?i+1:0).filter(Boolean);how='三枚銅錢搖六次，老陽、老陰為動爻';}
+  else{const v=$('#d-hex').value;u=+v[0];l=+v[1];mv=[+$('#d-mv').value];how='自選卦象與動爻';}
+  return {u,l,mv,how,time:tv,lunar:lunarText(L),q:$('#d-q').value.trim(),cat:$('#d-cat').value};
+}
+function renderDivination(r){
+  const {u,l,mv}=r;const d=hx(u,l);const ch=mv.length?flip(u,l,mv):{u,l};const dc=hx(ch.u,ch.l);const hu=huGua(u,l);const dh=hx(hu.u,hu.l);
+  let html=`<div class="card"><h3>卦象 ${luckTag(d.luck)}</h3><p class="hint">${esc(r.q?('所問：'+r.q+'｜'):'')}${esc(r.cat)}｜${esc(r.time.replace('T',' '))}（${r.lunar}）</p><p class="hint">${esc(r.how)}</p>
+  <div class="hexrow">${hexFig(u,l,mv,'本卦・現況')}${hexFig(hu.u,hu.l,[],'互卦・過程')}${hexFig(ch.u,ch.l,[],'變卦・結果')}</div>
+  <p style="margin-top:10px">根據取得的數字，本卦為 <b>${d.name}</b>（${TRI[u].n}上${TRI[l].n}下），${mv.length?`動在${mv.map(i=>yaoName(u,l,i)).join('、')}，變為 <b>${dc.name}</b>。`:'六爻安靜無變爻，以本卦卦辭為主。'}</p></div>`;
+  html+=`<div class="card"><h3>本卦：${d.name}　<small class="hint">${esc(d.kw)}</small></h3>${classicBlock(d)}<h4>卦義解說${d.jpg?`<small class="hint" style="font-weight:400">（本法第 ${d.jpg} 頁）</small>`:''}</h4><p>${esc(d.sum)}</p></div>`;
+  if(mv.length){html+=`<div class="card"><h3>動爻</h3><div class="list-period">${mv.map(i=>lineBlock(d,u,l,i)).join('')}</div></div>`;}
+  // 體用
+  if(mv.length===1){const inUpper=mv[0]>3;const ti=inUpper?l:u, yo=inUpper?u:l;const rel=relation(TRI[ti].e,TRI[yo].e);const hj=huajie(u,l,mv[0]);
+    html+=`<div class="card"><h3>體用生剋 ${luckTag(rel.s)}</h3><dl class="kv"><dt>體卦</dt><dd>${TRI[ti].n}（${TRI[ti].x}，五行${TRI[ti].e}）代表自己</dd><dt>用卦</dt><dd>${TRI[yo].n}（${TRI[yo].x}，五行${TRI[yo].e}）代表所問之事</dd><dt>判斷</dt><dd><b>${rel.t}</b>：${rel.d}</dd></dl>
+    <h4>化解與開運</h4><p>${esc(hj.t)}</p>${hj.why?`<p class="hint">${esc(hj.why)}</p>`:''}${hj.e?`<p class="hint">日常也可多用${WX_INFO[hj.e].col}。</p>`:''}</div>`;}
+  const cat=r.cat;const focus=cat.startsWith('事業')||cat.startsWith('考試')?'work':cat.startsWith('創業')?'biz':cat.startsWith('感情')?'love':null;
+  html+=`<div class="card"><h3>運勢分析（${trend(d.luck,dc.luck)}）</h3>${trio(d)}${mv.length?`<h4>後續發展（變卦 ${dc.name}）</h4><p>${esc(dc.sum)}</p>${focus?`<p><b>${({work:'工作',biz:'經商',love:'感情'})[focus]}：</b>${esc(dc[focus])}</p>`:''}`:''}<h4>過程（互卦 ${dh.name}）</h4><p>${esc(dh.sum)}</p></div>`;
+  if(dc!==d){html+=`<div class="card"><h3>變卦：${dc.name}</h3>${classicBlock(dc)}</div>`;}
+  html+=`<div class="card"><h3>占卜紀錄</h3><p class="hint">斷卦第七步：記下行動提醒，事後再回來寫觀察，才能檢驗與累積經驗。</p><div class="grid"><label class="f" style="grid-column:1/-1">行動提醒（讀完卦後打算怎麼做）<textarea id="d-act" placeholder="例：先不急著提離職，三個月內累積作品再談">${esc(r.act||'')}</textarea></label><label class="f" style="grid-column:1/-1">事後觀察（之後回來補寫）<textarea id="d-obs" placeholder="事情後來的發展">${esc(r.obs||'')}</textarea></label></div><div class="row" style="margin-top:10px"><button class="btn pri" type="button" onclick="document.getElementById('d-save').click()">儲存紀錄</button></div></div>`;
+  $('#d-out').innerHTML=html;
+}
+$('#d-go').onclick=()=>{const r=castDivination();if(!r)return;lastDiv=r;renderDivination(r);$('#d-out').scrollIntoView({behavior:'smooth',block:'start'});};
+$('#d-save').onclick=()=>{if(!lastDiv){toast('請先起卦');return;}lastDiv.act=($('#d-act')||{}).value||'';lastDiv.obs=($('#d-obs')||{}).value||'';const a=store('ic-rec')||[];
+  const i=lastDiv.saved?a.findIndex(x=>x.saved===lastDiv.saved):-1;if(i>=0){a[i]={...lastDiv};}else{lastDiv.saved=Date.now();a.unshift({...lastDiv});}store('ic-rec',a.slice(0,300));toast(i>=0?'已更新紀錄':'已儲存到「我的紀錄」');};
+$('#d-copy').onclick=()=>copyOut('#d-out');
+
+function recText(r){const d=hx(r.u,r.l);const c=r.mv.length?flip(r.u,r.l,r.mv):{u:r.u,l:r.l};
+  return [`提問：${r.q||'（未填寫）'}（${r.cat}）`,`時間：${r.time.replace('T',' ')}`,`上卦：${r.u} 下卦：${r.l} 卦名：${d.name}${d.jpg?`（本法第${d.jpg}頁）`:''} 動爻：${r.mv.map(i=>yaoName(r.u,r.l,i)).join('、')||'無'}${r.mv.length?` → 變卦 ${hx(c.u,c.l).name}`:''}`,
+   ...r.mv.map(i=>`爻辭：${d.lines[i-1][0]}\n本法分析：${d.ja?d.ja[i-1]:d.yb[i-1]}\n化解：${huajie(r.u,r.l,i).t}`),`行動提醒：${r.act||''}`,`事後觀察：${r.obs||''}`].join('\n');}
+function renderRecords(){
+  const a=store('ic-rec')||[];const box=$('#r-list');
+  if(!a.length){box.innerHTML='<p class="empty">還沒有紀錄。起卦後按「儲存紀錄」就會出現在這裡。</p>';return;}
+  box.innerHTML=`<div class="row" style="margin-bottom:6px"><button class="btn sm" id="r-export">複製全部紀錄（文字）</button><span class="hint">共 ${a.length} 筆</span></div>`+a.map((r,i)=>{const d=hx(r.u,r.l);const c=r.mv.length?flip(r.u,r.l,r.mv):{u:r.u,l:r.l};
+    return `<div class="rec"><div class="m"><b>${d.name}</b>${r.mv.length?`（${r.mv.map(j=>yaoName(r.u,r.l,j)).join('、')}）→ ${hx(c.u,c.l).name}`:''}　<span class="hint">上${r.u}下${r.l}${d.jpg?`｜本法第${d.jpg}頁`:''}｜${esc(r.cat)}｜${esc(r.time.replace('T',' '))}</span><div>${esc(r.q||'（未填寫問題）')}</div>
+    <details style="margin-top:4px"><summary class="hint" style="cursor:pointer">行動提醒與事後觀察${r.obs?'（已回顧）':r.act?'（待回顧）':''}</summary><div class="grid" style="margin-top:6px"><label class="f" style="grid-column:1/-1">行動提醒<textarea id="r-act-${i}">${esc(r.act||'')}</textarea></label><label class="f" style="grid-column:1/-1">事後觀察<textarea id="r-obs-${i}">${esc(r.obs||'')}</textarea></label></div><div class="row" style="margin-top:6px"><button class="btn sm" data-upd="${i}">儲存回顧</button></div></details></div>
+    <div class="row"><button class="btn sm" data-open="${i}">開啟</button><button class="btn sm" data-del="${i}">刪除</button></div></div>`;}).join('');
+  box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const r=a[+b.dataset.open];lastDiv={...r};$('#t-div').click();renderDivination(lastDiv);});
+  box.querySelectorAll('[data-upd]').forEach(b=>b.onclick=()=>{const i=+b.dataset.upd;a[i].act=$('#r-act-'+i).value;a[i].obs=$('#r-obs-'+i).value;store('ic-rec',a);toast('已儲存回顧');});
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(b.dataset.confirm){a.splice(+b.dataset.del,1);store('ic-rec',a);renderRecords();toast('已刪除');}else{b.dataset.confirm=1;b.textContent='確定刪除';}});
+  $('#r-export').onclick=()=>{const txt=a.map(recText).join('\n\n────────\n\n');navigator.clipboard.writeText(txt).then(()=>toast('已複製全部紀錄'),()=>toast('瀏覽器不允許複製，請改用各筆「開啟」後複製結果'));};
+}
+
+/* ========== 姓名筆劃 ========== */
+function strokeInputs(box,chars,key){
+  const prev={};box.querySelectorAll('input').forEach(i=>prev[i.dataset.c]=i.value);
+  box.innerHTML=chars.length?`<div class="hint" style="margin-bottom:4px">康熙筆劃（可自行修正）</div><div class="stroke-ins">${chars.map((c,i)=>`<label>${esc(c)}<input id="${key}-s${i}" data-c="${esc(c)}" type="number" min="1" value="${prev[c]||STROKE[c]||''}" placeholder="?"></label>`).join('')}</div>`:'';
+}
+function readStrokes(box){const v=[...box.querySelectorAll('input')].map(i=>parseInt(i.value)||0);return v.includes(0)?null:v;}
+function wuge(sur,giv){ // 陣列筆劃
+  const S=sur.reduce((a,b)=>a+b,0),G=giv.reduce((a,b)=>a+b,0);
+  const tian=sur.length===1?sur[0]+1:S, ren=sur[sur.length-1]+giv[0], di=giv.length===1?giv[0]+1:G, zong=S+G;
+  let wai=zong-ren+(sur.length===1?1:0)+(giv.length===1?1:0);if(wai<1)wai=1;
+  return {tian,ren,di,wai,zong};
+}
+function sancai(w){const t=numWx(w.tian),r=numWx(w.ren),d=numWx(w.di);
+  const rel=(a,b)=>a===b?'比':GEN[a]===b?'生':GEN[b]===a?'被生':KE[a]===b?'剋':'被剋';
+  const tr=rel(t,r), rd=rel(r,d); // 天對人、人對地
+  let s=60;const good=x=>x==='生'||x==='比'||x==='被生';
+  if(good(tr)&&good(rd))s=100;else if(tr==='剋'||rd==='被剋')s=20;else if(good(tr)||good(rd))s=80;
+  return {t,r,d,s,word:s>=100?'大吉':s>=80?'吉':s>=60?'平':'凶'};
+}
+function wugeHtml(w,sc){
+  const row=(k,n,desc)=>{const [g,txt]=n81(n);return `<span>${k}</span><span class="num">${n}</span><span><span class="verdict ${g==='吉'?'v-good':g==='半吉'?'v-mid':'v-bad'}">${g}</span> ${numWx(n)}｜${txt}${desc?`<br><small class="hint">${desc}</small>`:''}</span>`;};
+  return `<div class="wuge">${row('天格',w.tian,'祖先、先天運')}${row('人格',w.ren,'主運，影響個性與一生')}${row('地格',w.di,'前運，36歲前')}${row('外格',w.wai,'副運，人際與外緣')}${row('總格',w.zong,'後運，37歲後')}</div><p style="margin-top:8px">三才配置：天${sc.t}・人${sc.r}・地${sc.d}　<span class="verdict ${sc.s>=80?'v-good':sc.s>=60?'v-mid':'v-bad'}">${sc.word}</span></p>`;
+}
+
+/* ========== 2. 八字姓名論命 ========== */
+$('#l-ref').value=new Date().toISOString().slice(0,10);
+const refreshLS=()=>strokeInputs($('#l-strokes'),[...$('#l-sur').value.trim(),...$('#l-giv').value.trim()],'l');
+['#l-sur','#l-giv'].forEach(s=>$(s).addEventListener('input',refreshLS));refreshLS();
+function birthInfo(bd,bt,noTime,gender){
+  const [Y,M,D]=bd.split('-').map(Number);let [hh,mm]=(bt||'12:00').split(':').map(Number);if(noTime){hh=12;mm=0;}
+  const L=lunarOf(Y,M,D,hh,mm);const e=L.getEightChar();
+  const yz=L.getYearZhiIndex()+1,lm=Math.abs(L.getMonth()),ld=L.getDay(),hz=L.getTimeZhiIndex()+1;
+  const a=yz+lm+ld;const xt={u:m8(a),l:m8(a+hz),mv:m6(a+hz),sum:a+hz};
+  return {Y,M,D,hh,mm,L,e,xt,sx:SX[yz-1],yz,gender};
+}
+function pillarsHtml(b){const e=b.e;const P=[['年柱',e.getYear()],['月柱',e.getMonth()],['日柱',e.getDay()],['時柱',e.getTime()]];
+  const cnt={木:0,火:0,土:0,金:0,水:0};P.forEach(([,gz])=>{cnt[GAN_WX[gz[0]]]++;cnt[ZHI_WX[gz[1]]]++;});
+  const dm=e.getDay()[0];const lack=Object.keys(cnt).filter(k=>!cnt[k]);
+  return `<div class="pillars">${P.map(([k,gz])=>`<div><small>${k}</small><div class="gz">${gz}</div><small>${GAN_WX[gz[0]]}${ZHI_WX[gz[1]]}</small></div>`).join('')}</div>
+  <div class="wx" style="margin-top:10px">${Object.entries(cnt).map(([k,v])=>`<span>${k} ${v}</span>`).join('')}</div>
+  <p style="margin:8px 0 0">日主為 <b>${dm}${GAN_WX[dm]}</b>，生肖屬${b.sx}。${lack.length?`八字缺「${lack.join('、')}」，命名或開運可多加補強。`:'五行俱全。'}</p>`;}
+/* 八字密碼（先天卦／本命卦）、姓名卦（後天卦）、總命卦 */
+const r8=n=>((n%8)+8)%8, toTri=r=>r||8;
+function benming(Y,M,D){const yr=r8(Y),mr=r8(M),dr=r8(D),md=mr*10+dr,lr=r8(md);
+  return {u:toTri(yr),l:toTri(lr),yr,lr,steps:`年 ${Y}÷8 餘 ${yr}（${TRI[toTri(yr)].n}）；月 ${M}÷8 餘 ${mr}、日 ${D}÷8 餘 ${dr}，月日合為「${pad(md)}」÷8 餘 ${lr}（${TRI[toTri(lr)].n}）`};}
+function nameGua(sur,giv,chars){const S=sur.reduce((a,b)=>a+b,0),sr=r8(S),gd=giv.map(r8),gn=+gd.join(''),gr=r8(gn);
+  return {u:toTri(sr),l:toTri(gr),sr,gr,steps:`姓 ${chars?chars[0]+' ':''}${S} 劃÷8 餘 ${sr}（${TRI[toTri(sr)].n}）；名 ${giv.map((g,i)=>`${g}÷8 餘 ${gd[i]}`).join('、')}，合為「${gd.join('')}」÷8 餘 ${gr}（${TRI[toTri(gr)].n}）`};}
+function zongGua(bm,ng){const a=bm.yr*10+bm.lr,b=ng.sr*10+ng.gr;return {u:toTri(r8(a)),l:toTri(r8(b)),steps:`先天「${bm.yr}${bm.lr}」÷8 餘 ${r8(a)}（${TRI[toTri(r8(a))].n}）為上卦；後天「${ng.sr}${ng.gr}」÷8 餘 ${r8(b)}（${TRI[toTri(r8(b))].n}）為下卦`};}
+const jlTag=d=>`<span class="verdict ${d.jl==='吉'?'v-good':d.jl==='平'?'v-mid':'v-bad'}">${d.jl}</span>`;
+function hexCard(title,g,cap,how){const d=hx(g.u,g.l);return `<div class="card"><h3>${title}：${d.name} ${jlTag(d)}</h3><p class="hint">${esc(how)}</p><div class="hexrow">${hexFig(g.u,g.l,[],cap)}<div style="flex:1;min-width:220px">${classicBlock(d)}</div></div><h4>卦義解說${d.jpg?`<small class="hint" style="font-weight:400">（本法第 ${d.jpg} 頁）</small>`:''}</h4><p>${esc(d.sum)}</p>${trio(d)}</div>`;}
+function lifeHex(xt,hou){ // 一生命運卦：先天上卦 + 後天下卦
+  return {u:xt.u,l:hou.l,mv:m6(xt.sum+hou.zong)};
+}
+const chainStep=(base,n)=>{const ln=((n-1)%6)+1;const r=flip(base.u,base.l,[ln]);return {u:r.u,l:r.l,ln};};
+function chainFor(base,birthY,y,m,d){ // 本命→大運→流年→流月→流日（爻變推演法）
+  const age=y-birthY+1, k=Math.max(1,Math.ceil(age/10)), n=age-(k-1)*10;
+  const dy=chainStep(base,k), ly=chainStep(dy,n), lm=chainStep(ly,m), ld=chainStep(lm,d);
+  return {age,k,n,dy,ly,lm,ld};
+}
+function periodItem(title,prev,cur,detail){
+  const d=hx(cur.u,cur.l),p=hx(prev.u,prev.l);const [t]=d.lines[cur.ln-1];let ls=lineLuck(t);if(d.bad.includes(cur.ln))ls=Math.min(ls,2);
+  const s=Math.round((d.luck*2+ls)/3);
+  return `<div class="period ${s>=4?'good':s>=3?'mid':'bad'}"><p class="t">${title}：${d.name}（${trend(p.luck,s)}）<span class="hint" style="font-weight:400">　由${p.name}變${YAO_POS[cur.ln-1]}爻</span></p><p class="classic" style="font-size:16px">◎ 爻辭：${esc(t)}</p><p>◎ 白話：${esc(d.yb[cur.ln-1])}</p>${d.ja?`<p class="ja"><b>◎ 本法分析：</b>${esc(d.ja[cur.ln-1])}</p>`:''}${hjHtml(cur.u,cur.l,cur.ln)}${detail?`<p class="hint">${esc(d.sum)}</p>`:''}</div>`;
+}
+function runLife(){
+  const sur=[...$('#l-sur').value.trim()],giv=[...$('#l-giv').value.trim()];
+  if(!sur.length||!giv.length||sur.length>2||giv.length>2){toast('請輸入姓（1～2字）與名（1～2字）');return;}
+  const st=readStrokes($('#l-strokes'));if(!st){toast('有字查不到筆劃，請手動填入');return;}
+  const bd=$('#l-bd').value;if(!bd){toast('請輸入出生日期');return;}
+  const b=birthInfo(bd,$('#l-bt').value,$('#l-nt').checked,+$('#l-gen').value);
+  const w=wuge(st.slice(0,sur.length),st.slice(sur.length));const sc=sancai(w);
+  const bm=benming(b.Y,b.M,b.D),ng=nameGua(st.slice(0,sur.length),st.slice(sur.length),[sur.join('')]),zg=zongGua(bm,ng);
+  const bsel=$('#l-base').value;const base=bsel==='zong'?zg:bsel==='name'?ng:bsel==='mh'?{u:b.xt.u,l:b.xt.l}:bm;const baseName={bm:'本命卦（先天卦）',zong:'總命卦',name:'姓名卦（後天卦）',mh:'梅花生辰卦'}[bsel];const items=new Set($$('#l-items input:checked').map(i=>i.value));
+  const name=sur.join('')+giv.join('');const ref=$('#l-ref').value||new Date().toISOString().slice(0,10);const [RY,RM,RD]=ref.split('-').map(Number);
+  const age=RY-b.Y+1;
+  let h=`<div class="card"><h3>${esc(name)}　命盤</h3><p class="hint">國曆 ${b.Y}/${b.M}/${b.D} ${pad(b.hh)}:${pad(b.mm)}${$('#l-nt').checked?'（時辰未定，以午時計）':''}｜${lunarText(b.L)}｜${b.gender?'男':'女'}｜虛歲 ${age}</p>${pillarsHtml(b)}<h4>姓名五格</h4>${wugeHtml(w,sc)}</div>`;
+  if(items.has('1'))h+=hexCard('先天命運（本命卦）',bm,'先天不能改',bm.steps);
+  if(items.has('2'))h+=hexCard('後天命運（姓名卦）',ng,'後天可以創',ng.steps);
+  if(items.has('3'))h+=hexCard('先後天總命卦',zg,'先天為上、後天為下',zg.steps);
+  const C=chainFor(base,b.Y,RY,RM,RD);const bd0=hx(base.u,base.l);
+  if([...'4567'].some(x=>items.has(x)))h+=`<div class="card"><h3>本命推運鏈（${RY}-${pad(RM)}-${pad(RD)}，虛歲 ${C.age}）</h3><p class="hint">以${baseName}「${bd0.name}」為起點，依爻變法逐層推出：第 k 個十年變第 k 爻、第 n 年變第 n 爻、第 m 月變第 m 爻、第 d 日變第 d 爻（超過六就從初爻重新數）。</p><div class="hexrow">${hexFig(base.u,base.l,[],'本命卦')}${hexFig(C.dy.u,C.dy.l,[C.dy.ln],'大運卦')}${hexFig(C.ly.u,C.ly.l,[C.ly.ln],'流年卦')}${hexFig(C.lm.u,C.lm.l,[C.lm.ln],'流月卦')}${hexFig(C.ld.u,C.ld.l,[C.ld.ln],'流日卦')}</div></div>`;
+  if(items.has('4')){let s='';for(let k=1;k<=10;k++){const dy=chainStep(base,k);const cur=k===C.k;const d=hx(dy.u,dy.l);s+=`<div${cur?' class="curbox"':''}>${periodItem(`${(k-1)*10+1}～${k*10}歲${cur?'・目前大運':''}`,base,dy,true)}${cur?trio(d):''}</div>`;}
+    h+=`<div class="card"><h3>一生大運（每十年一運）</h3><div class="list-period">${s}</div></div>`;}
+  if(items.has('5')){let s='';for(let y=RY-2;y<=RY+3;y++){const c=chainFor(base,b.Y,y,1,1);if(c.age<1)continue;s+=periodItem(`${y}年（虛歲${c.age}）${y===RY?'・今年':''}`,c.dy,c.ly,y===RY);}h+=`<div class="card"><h3>流年</h3><div class="list-period">${s}</div></div>`;}
+  if(items.has('6')){let s='';for(let m=1;m<=12;m++){const c=chainFor(base,b.Y,RY,m,1);s+=periodItem(`${RY}年${m}月${m===RM?'・本月':''}`,c.ly,c.lm,false);}h+=`<div class="card"><h3>流月（${RY}年，由流年卦推）</h3><div class="list-period">${s}</div></div>`;}
+  if(items.has('7')){let s='';const bse=new Date(RY,RM-1,RD);for(let k=0;k<7;k++){const dt=new Date(bse);dt.setDate(bse.getDate()+k);const c=chainFor(base,b.Y,dt.getFullYear(),dt.getMonth()+1,dt.getDate());s+=periodItem(`${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`,c.lm,c.ld,false);}h+=`<div class="card"><h3>流日（自論命日期起七天，由流月卦推）</h3><div class="list-period">${s}</div></div>`;}
+  h+=`<p class="note">本命卦、姓名卦、總命卦與大運、流年、流月、流日皆依本站算法；吉凶標示採「64卦吉凶判斷表」。內容僅供參考與自我反思。</p>`;
+  $('#l-out').innerHTML=h;$('#l-out').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('#l-go').onclick=runLife;$('#l-copy').onclick=()=>copyOut('#l-out');
+function loadProfiles(){const a=store('ic-prof')||[];const s=$('#l-prof');s.innerHTML='<option value="">— 新增 —</option>'+a.map((p,i)=>`<option value="${i}">${esc(p.sur+p.giv)}</option>`).join('');return a;}
+loadProfiles();
+$('#l-prof').onchange=()=>{const a=store('ic-prof')||[];const p=a[$('#l-prof').value];if(!p)return;$('#l-sur').value=p.sur;$('#l-giv').value=p.giv;$('#l-gen').value=p.gen;$('#l-bd').value=p.bd;$('#l-bt').value=p.bt;$('#l-nt').checked=!!p.nt;$('#l-sample').hidden=true;refreshLS();};
+$('#l-save').onclick=()=>{const p={sur:$('#l-sur').value.trim(),giv:$('#l-giv').value.trim(),gen:$('#l-gen').value,bd:$('#l-bd').value,bt:$('#l-bt').value,nt:$('#l-nt').checked};if(!p.sur||!p.giv){toast('請輸入姓名');return;}const a=store('ic-prof')||[];const i=a.findIndex(x=>x.sur+x.giv===p.sur+p.giv);if(i>=0)a[i]=p;else a.push(p);store('ic-prof',a);loadProfiles();$('#l-prof').value=a.findIndex(x=>x.sur+x.giv===p.sur+p.giv);toast('已儲存問測者');};
+$('#l-del').onclick=()=>{const v=$('#l-prof').value;if(v===''){toast('請先在上方選擇要刪除的問測者');return;}const b=$('#l-del');if(!b.dataset.confirm){b.dataset.confirm=1;b.textContent='確定刪除？';return;}delete b.dataset.confirm;b.textContent='刪除問測者';const a=store('ic-prof')||[];a.splice(+v,1);store('ic-prof',a);loadProfiles();toast('已刪除');};
+
+/* ========== 3. 命名 ========== */
+const RADN={宀:40,口:30,米:119,豆:151,禾:115,木:75,金:167,王:96,馬:187,火:86,日:72,山:46,人:9,羊:123,艸:140,車:159,田:102,水:85,心:61,犬:94,衣:145,月:74,肉:130,門:169,虫:142,雨:173,辰:161,大:37,鳥:196,酉:164,石:112,刀:18,示:113,言:149,足:157,冖:14,食:184,土:32,糸:120,彡:59,力:19,子:39,女:38,巾:50,竹:118,玉:96};
+const ZOD={ // 依年支：喜用部首、忌用部首（簡化版）
+  子:{like:'宀口米豆禾木金王',hate:'馬火日山人羊'},丑:{like:'艸禾米豆車田宀水',hate:'羊心王日馬'},寅:{like:'山木王犬衣月馬',hate:'口田示人'},卯:{like:'艸禾米豆宀口月木山',hate:'酉金日鳥大'},
+  辰:{like:'水雨王大日月辰金',hate:'犬田口艸土'},巳:{like:'口宀艸木田虫月心',hate:'人火日石'},午:{like:'艸禾米木宀王金羊',hate:'子水田車心'},未:{like:'艸禾米豆木宀足門口',hate:'大王示車水'},
+  申:{like:'木口宀王金禾米言',hate:'山火石刀'},酉:{like:'米豆禾虫山宀冖木王',hate:'大石刀犬'},戌:{like:'宀人馬月心',hate:'口言水辰'},亥:{like:'豆米禾水宀冖口山木',hate:'刀石示彡'}};
+const radSet=s=>new Set([...s].map(c=>RADN[c]));
+const refreshNS=()=>strokeInputs($('#n-strokes'),[...$('#n-sur').value.trim()],'n');
+$('#n-sur').addEventListener('input',refreshNS);refreshNS();
+let nameCtx=null;
+function runNaming(two){
+  const sur=[...$('#n-sur').value.trim()];if(!sur.length||sur.length>2){toast('請輸入 1～2 字的姓氏');return;}
+  const ss=readStrokes($('#n-strokes'));if(!ss){toast('姓氏查不到筆劃，請手動填入');return;}
+  const bd=$('#n-bd').value;if(!bd){toast('請輸入出生日期');return;}
+  const gen=+$('#n-gen').value;const rules=new Set($$('#n-rules input:checked').map(i=>i.value));
+  const b=birthInfo(bd,$('#n-bt').value,false,gen);const bm=benming(b.Y,b.M,b.D);const z=ZOD[ZHI[b.yz-1]];const like=radSet(z.like),hate=radSet(z.hate);
+  const pool=NAMECHARS.filter(([c,s,r,g])=>{if(rules.has('sex')&&((gen&&g==='F')||(!gen&&g==='M')))return false;if(rules.has('zod')&&hate.has(r))return false;return true;});
+  const byS={};pool.forEach(x=>(byS[x[1]]=byS[x[1]]||[]).push(x));
+  const res=[];const R=[];for(let s=2;s<=24;s++)if(byS[s])R.push(s);
+  const combos=two?R.flatMap(a=>R.map(b2=>[a,b2])):R.map(a=>[a]);
+  for(const g of combos){
+    const w=wuge(ss,g);const sc=sancai(w);const hou=nameGua(ss,g);const d=hx(hou.u,hou.l);const zg=zongGua(bm,hou);const dz=hx(zg.u,zg.l);
+    if(rules.has('num')&&(n81(w.ren)[0]!=='吉'||n81(w.di)[0]==='凶'||n81(w.zong)[0]!=='吉'||n81(w.wai)[0]==='凶'||sc.s<60))continue;
+    if(rules.has('hex')&&(d.jl==='凶'||dz.jl==='凶'))continue;
+    if(rules.has('sex')&&!gen&&(FEMALE_AVOID.includes(w.ren)||FEMALE_AVOID.includes(w.zong)))continue;
+    const score=Math.round(numScore(w.ren)*.25+numScore(w.di)*.2+numScore(w.zong)*.2+numScore(w.wai)*.1+sc.s*.1+({吉:100,平:60,凶:20})[d.jl]*.1+({吉:100,平:60,凶:20})[dz.jl]*.05);
+    res.push({g,w,sc,hou,zg,score});
+  }
+  res.sort((a,b)=>b.score-a.score||a.w.zong-b.w.zong);
+  nameCtx={sur,ss,b,bm,gen,two,byS,like,res};
+  const xd=hx(bm.u,bm.l);
+  let h=`<div class="card"><h3>命名條件</h3><p>姓「${esc(sur.join(''))}」（${ss.join('＋')}劃）｜${gen?'男':'女'}｜生肖屬${b.sx}｜${two?'複名':'單名'}｜本命卦：${xd.name}（${xd.jl}）</p><p class="hint">依據：${[...rules].map(r=>({hex:'易經六十四卦',zod:'生肖姓名學',num:'筆劃吉凶',sex:'男女忌用'})[r]).join('、')||'未勾選（列出全部組合）'}。共找到 ${res.length} 組${res.length>80?'，列出分數最高的 80 組':''}。</p></div>`;
+  if(!res.length)h+=`<div class="card"><p class="empty">條件太嚴格，沒有符合的筆劃組合。試著取消一兩個命名依據。</p></div>`;
+  else h+=`<div class="card"><h3>各種吉數組合</h3><div class="tbl"><table><thead><tr><th></th><th>名${two?'一':''}筆劃</th>${two?'<th>名二筆劃</th>':''}<th>人格</th><th>地格</th><th>總格</th><th>姓名卦</th><th>總命卦</th><th>得分</th></tr></thead><tbody>${res.slice(0,80).map((r,i)=>`<tr><td><button class="btn sm" data-show="${i}">顯示</button></td><td>${r.g[0]}</td>${two?`<td>${r.g[1]}</td>`:''}<td>${r.w.ren}</td><td>${r.w.di}</td><td>${r.w.zong}</td><td>${hx(r.hou.u,r.hou.l).short}（${hx(r.hou.u,r.hou.l).jl}）</td><td>${hx(r.zg.u,r.zg.l).short}（${hx(r.zg.u,r.zg.l).jl}）</td><td><b>${r.score}</b></td></tr>`).join('')}</tbody></table></div></div><div id="n-detail"></div>`;
+  $('#n-out').innerHTML=h;
+  $$('#n-out [data-show]').forEach(bt=>bt.onclick=()=>showNameDetail(+bt.dataset.show));
+  if(res.length)showNameDetail(0,false);
+  $('#n-out').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showNameDetail(i,scroll=true){
+  const {sur,ss,two,byS,like,res}=nameCtx;const r=res[i];const d=hx(r.hou.u,r.hou.l);
+  const chars=s=>(byS[s]||[]).slice().sort((a,b)=>like.has(b[2])-like.has(a[2])).map(([c,,rad])=>`<span class="${like.has(rad)?'like':''}">${c}</span>`).join('');
+  $('#n-detail').innerHTML=`<div class="card"><h3>${esc(sur.join(''))}○${two?'○':''}　組合：${r.g.join('、')} 劃（${r.score} 分）</h3>${wugeHtml(r.w,r.sc)}
+  <h4>姓名卦（後天卦）：${d.name} ${jlTag(d)}</h4><p class="hint">${esc(r.hou.steps)}</p><div class="hexrow">${hexFig(r.hou.u,r.hou.l,[],'姓名卦')}${hexFig(r.zg.u,r.zg.l,[],'總命卦')}<div style="flex:1;min-width:220px"><p>${esc(d.sum)}</p><p><b>總命卦 ${hx(r.zg.u,r.zg.l).name} ${jlTag(hx(r.zg.u,r.zg.l))}</b>：${esc(hx(r.zg.u,r.zg.l).sum)}</p><p class="hint">${esc(r.zg.steps)}</p></div></div>
+  <h4>名字第一個字（${r.g[0]} 劃）</h4><div class="chars">${chars(r.g[0])}</div>
+  ${two?`<h4>名字第二個字（${r.g[1]} 劃）</h4><div class="chars">${chars(r.g[1])}</div><p class="hint">兩組字可以交叉配對使用。</p>`:''}
+  <p class="note">綠框字為生肖喜用部首。字庫為常用美字，若想用其他字，只要康熙筆劃相同即可套用此組合；建議把選好的名字再到「易經論八字姓名」完整論一次。</p></div>`;
+  if(scroll)$('#n-detail').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('#n-two').onclick=()=>runNaming(true);$('#n-one').onclick=()=>runNaming(false);
+
+
+/* ========== 六十四卦查詢 ========== */
+(function(){
+  const g=$('#b-grid');let h='<div class="hd">上＼下</div>'+[1,2,3,4,5,6,7,8].map(l=>`<div class="hd">${TRI[l].n}${TRI[l].x}</div>`).join('');
+  for(let u=1;u<=8;u++){h+=`<div class="hd">${TRI[u].n}${TRI[u].x}</div>`;for(let l=1;l<=8;l++){const d=hx(u,l);h+=`<button data-k="${u}${l}" title="${d.name}">${d.short}</button>`;}}
+  g.innerHTML=h;
+  g.querySelectorAll('button').forEach(b=>b.onclick=()=>{g.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b));showHex(+b.dataset.k[0],+b.dataset.k[1]);});
+  $('#b-q').addEventListener('input',()=>{const q=$('#b-q').value.trim();g.querySelectorAll('button').forEach(b=>{const d=H[b.dataset.k];b.classList.toggle('dim',!!q&&!(d.name+d.kw+d.sum+(d.jsum||'')).includes(q));});});
+})();
+function showHex(u,l){
+  const d=hx(u,l);
+  $('#b-out').innerHTML=`<div class="card"><h3>${d.name}　${luckTag(d.luck)}　<small class="hint">第 ${d.no} 卦｜上${u}下${l}｜${esc(d.kw)}</small></h3><div class="hexrow">${hexFig(u,l,[],`${TRI[u].n}上${TRI[l].n}下`)}<div style="flex:1;min-width:240px">${classicBlock(d)}</div></div><h4>卦義解說${d.jpg?`<small class="hint" style="font-weight:400">（本法第 ${d.jpg} 頁）</small>`:''}</h4><p>${esc(d.sum)}</p>${trio(d)}</div>
+  <div class="card"><h3>六爻與化解</h3><div class="list-period">${[1,2,3,4,5,6].map(i=>`<p class="t" style="margin:6px 0 0;font-weight:700">${yaoName(u,l,i)}</p>${lineBlock(d,u,l,i)}`).join('')}${d.lines[6]?`<p class="classic hint">${esc(d.lines[6][0])}　${esc((d.lines[6][1]||'').replace(/^象曰：/,'小象：'))}</p>`:''}</div></div>`;
+  $('#b-out').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ========== 斷卦教學 ========== */
+function jlTable(){let h='<table class="jlt"><thead><tr><th>下＼上</th>'+[1,2,3,4,5,6,7,8].map(u=>`<th>${TRI[u].n}${u}</th>`).join('')+'</tr></thead><tbody>';
+  for(let l=1;l<=8;l++){h+=`<tr><th>${TRI[l].n}${l}</th>`+[1,2,3,4,5,6,7,8].map(u=>{const d=hx(u,l);return `<td><button class="jlb ${d.jl==='吉'?'v-good':d.jl==='平'?'v-mid':'v-bad'}" data-hex="${u}${l}">${d.short}<br>${d.jl}</button></td>`;}).join('')+'</tr>';}
+  return h+'</tbody></table>';}
+(function(){
+  const T=$('#k-body');if(!T)return;
+  const triRows=[1,2,3,4,5,6,7,8].map(n=>`<tr><td>${n}</td><td>${TRI[n].n}</td><td>${TRI[n].x}</td><td>${TRI[n].e}</td><td>${TRI[n].dir}</td><td>${TRI_ZHI[n].split('、').map(z=>z+'日'+z+'時').join('／')}</td></tr>`).join('');
+  const qian=hx(1,1);
+  T.innerHTML=`<div class="card"><h3>一、八卦編碼與方位</h3><p>八卦各有三爻，兩個三爻卦上下重疊成六十四卦。初始卦象稱本卦，動爻改變後成為變卦。查卦一律寫「上X下Y」，上下不能顛倒。</p>
+  <div class="tbl"><table><thead><tr><th>數字</th><th>卦</th><th>自然象</th><th>五行</th><th>後天方位</th><th>化解常見日時</th></tr></thead><tbody>${triRows}</tbody></table></div>
+  <p class="hint">查卦示例：<button class="btn sm" data-hex="12">上1下2 天澤履</button> <button class="btn sm" data-hex="63">上6下3 水火既濟</button> <button class="btn sm" data-hex="81">上8下1 地天泰</button></p></div>
+  <div class="card"><h3>二、查卦與斷卦七步驟</h3><ol class="steps">
+   <li><b>明確問題</b>：一次只問一件具體的事，界定情境。</li>
+   <li><b>取得卦象</b>：依採用的起卦方式確認上卦、下卦（本程式「問事占卜」提供四種）。</li>
+   <li><b>定位本卦</b>：以「上X下Y」查卦名與卦辭。</li>
+   <li><b>確定爻位</b>：有動爻時，確認是初、二、三、四、五、上哪一爻。</li>
+   <li><b>閱讀原文</b>：依序看卦辭、彖、象、爻辭與白話。</li>
+   <li><b>查化解條件</b>：逐爻核對化解，不可把整卦當成同一規則。</li>
+   <li><b>紀錄與回顧</b>：記下提問、卦象、爻位、行動提醒，事後補寫觀察（占卜結果最下方與「我的紀錄」都能寫）。</li></ol>
+   <div class="row"><button class="btn sm" data-go="div">去起卦</button><button class="btn sm" data-go="rec">看我的紀錄</button></div></div>
+  <div class="card"><h3>三、命卦與運勢推演</h3><p>推演概論：由生日採集八字 → 由八字算出<b>身世卦（本命卦）</b> → 由身世卦算出<b>十年卦（大運卦）</b> → 由十年卦算出<b>流年卦（小運卦）</b> → 由流年卦算出<b>流月卦（日常卦）</b> → 由流月卦算出<b>流日卦（月經卦）</b>；流時、流分、流秒則靠卜卦（時機卦）。</p>
+   <h4>1. 先天卦（本命卦）＝出生日期</h4><p>西元年÷8 的餘數為上卦；月÷8、日÷8 的餘數依序合成兩位數，再÷8 的餘數為下卦。餘數 0 為坤（8）。例：陳水扁 1951/02/18，1951÷8 餘 7（艮）；月 2、日 18÷8 餘 2，合為 22÷8 餘 6（坎）→ <b>山水蒙</b>。</p>
+   <h4>2. 後天卦（姓名卦）＝姓名</h4><p>姓的康熙筆劃÷8 的餘數為上卦；名字每個字的筆劃÷8 的餘數依序合成數字，再÷8 的餘數為下卦。例：陳 16÷8 餘 0（坤）；水 4、扁 9÷8 餘 1，合為 41÷8 餘 1（乾）→ <b>地天泰</b>。</p>
+   <h4>3. 先後天總命卦</h4><p>先天卦的兩個餘數合成兩位數÷8 為上卦，後天卦的兩個餘數合成兩位數÷8 為下卦。例：先天「76」÷8 餘 4（震），後天「01」÷8 餘 1（乾）→ <b>雷天大壯</b>。先天不能改，後天可以創。</p>
+   <h4>4. 大運、流年、流月、流日</h4><p>每一層都由上一層變一爻：第 k 個十年變第 k 爻（1–10 歲變初爻、11–20 歲變二爻……61–70 歲又回到初爻）；該十年的第 n 年變第 n 爻（第 7–10 年再從初爻數）；第 m 月變第 m 爻；第 d 日變第 d 爻。例：本命既濟、77 歲 → 大運需 → 流年井 → 7 月需 → 11 日泰。</p>
+   <div class="row"><button class="btn sm" data-demo="1951-02-18|陳|水扁">試算陳水扁例</button><button class="btn sm" data-demo="1950-07-13|馬|英九">試算馬英九例</button><button class="btn sm" data-demo="1936-08-27|連|戰">試算連戰例</button><button class="btn sm" data-go="life">去論命</button></div>
+   </div>
+  <div class="card"><h3>64 卦吉凶判斷表（吉凶表）</h3><div class="tbl">${jlTable()}</div><p class="hint">橫列為上卦、直行為下卦；點卦名可查看。</p></div>
+  <div class="card"><h3>四、六爻判讀核心</h3><p>爻位由下往上：初、二、三、四、五、上；陽爻稱九，陰爻稱六。同一卦不同爻可能由吉轉凶、由守轉進，不能只憑卦名判斷，也不要把「初爻一定凶、五爻一定吉」當定律。</p>
+   <div class="tbl"><table class="wrapt"><thead><tr><th>乾卦爻位</th><th>爻辭</th><th>重點</th></tr></thead><tbody>${qian.lines.slice(0,6).map((x,i)=>`<tr><td>${yaoName(1,1,i+1)}</td><td>${esc(x[0].split('：')[1])}</td><td style="white-space:normal">${esc(qian.yb[i])}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="card"><h3>五、五行化解查表原則</h3><p>每一爻的化解可能是：指定日時、方位與五行物品；<b>無需化解</b>；或<b>不利，無法化解</b>。日時與方位取「體卦」（不含動爻的那個經卦），五行依體用關係決定：</p>
+   <ul><li>用生體、體剋用：無需化解。</li><li>體用比和：取體卦所生的五行。</li><li>體生用：取與體卦相同的五行比助。</li><li>用剋體：取通關五行。</li></ul>
+   <p>例如天澤履前三爻化解在西北方，後三爻在西方；同一卦不同爻的方位可能不同，所以要逐爻查。</p>
+   <p class="hint">「無法化解」是傳統術數上的判斷，不代表現實中沒有任何改善的做法；化解擺設與吉凶推斷沒有經過科學驗證。</p></div>
+  <div class="card"><h3>六、實務案例：同卦不同爻</h3><div class="list-period">
+   <div class="period mid"><p class="t">職涯與爭議：天水訟（上1下6）</p><p>爭議宜適可而止。六三是繼續原有職業、輔助上級；九四強調安穩守正；上九警惕靠爭訟得利的風險。</p><button class="btn sm" data-hex="16">開啟訟卦</button></div>
+   <div class="period good"><p class="t">合作與人際：水地比（上6下8）</p><p>重視親近與追隨的時機。六三「比之匪人」提醒選錯對象；六四「外比之，貞吉」強調親近賢者。</p><button class="btn sm" data-hex="68">開啟比卦</button></div>
+   <div class="period mid"><p class="t">積累與進退：風天小畜（上5下1）</p><p>初九、九二有回歸原路的意涵；九三「夫妻反目」指出關係受阻，不能把整個小畜卦一概解作順利。</p><button class="btn sm" data-hex="51">開啟小畜卦</button></div></div></div>`;
+  T.querySelectorAll('[data-hex]').forEach(b=>b.onclick=()=>{$('#t-lib').click();showHex(+b.dataset.hex[0],+b.dataset.hex[1]);});
+  T.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{const [bd,su,gi]=b.dataset.demo.split('|');$('#l-prof').value='';$('#l-sur').value=su;$('#l-giv').value=gi;$('#l-bd').value=bd;$('#l-ref').value='2026-07-11';$('#l-base').value='bm';refreshLS();$('#t-life').click();runLife();});
+  T.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>$(`nav.tabs [data-tab="${b.dataset.go}"]`).click());
+})();
+/* ========== 說明 ========== */
+$('#h-body').innerHTML=`<h2>演算說明</h2>
+<h4>八卦數（先天數）</h4><p>乾1、兌2、離3、震4、巽5、坎6、艮7、坤8。數字除以 8 取餘數定卦（整除為 8），除以 6 取餘數定動爻（整除為 6）。地支數：子1、丑2……亥12。八卦五行：乾兌金、離火、震巽木、坎水、艮坤土；方位與地支：乾西北（戌亥）、兌西（酉）、離南（午）、震東（卯）、巽東南（辰巳）、坎北（子）、艮東北（丑寅）、坤西南（未申）。</p>
+<h4>問事占卜</h4><p><b>時間起卦</b>：農曆（年支數＋月＋日）定上卦，再加時支數定下卦與動爻。<b>數字起卦</b>：第一數定上卦、第二數定下卦，兩數加時支數定動爻。<b>銅錢搖卦</b>：三枚銅錢，字為 2、背為 3，合計 6 老陰、7 少陽、8 少陰、9 老陽，老陰老陽為動爻。結果包含本卦（現況）、互卦（過程）、變卦（結果）。</p>
+<h4>化解方法</h4><p>動爻所在的經卦為「用」，另一個經卦為「體」（代表自己）。化解的<b>時間</b>取體卦的地支日與地支時，<b>方位</b>取體卦方位，<b>五行</b>依體用關係決定：</p>
+<ul><li>用生體、體剋用：無需化解。</li><li>體用比和：取體卦五行所生的五行（例：都屬金，取水）。</li><li>體生用（自身受洩）：取與體卦相同的五行比助。</li><li>用剋體：取通關五行（例：金剋木，取水，使金生水、水生木）。</li><li>爻辭本身不吉的爻：不利，無法化解，宜謹慎守成。</li></ul>
+<h4>八字姓名論命</h4><p><b>八字</b>：以國曆出生時間換算農曆、四柱干支與五行統計。<b>先天卦（本命卦）</b>：西元年÷8 餘數為上卦；月、日各÷8 的餘數合成兩位數再÷8 為下卦（餘 0 為坤）。<b>後天卦（姓名卦）</b>：姓的康熙筆劃÷8 為上卦；名字各字筆劃÷8 的餘數依序合成數字再÷8 為下卦（複姓以兩字筆劃合計）。<b>總命卦</b>：先天兩餘數合成÷8 為上卦、後天兩餘數合成÷8 為下卦。吉凶標示採「64 卦吉凶判斷表」。另提供梅花生辰卦（含時辰）作為可選的推運起點。</p>
+<h4>大運、流年、流月、流日（爻變推演法）</h4><p>以選定的命卦為起點，一層推一層：虛歲落在第 k 個十年，大運卦＝本命卦變第 k 爻；該十年中的第 n 年，流年卦＝大運卦變第 n 爻；國曆第 m 月，流月卦＝流年卦變第 m 爻；第 d 日，流日卦＝流月卦變第 d 爻。數字超過 6 時減 6 循環。</p>
+<h4>六十四卦命名</h4><p>窮舉名字的筆劃組合，依勾選的條件篩選：<b>易經六十四卦</b>要求姓名卦與總命卦（配合出生日期）都不是吉凶表中的凶卦；<b>筆劃吉凶</b>要求人格、總格為吉數，地格、外格不為凶，三才不凶；<b>生肖姓名學</b>依出生年支排除忌用部首、標示喜用部首（依部首判斷的簡化版）；<b>男女忌用</b>排除不合性別的字，女性另避開 21、23、29、33、39 首領數。</p>
+<h4>經文與解說來源</h4><p>卦辭、彖傳、大象、爻辭、小象為《周易》原文（公有領域）。白話、卦義與運勢解說為本站撰寫。命卦、推運與化解採傳統易數算法整理而成。結果僅供文化學習與自我反思參考，化解擺設與吉凶推斷沒有經過科學驗證。</p>`;
+
+/* 回到上次分頁 */
+try{const t=localStorage.getItem('ic-tab');if(t&&t!=='div')$(`nav.tabs [data-tab="${t}"]`).click();}catch(e){}
+/* 預先產生一個示範占卜，讓第一畫面就有內容 */
+(function(){$('#d-q').value='';lastDiv=castDivination();if(lastDiv){lastDiv.q='（示範：以目前時間起卦）';renderDivination(lastDiv);}})();
+
+</script>
+</body>
+</html>
